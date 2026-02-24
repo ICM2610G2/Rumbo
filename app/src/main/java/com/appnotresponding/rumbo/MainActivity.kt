@@ -47,7 +47,7 @@ fun LightPreview() {
         Greeting("Android")
     }}
 
-@Preview(showBackground = true, name = "Dark Theme", backgroundColor = 0xFF111509)
+@Preview(showBackground = true, name = "Dark Theme", backgroundColor = 0xFF1E1E1E)
 @Composable
 fun DarkPreview() {
     AppTheme(darkTheme = true) {
