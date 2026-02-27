@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -22,7 +23,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.appnotresponding.rumbo.R
-import com.appnotresponding.rumbo.ui.theme.AppTheme
+import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 /**
  * Componente RumboTextField para campos de texto con validación y estilos personalizados.
@@ -72,12 +73,12 @@ fun RumboTextField(
         readOnly = readOnly,
         singleLine = singleLine,
         maxLines = maxLines,
-        label = label?.let { { Text(text = it, style = AppTheme.typography.bodyText) } },
+        label = label?.let { { Text(text = it, style = MaterialTheme.typography.bodyMedium) } },
         placeholder = {
             Text(
                 text = placeholder,
-                style = AppTheme.typography.bodyText,
-                color = AppTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
             )
         },
         isError = isError,
@@ -86,8 +87,8 @@ fun RumboTextField(
                 val msg = errorMessage ?: "Formato inválido"
                 Text(
                     text = msg,
-                    style = AppTheme.typography.buttonText,
-                    color = AppTheme.colorScheme.error
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.error
                 )
             }
         } else null,
@@ -97,18 +98,18 @@ fun RumboTextField(
         trailingIcon = trailingIcon,
         shape = RoundedCornerShape(8.dp),
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = AppTheme.colorScheme.primary,
-            unfocusedBorderColor = AppTheme.colorScheme.outline,
-            disabledBorderColor = AppTheme.colorScheme.onSurface.copy(alpha = 0.12f),
-            errorBorderColor = AppTheme.colorScheme.error,
-            focusedLabelColor = AppTheme.colorScheme.primary,
-            unfocusedLabelColor = AppTheme.colorScheme.onSurfaceVariant,
-            cursorColor = AppTheme.colorScheme.primary,
-            focusedTextColor = AppTheme.colorScheme.onSurface,
-            unfocusedTextColor = AppTheme.colorScheme.onSurface,
-            disabledTextColor = AppTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+            disabledBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+            errorBorderColor = MaterialTheme.colorScheme.error,
+            focusedLabelColor = MaterialTheme.colorScheme.primary,
+            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            cursorColor = MaterialTheme.colorScheme.primary,
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+            disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
         ),
-        textStyle = AppTheme.typography.bodyText
+        textStyle = MaterialTheme.typography.bodyMedium
     )
 }
 
@@ -116,7 +117,7 @@ fun RumboTextField(
 @Preview(showBackground = true, name = "TextField - Light")
 @Composable
 private fun TextFieldLightPreview() {
-    AppTheme(darkTheme = false) {
+    RumboTheme(darkTheme = false) {
         var text by remember { mutableStateOf("") }
         var emailText by remember { mutableStateOf("bad-email") }
         Column(
@@ -136,7 +137,7 @@ private fun TextFieldLightPreview() {
                 label = "Email",
                 validationRegex = Regex("^[\\w.-]+@[\\w.-]+\\.\\w+$"),
                 keyboardType = KeyboardType.Email,
-                trailingIcon = { Icon(painter = painterResource(id = R.drawable.ic_eye_open), contentDescription = "Eye Icon", tint = AppTheme.colorScheme.onSurface) }
+                trailingIcon = { Icon(painter = painterResource(id = R.drawable.ic_eye_open), contentDescription = "Eye Icon", tint = MaterialTheme.colorScheme.onSurface) }
             )
             RumboTextField(
                 value = "",
@@ -156,7 +157,7 @@ private fun TextFieldLightPreview() {
 @Preview(showBackground = true, name = "TextField - Dark", backgroundColor = 0xFF1E1E1E)
 @Composable
 private fun TextFieldDarkPreview() {
-    AppTheme(darkTheme = true) {
+    RumboTheme(darkTheme = true) {
         var text by remember { mutableStateOf("") }
         var emailText by remember { mutableStateOf("bad-email") }
         Column(
@@ -176,7 +177,7 @@ private fun TextFieldDarkPreview() {
                 label = "Email",
                 validationRegex = Regex("^[\\w.-]+@[\\w.-]+\\.\\w+$"),
                 keyboardType = KeyboardType.Email,
-                trailingIcon = { Icon(painter = painterResource(id = R.drawable.ic_eye_open), contentDescription = "Eye Icon", tint = AppTheme.colorScheme.onSurface) }
+                trailingIcon = { Icon(painter = painterResource(id = R.drawable.ic_eye_open), contentDescription = "Eye Icon", tint = MaterialTheme.colorScheme.onSurface) }
             )
             RumboTextField(
                 value = "",

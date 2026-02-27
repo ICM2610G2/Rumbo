@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,7 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.appnotresponding.rumbo.R
-import com.appnotresponding.rumbo.ui.theme.AppTheme
+import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 // Definición de los estilos de las pills
 enum class RumboPillStyle {
@@ -61,9 +63,9 @@ fun RumboPill(
         //Definicion del estillo relleno
         RumboPillStyle.Filled -> {
             backgroundColor =
-                if (selected) AppTheme.colorScheme.primary else AppTheme.colorScheme.primaryContainer
+                if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer
             textColor =
-                if (selected) AppTheme.colorScheme.onPrimary else AppTheme.colorScheme.onPrimaryContainer
+                if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
             borderColor = Color.Transparent
         }
 
@@ -71,17 +73,17 @@ fun RumboPill(
         RumboPillStyle.Outlined -> {
             backgroundColor = Color.Transparent
             textColor =
-                if (selected) AppTheme.colorScheme.primary else AppTheme.colorScheme.onSurfaceVariant
+                if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
             borderColor =
-                if (selected) AppTheme.colorScheme.primary else AppTheme.colorScheme.outline
+                if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
         }
 
         //Definicion del estilo de tono
         RumboPillStyle.Tonal -> {
             backgroundColor =
-                if (selected) AppTheme.colorScheme.secondaryContainer else AppTheme.colorScheme.surfaceContainerHigh
+                if (selected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh
             textColor =
-                if (selected) AppTheme.colorScheme.onSecondaryContainer else AppTheme.colorScheme.onSurfaceVariant
+                if (selected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
             borderColor = Color.Transparent
         }
     }
@@ -111,9 +113,9 @@ fun RumboPill(
             Spacer(modifier = Modifier.width(4.dp))
         }
 
-        RumboText(
+        Text(
             text = text,
-            style = RumboTextStyle.Button,
+            style = MaterialTheme.typography.labelLarge,
             color = textColor,
             maxLines = 1
         )
@@ -125,7 +127,7 @@ fun RumboPill(
 @Preview(showBackground = true, name = "Pill - Light")
 @Composable
 private fun PillLightPreview() {
-    AppTheme(darkTheme = false) {
+    RumboTheme(darkTheme = false) {
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -149,7 +151,7 @@ private fun PillLightPreview() {
 @Preview(showBackground = true, name = "Pill - Dark", backgroundColor = 0xFF1E1E1E)
 @Composable
 private fun PillDarkPreview() {
-    AppTheme(darkTheme = true) {
+    RumboTheme(darkTheme = true) {
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally

@@ -9,7 +9,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.okhttp.OkHttpNetworkFetcherFactory
-import com.appnotresponding.rumbo.ui.theme.AppTheme
+import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
                     }
                     .build()
             }
-            AppTheme {
+            RumboTheme {
 
             }
         }
@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
 @Preview(showBackground = true, name = "Light Theme")
 @Composable
 fun LightPreview() {
-    AppTheme(darkTheme = false) {
+    RumboTheme(darkTheme = false) {
 
     }
 }
@@ -42,7 +42,7 @@ fun LightPreview() {
 @Preview(showBackground = true, name = "Dark Theme", backgroundColor = 0xFF1E1E1E)
 @Composable
 fun DarkPreview() {
-    AppTheme(darkTheme = true) {
+    RumboTheme(darkTheme = true) {
 
     }
 }

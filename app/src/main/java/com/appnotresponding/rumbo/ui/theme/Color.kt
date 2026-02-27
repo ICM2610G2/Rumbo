@@ -6,13 +6,13 @@ import androidx.compose.ui.graphics.Color
 // LIGHT SCHEME — Default contrast
 // ============================================================
 // Key contrast ratios (WCAG AA ≥ 4.5:1 text, ≥ 3:1 UI):
-//   primary #4A6800 on surface #F9F9F9 → ~5.1:1 ✓
-//   onPrimary #FFFFFF on primary #4A6800 → ~5.1:1 ✓
-//   onPrimaryContainer #1A2100 on primaryContainer #D2FF6E → ~12.5:1 ✓
-//   onBackground #1E1E1E on background #F9F9F9 → ~15.4:1 ✓
-//   onSurfaceVariant #444748 on surfaceVariant #E6E7E8 → ~7.1:1 ✓
-//   outline #747878 on surface #F9F9F9 → ~4.5:1 ✓
-//   error #BA1A1A on surface #F9F9F9 → ~5.9:1 ✓
+//   primary #4A6800 on surface #F9F9F9 → ~5.1:1
+//   onPrimary #FFFFFF on primary #4A6800 → ~5.1:1
+//   onPrimaryContainer #1A2100 on primaryContainer #D2FF6E → ~12.5:1
+//   onBackground #1E1E1E on background #F9F9F9 → ~15.4:1
+//   onSurfaceVariant #444748 on surfaceVariant #E6E7E8 → ~7.1:1
+//   outline #747878 on surface #F9F9F9 → ~4.5:1
+//   error #BA1A1A on surface #F9F9F9 → ~5.9:1
 
 val primaryLight = Color(0xFF4A6800)
 val onPrimaryLight = Color(0xFFFFFFFF)
@@ -132,13 +132,13 @@ val surfaceContainerHighestLightHighContrast = Color(0xFFC6C6C6)
 // DARK SCHEME — Default contrast
 // ============================================================
 // Key contrast ratios (WCAG AA ≥ 4.5:1 text, ≥ 3:1 UI):
-//   primary #BDF522 on surface #1E1E1E → ~11.8:1 ✓
-//   onPrimary #263500 on primary #BDF522 → ~5.2:1 ✓
-//   onPrimaryContainer #D2FF6E on primaryContainer #3A5000 → ~6.3:1 ✓
-//   onBackground #E6E7E8 on background #1E1E1E → ~12.1:1 ✓
-//   onSurfaceVariant #C4C7C7 on surfaceVariant #444748 → ~5.6:1 ✓
-//   outline #8E9192 on surface #1E1E1E → ~4.7:1 ✓
-//   error #FFB4AB on surface #1E1E1E → ~8.5:1 ✓
+//   primary #BDF522 on surface #1E1E1E → ~11.8:1 
+//   onPrimary #263500 on primary #BDF522 → ~5.2:1 
+//   onPrimaryContainer #D2FF6E on primaryContainer #3A5000 → ~6.3:1 
+//   onBackground #E6E7E8 on background #1E1E1E → ~12.1:1 
+//   onSurfaceVariant #C4C7C7 on surfaceVariant #444748 → ~5.6:1 
+//   outline #8E9192 on surface #1E1E1E → ~4.7:1 
+//   error #FFB4AB on surface #1E1E1E → ~8.5:1 
 
 val primaryDark = Color(0xFFBDF522)
 val onPrimaryDark = Color(0xFF263500)

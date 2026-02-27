@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -19,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.appnotresponding.rumbo.R
-import com.appnotresponding.rumbo.ui.theme.AppTheme
+import com.appnotresponding.rumbo.ui.theme.RumboTheme
 import java.util.Locale
 
 /**
@@ -38,8 +40,8 @@ fun RumboRatingStar(
     modifier: Modifier = Modifier,
     maxStars: Int = 5,
     starSize: Dp = 24.dp,
-    filledColor: Color = AppTheme.colorScheme.primary,
-    emptyColor: Color = AppTheme.colorScheme.outlineVariant,
+    filledColor: Color = MaterialTheme.colorScheme.primary,
+    emptyColor: Color = MaterialTheme.colorScheme.outlineVariant,
     onRatingChanged: ((Float) -> Unit)? = null
 ) {
     // Contenedor horizontal para las estrellas, con espacio entre ellas y alineación vertical centrada
@@ -89,8 +91,8 @@ fun RumboRatingDisplay(
     maxStars: Int = 5,
     starSize: Dp = 16.dp,
     showText: Boolean = true,
-    filledColor: Color = AppTheme.colorScheme.primary,
-    emptyColor: Color = AppTheme.colorScheme.outlineVariant
+    filledColor: Color = MaterialTheme.colorScheme.primary,
+    emptyColor: Color = MaterialTheme.colorScheme.outlineVariant
 ) {
     Row(
         modifier = modifier,
@@ -105,10 +107,10 @@ fun RumboRatingDisplay(
             emptyColor = emptyColor
         )
         if (showText) {
-            RumboText(
+            Text(
                 text = String.format(Locale.getDefault(), "%.1f", rating),
-                style = RumboTextStyle.Button,
-                color = AppTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -118,7 +120,7 @@ fun RumboRatingDisplay(
 @Preview(showBackground = true, name = "RatingStar - Light")
 @Composable
 private fun RatingStarLightPreview() {
-    AppTheme(darkTheme = false) {
+    RumboTheme(darkTheme = false) {
         Column(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -134,10 +136,10 @@ private fun RatingStarLightPreview() {
                 starSize = 32.dp,
                 onRatingChanged = { rating = it }
             )
-            RumboText(
+            Text(
                 text = "Toca para valorar: ${rating.toInt()}/5",
-                style = RumboTextStyle.Body,
-                color = AppTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -146,7 +148,7 @@ private fun RatingStarLightPreview() {
 @Preview(showBackground = true, name = "RatingStar - Dark", backgroundColor = 0xFF1E1E1E)
 @Composable
 private fun RatingStarDarkPreview() {
-    AppTheme(darkTheme = true) {
+    RumboTheme(darkTheme = true) {
         Column(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -162,10 +164,10 @@ private fun RatingStarDarkPreview() {
                 starSize = 32.dp,
                 onRatingChanged = { rating = it }
             )
-            RumboText(
+            Text(
                 text = "Toca para valorar: ${rating.toInt()}/5",
-                style = RumboTextStyle.Body,
-                color = AppTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

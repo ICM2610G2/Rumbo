@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.appnotresponding.rumbo.ui.theme.AppTheme
+import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 //Tamaños predefinidos para el Avatar, con tamaños de texto asociados para las iniciales
 enum class AvatarSize(val size: Dp) {
@@ -43,10 +45,10 @@ fun Avatar(
     pfp: String? = null,
     initials: String? = null,
     size: AvatarSize = AvatarSize.Medium,
-    backgroundColor: Color = AppTheme.colorScheme.primaryContainer,
+    backgroundColor: Color = MaterialTheme.colorScheme.primaryContainer,
     contentDescription: String? = "Avatar Image",
     borderWidth: Dp = 0.dp,
-    borderColor: Color = AppTheme.colorScheme.outline,
+    borderColor: Color = MaterialTheme.colorScheme.outline,
 ) {
     // Extraer las iniciales para mostrar, limitando a 2 caracteres y convirtiendo a mayúsculas
     val displayInitials = initials?.trim()?.take(2)?.uppercase()?.ifBlank { null }
@@ -78,12 +80,10 @@ fun Avatar(
             }
 
             displayInitials != null -> {
-                RumboText(
+                Text(
                     text = displayInitials,
-                    color = AppTheme.colorScheme.onPrimaryContainer,
-                    style = RumboTextStyle.Button,
-                    modifier = Modifier,
-                    maxLines = 1,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }
@@ -93,7 +93,7 @@ fun Avatar(
 @Preview(showBackground = true, name = "Avatar - Light")
 @Composable
 private fun AvatarLightPreview() {
-    AppTheme(darkTheme = false) {
+    RumboTheme(darkTheme = false) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(16.dp)
@@ -108,7 +108,7 @@ private fun AvatarLightPreview() {
 @Preview(showBackground = true, name = "Avatar - Dark", backgroundColor = 0xFF1E1E1E)
 @Composable
 private fun AvatarDarkPreview() {
-    AppTheme(darkTheme = true) {
+    RumboTheme(darkTheme = true) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(16.dp)
