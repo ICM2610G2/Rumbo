@@ -37,7 +37,8 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  * @param singleLine Indica si el campo de texto es de una sola línea o multilinea
  * @param maxLines Número máximo de líneas a mostrar (solo relevante si singleLine es false)
  * @param validationRegex Expresión regular para validar el formato del texto (opcional)
- * @param errorMessage Mensaje de error personalizado a mostrar cuando la validación falla (opcional)
+ * @param errorMessage Mensaje de error personalizado a mostrar cuando la validación falla (opcional, reemplaza "Formato inválido")
+ * @param externalError Mensaje de error externo que fuerza el estado de error (opcional, ej: error de servidor)
  * @param keyboardType Tipo de teclado a mostrar (por ejemplo, Email, Number, etc.)
  * @param visualTransformation Transformación visual para ocultar o formatear el texto (por ejemplo, para contraseñas)
  * @param leadingIcon Icono opcional para mostrar al inicio del campo de texto
@@ -56,6 +57,7 @@ fun RumboTextField(
     maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
     validationRegex: Regex? = null,
     errorMessage: String? = null,
+    externalError: String? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     leadingIcon: @Composable (() -> Unit)? = null,
@@ -63,7 +65,12 @@ fun RumboTextField(
 ) {
     val isValidationError =
         validationRegex != null && value.isNotEmpty() && !validationRegex.matches(value)
-    val isError = isValidationError || errorMessage != null
+    val isError = isValidationError || externalError != null
+    val displayedErrorMessage = when {
+        externalError != null -> externalError
+        isValidationError -> errorMessage ?: "Formato inválido"
+        else -> null
+    }
 
     OutlinedTextField(
         value = value,
@@ -82,11 +89,10 @@ fun RumboTextField(
             )
         },
         isError = isError,
-        supportingText = if (isError) {
+        supportingText = if (isError && displayedErrorMessage != null) {
             {
-                val msg = errorMessage ?: "Formato inválido"
                 Text(
-                    text = msg,
+                    text = displayedErrorMessage,
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.error
                 )
@@ -148,7 +154,7 @@ private fun TextFieldLightPreview() {
             RumboTextField(
                 value = "Error externo",
                 onValueChange = {},
-                errorMessage = "Este campo es requerido"
+                externalError = "Este campo es requerido"
             )
         }
     }
@@ -188,7 +194,7 @@ private fun TextFieldDarkPreview() {
             RumboTextField(
                 value = "Error externo",
                 onValueChange = {},
-                errorMessage = "Este campo es requerido"
+                externalError = "Este campo es requerido"
             )
         }
     }
