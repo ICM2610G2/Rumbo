@@ -116,7 +116,7 @@ val rumboTypography = Typography(
     labelLarge = baseline.labelLarge.copy(
         fontFamily = bodyFontFamily,
         fontSize = 14.sp,
-        fontWeight = FontWeight.Medium
+        fontWeight = FontWeight.SemiBold
     ),
     //Label 2
     labelMedium = baseline.labelMedium.copy(

@@ -121,6 +121,17 @@ private class PhoneVisualTransformation : VisualTransformation {
 }
 
 //PHONE TEXT FIELD
+/**
+ * Este TextField almacena el número de teléfono en formato E.164 (ej: +573012345678)
+ * pero lo muestra formateado como +57 301 234 5678.
+ *
+ * Solo permite ingresar dígitos y un "+" al inicio. No se permiten espacios en la entrada.
+ * El formato visual se aplica automáticamente mientras se escribe.
+ * @param value El número de teléfono en formato E.164 (ej: +573012345678)
+ * @param onValueChange Callback que recibe el nuevo valor en formato E.164 cada vez que el usuario cambia el texto. El valor siempre es solo +dígitos, sin espacios.
+ * @param label Etiqueta del campo (por defecto "Celular")
+ * @param placeholder Texto de ejemplo que se muestra cuando el campo está vacío (por defecto "+57 300 123 4567")
+ */
 @Composable
 fun AuthPhoneText(
     value: String,
@@ -147,6 +158,13 @@ fun AuthPhoneText(
 }
 
 //MAIL TEXT FIELD
+/**
+ * TextField para ingresar un correo electrónico. Valida que el formato sea correcto.
+ * @param value El correo electrónico ingresado por el usuario
+ * @param onValueChange Callback que recibe el nuevo valor cada vez que el usuario cambia el texto
+ * @param label Etiqueta del campo (por defecto "Correo electrónico")
+ * @param placeholder Texto de ejemplo que se muestra cuando el campo está vacío (por defecto "Correo electrónico")
+ */
 @Composable
 fun AuthEmailText(
     value: String,
@@ -166,6 +184,14 @@ fun AuthEmailText(
 }
 
 //PASSWORD TEXT FIELD
+/**
+ * TextField para ingresar una contraseña. Valida que tenga al menos 8 caracteres, incluyendo letras mayúsculas, minúsculas, números y símbolos.
+ * Incluye un ícono para mostrar u ocultar la contraseña.
+ * @param value La contraseña ingresada por el usuario
+ * @param onValueChange Callback que recibe el nuevo valor cada vez que el usuario cambia el texto
+ * @param label Etiqueta del campo (por defecto "Contraseña")
+ * @param placeholder Texto de ejemplo que se muestra cuando el campo está vacío (por defecto "*********")
+ */
 @Composable
 fun AuthPasswordText(
     value: String,

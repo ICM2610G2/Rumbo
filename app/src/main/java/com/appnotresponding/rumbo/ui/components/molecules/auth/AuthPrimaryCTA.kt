@@ -16,7 +16,9 @@ import com.appnotresponding.rumbo.ui.components.atoms.RumboButton
 import com.appnotresponding.rumbo.ui.components.atoms.RumboButtonStyle
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
-
+/**
+ * Componente que representa las acciones principales en la pantalla de autenticación, como iniciar sesión o registrarse.
+ */
 @Composable
 fun AuthPrimaryCTA() {
     Column(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
