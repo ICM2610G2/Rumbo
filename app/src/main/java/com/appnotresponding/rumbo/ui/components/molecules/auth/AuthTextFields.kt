@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TransformedText
@@ -152,7 +153,7 @@ fun AuthPhoneText(
         placeholder = placeholder,
         validationRegex = Regex("^\\+\\d{10,14}$"),
         errorMessage = "Número de teléfono inválido",
-        keyboardType = androidx.compose.ui.text.input.KeyboardType.Phone,
+        keyboardType = KeyboardType.Phone,
         visualTransformation = PhoneVisualTransformation()
     )
 }
@@ -179,7 +180,7 @@ fun AuthEmailText(
         placeholder = placeholder,
         validationRegex = Regex("""^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$"""),
         errorMessage = "Correo electrónico inválido",
-        keyboardType = androidx.compose.ui.text.input.KeyboardType.Email
+        keyboardType = KeyboardType.Email
     )
 }
 
@@ -219,7 +220,7 @@ fun AuthPasswordText(
             }
         },
         errorMessage = "La contraseña debe tener al menos 8 caracteres, incluyendo letras, números y símbolos",
-        keyboardType = androidx.compose.ui.text.input.KeyboardType.Password,
+        keyboardType = KeyboardType.Password,
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
     )
 }

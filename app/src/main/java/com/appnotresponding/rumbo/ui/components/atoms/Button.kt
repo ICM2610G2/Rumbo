@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -78,7 +77,7 @@ fun RumboButton(
 ) {
     val contentPadding =
         PaddingValues(horizontal = size.horizontalPadding, vertical = size.verticalPadding)
-    val shape = RoundedCornerShape(8.dp)
+    val shape = MaterialTheme.shapes.medium
     val isInteractable = enabled && !loading
     val textStyle =
         if (size == RumboButtonSize.Large) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.labelLarge
@@ -123,21 +122,23 @@ fun RumboButton(
                 shape = shape,
                 border = BorderStroke(
                     1.dp,
-                    if (enabled && !loading) MaterialTheme.colorScheme.outline
-                    else if (loading) MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                    if (enabled && !loading) MaterialTheme.colorScheme.secondary
+                    else if (loading) MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
                     else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
                 ),
                 colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = if (loading) MaterialTheme.colorScheme.primary.copy(alpha = 0.6f) else MaterialTheme.colorScheme.primary,
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = if (loading) MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSecondaryContainer,
+                    disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
                     disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
             ) {
                 ButtonContent(
                     text,
                     textStyle,
-                    if (loading) MaterialTheme.colorScheme.primary.copy(alpha = 0.6f) else MaterialTheme.colorScheme.primary,
+                    if (loading) MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSecondaryContainer,
                     loading,
-                    MaterialTheme.colorScheme.primary,
+                    MaterialTheme.colorScheme.onSecondaryContainer,
                     icon,
                     iconContentDescription,
                     size.iconSize,
@@ -154,16 +155,16 @@ fun RumboButton(
                 enabled = isInteractable,
                 contentPadding = contentPadding,
                 colors = ButtonDefaults.textButtonColors(
-                    contentColor = if (loading) MaterialTheme.colorScheme.primary.copy(alpha = 0.6f) else MaterialTheme.colorScheme.primary,
+                    contentColor = if (loading) MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f) else MaterialTheme.colorScheme.tertiary,
                     disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
             ) {
                 ButtonContent(
                     text,
                     textStyle,
-                    if (loading) MaterialTheme.colorScheme.primary.copy(alpha = 0.6f) else MaterialTheme.colorScheme.primary,
+                    if (loading) MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f) else MaterialTheme.colorScheme.tertiary,
                     loading,
-                    MaterialTheme.colorScheme.primary,
+                    MaterialTheme.colorScheme.tertiary,
                     icon,
                     iconContentDescription,
                     size.iconSize,

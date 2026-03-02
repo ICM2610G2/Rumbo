@@ -19,14 +19,21 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+/**
+ * Componente de encabezado para mostrar la ubicación actual del usuario.
+ *
+ * @param title El título principal del encabezado.
+ * @param locationName El nombre de la ubicación actual del usuario. Por defecto es "Desconocida".
+ */
 @Composable
 fun LocationHeader(
+    title: String,
     locationName: String = "Desconocida"
 ) {
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            text = "Planea Tu Día",
+            text = title,
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp)
@@ -45,8 +52,14 @@ fun LocationHeader(
     }
 }
 
+/**
+ * Componente de encabezado para mostrar la fecha actual.
+ *
+ * @param title El título principal del encabezado.
+ */
 @Composable
 fun DayHeader(
+    title: String
 ) {
     var date by remember {
         mutableStateOf(
@@ -58,7 +71,7 @@ fun DayHeader(
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            text = "Planea Tu Día",
+            text = title,
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp)
@@ -82,7 +95,7 @@ fun DayHeader(
 @Composable
 private fun DayHeaderLightPreview() {
     RumboTheme(darkTheme = false) {
-        DayHeader()
+        DayHeader(title = "Planea tu Día")
     }
 }
 
@@ -90,7 +103,7 @@ private fun DayHeaderLightPreview() {
 @Composable
 private fun DayHeaderDarkPreview() {
     RumboTheme(darkTheme = true) {
-        DayHeader()
+        DayHeader(title = "Planea tu Día")
     }
 }
 
@@ -98,7 +111,7 @@ private fun DayHeaderDarkPreview() {
 @Composable
 private fun DayHeaderDefaultLightPreview() {
     RumboTheme(darkTheme = false) {
-        LocationHeader("Bogotá, Colombia")
+        LocationHeader(title = "Planea tu Día", locationName = "Bogotá, Colombia")
     }
 }
 
@@ -106,7 +119,7 @@ private fun DayHeaderDefaultLightPreview() {
 @Composable
 private fun DayHeaderDefaultDarkPreview() {
     RumboTheme(darkTheme = true) {
-        LocationHeader("Bogotá, Colombia")
+        LocationHeader(title = "Planea tu Día", locationName = "Bogotá, Colombia")
     }
 }
 

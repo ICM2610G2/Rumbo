@@ -89,7 +89,7 @@ fun RumboRatingDisplay(
     rating: Float,
     modifier: Modifier = Modifier,
     maxStars: Int = 5,
-    starSize: Dp = 16.dp,
+    starSize: Dp = 12.dp,
     showText: Boolean = true,
     filledColor: Color = MaterialTheme.colorScheme.primary,
     emptyColor: Color = MaterialTheme.colorScheme.outlineVariant

@@ -28,7 +28,14 @@ import com.appnotresponding.rumbo.ui.components.atoms.RumboButton
 import com.appnotresponding.rumbo.ui.components.atoms.RumboButtonStyle
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
-
+/**
+ * PlanItemCard.kt
+ *
+ * Componente que representa una tarjeta de un lugar en el planificador.
+ * Muestra la imagen, nombre, descripción, precio y un botón para añadir al itinerario.
+ *
+ * @param p El lugar a mostrar en la tarjeta.
+ */
 @Composable
 fun PlanItemCard(p: Place) {
 
@@ -58,7 +65,7 @@ fun PlanItemCard(p: Place) {
                 })
         }
         Column(
-            modifier = Modifier.weight(6f).padding(2.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.weight(6f).padding(top = 2.dp, end = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
                 text = p.name,

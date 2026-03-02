@@ -14,6 +14,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.appnotresponding.rumbo.models.User
+import com.appnotresponding.rumbo.models.sampleUser
 import com.appnotresponding.rumbo.ui.components.atoms.Avatar
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
@@ -21,7 +23,7 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 /**
  * Componente que representa un elemento de la lista de chats, mostrando el nombre del remitente, el último mensaje, el estado (opcional) y la hora del último mensaje.
  *
- * @param senderName El nombre del remitente del chat.
+ * @param user El objeto User que representa al remitente del mensaje, del cual se obtiene el nombre y las iniciales para el avatar.
  * @param lastMessage El texto del último mensaje enviado o recibido en el chat.
  * @param status Un estado opcional que muestra la ruta de la persona "Rumbo al Museo Nacional".
  * @param timestamp La hora o fecha del último mensaje, como "12:30", "Ayer" o "Lun".
@@ -29,31 +31,29 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  */
 @Composable
 fun ChatListItem(
-    senderName: String,
+    user: User,
     lastMessage: String,
     status: String? = null,
     timestamp: String,
-    avatar: @Composable () -> Unit = { Avatar(initials = senderName) }
 ) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         Box() {
-            avatar()
+            Avatar(user = user)
         }
 
         Column(modifier = Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = senderName,
+                    text = user.name,
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                if (status != null)
-                    Text(
-                        text = status,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
+                if (status != null) Text(
+                    text = status,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -79,25 +79,23 @@ fun ChatListItem(
 @Composable
 private fun ChatListItemPreviewContent() {
     Column(
-        modifier = Modifier.padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         ChatListItem(
-            senderName = "Carlos Pérez",
+            user = sampleUser,
             lastMessage = "¡Nos vemos en el punto!",
             timestamp = "12:30",
         )
         ChatListItem(
-            senderName = "María López",
+            user = sampleUser,
             lastMessage = "Gracias por el viaje 🚗",
             timestamp = "Ayer",
         )
         ChatListItem(
-            senderName = "Samuel Pico",
+            user = sampleUser,
             status = "Rumbo al Museo Nacional",
             lastMessage = "¿A qué hora sales?",
             timestamp = "Lun",
-            avatar = { Avatar(pfp = "https://github.com/Samu-Kiss.png", initials = "JG") }
         )
     }
 }

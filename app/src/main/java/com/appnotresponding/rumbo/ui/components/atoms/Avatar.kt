@@ -27,6 +27,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.ui.graphics.ColorFilter
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.SubcomposeAsyncImageContent
+import com.appnotresponding.rumbo.models.User
+import com.appnotresponding.rumbo.models.sampleUser
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 import com.appnotresponding.rumbo.R
 
@@ -38,8 +40,7 @@ enum class AvatarSize(val size: Dp) {
 /**
  * Componente Avatar para mostrar una imagen de perfil o iniciales de usuario.
  * @param modifier Modificador para ajustar el diseño, tamaño y comportamiento visual del componente Avatar.
- * @param pfp URL de la imagen de perfil (opcional)
- * @param initials Recibe el nombre o las iniciales del usuario
+ * @param user Objeto User del cual se obtiene la imagen de perfil y las iniciales.
  * @param size Tamaño del avatar (Small, Medium, Large)
  * @param backgroundColor Color de fondo del avatar
  * @param contentDescription Descripción para accesibilidad
@@ -50,8 +51,7 @@ enum class AvatarSize(val size: Dp) {
 @Composable
 fun Avatar(
     modifier: Modifier = Modifier,
-    pfp: String? = null,
-    initials: String? = null,
+    user: User? = null,
     size: AvatarSize = AvatarSize.Medium,
     backgroundColor: Color = MaterialTheme.colorScheme.primaryContainer,
     contentDescription: String? = "Avatar Image",
@@ -59,6 +59,8 @@ fun Avatar(
     borderColor: Color = MaterialTheme.colorScheme.outline,
     isOnline: Boolean = false
 ) {
+    val pfp = user?.profilePictureUrl
+    val initials = user?.name
     // Extraer las iniciales para mostrar, limitando a 2 caracteres y convirtiendo a mayúsculas
     val displayInitials = initials?.trim()?.take(2)?.uppercase()?.ifBlank { null }
 
@@ -160,7 +162,7 @@ private fun AvatarLightPreview() {
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 for (size in AvatarSize.entries) {
-                    Avatar(initials = "SP", size = size, isOnline = true)
+                    Avatar(user = sampleUser, size = size, isOnline = true)
                 }
             }
             Column(
@@ -168,7 +170,7 @@ private fun AvatarLightPreview() {
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 for (size in AvatarSize.entries) {
-                    Avatar(initials = "SP", size = size, isOnline = false)
+                    Avatar(user = sampleUser, size = size, isOnline = false)
                 }
             }
 
@@ -189,7 +191,7 @@ private fun AvatarDarkPreview() {
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 for (size in AvatarSize.entries) {
-                    Avatar(initials = "SP", size = size, isOnline = true)
+                    Avatar(user = sampleUser, size = size, isOnline = true)
                 }
             }
             Column(
@@ -197,7 +199,7 @@ private fun AvatarDarkPreview() {
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 for (size in AvatarSize.entries) {
-                    Avatar(initials = "SP", size = size, isOnline = false)
+                    Avatar(user = sampleUser, size = size, isOnline = false)
                 }
             }
 

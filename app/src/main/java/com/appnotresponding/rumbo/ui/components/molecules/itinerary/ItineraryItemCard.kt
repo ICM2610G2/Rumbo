@@ -28,7 +28,11 @@ import com.appnotresponding.rumbo.ui.components.atoms.RumboButton
 import com.appnotresponding.rumbo.ui.components.atoms.RumboButtonStyle
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
-
+/**
+ * Componente que muestra la información de un lugar en el itinerario, incluyendo su imagen, nombre, horario, precio y un botón para iniciar el desplazamiento.
+ *
+ * @param p El objeto Place que contiene la información del lugar a mostrar.
+ */
 @Composable
 fun ItineraryItemCard(p: Place) {
 
@@ -55,7 +59,7 @@ fun ItineraryItemCard(p: Place) {
                 })
         }
         Column(
-            modifier = Modifier.weight(6f).padding(2.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.weight(6f).padding(top = 2.dp, end = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
                 text = p.name,
