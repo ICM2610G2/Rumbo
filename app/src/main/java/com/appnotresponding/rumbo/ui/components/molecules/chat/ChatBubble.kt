@@ -44,8 +44,10 @@ enum class ChatBubbleType {
  *
  * @param message El texto del mensaje.
  * @param messageImage Una imagen opcional asociada al mensaje.
- * @param isUserMessage Indica si el mensaje es del usuario o de otro participante.b
+ * @param isUserMessage Indica si el mensaje es del usuario o de otro participante.
  * @param senderName El nombre del remitente, opcional para mensajes del usuario.
+ * @param type El tipo de burbuja de chat (Regular, Location, LiveActivity), que determina el diseño y contenido mostrado.
+ * @param place El objeto [Place] asociado al mensaje, requerido cuando el tipo es [ChatBubbleType.LiveActivity].
  */
 @Composable
 fun ChatBubble(

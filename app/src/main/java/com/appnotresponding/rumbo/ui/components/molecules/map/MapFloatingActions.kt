@@ -22,9 +22,10 @@ import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 /**
- * Componentes de acciones flotantes para el mapa, que incluye un botón para escribir una nota de ubicación
- * y otro para localizar al usuario.
- * Ambos botones son circulares, con un fondo del color primario del tema y un ícono blanco.
+ * Circular floating button to create a new DropNote on the map.
+ * Displays a pencil icon over a circular background with the theme's primary color.
+ *
+ * @param onClick Callback invoked when the user presses the button.
  */
 @Composable
 fun WriteDropNote(onClick: () -> Unit = {}) {
@@ -44,6 +45,12 @@ fun WriteDropNote(onClick: () -> Unit = {}) {
     }
 }
 
+/**
+ * Circular floating button to center the map on the user's current location.
+ * Displays a crosshair icon over a circular background with the theme's primary color.
+ *
+ * @param onClick Callback invoked when the user presses the button.
+ */
 @Composable
 fun LocateMe(onClick: () -> Unit = {}) {
     Box(

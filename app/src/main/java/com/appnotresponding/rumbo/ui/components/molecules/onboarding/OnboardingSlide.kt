@@ -23,7 +23,8 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  * Composable representing a single onboarding slide with a title, subtitle, illustration, and description.
  * @param title The main title of the onboarding slide.
  * @param subtitle A brief subtitle providing additional context.
- * @param illustrationRes The resource ID of the illustration to display
+ * @param illustrationRes The resource ID of the illustration to display.
+ * @param description A paragraph of text displayed below the illustration to explain the slide's content.
  */
 @Composable
 fun OnboardingSlide(
