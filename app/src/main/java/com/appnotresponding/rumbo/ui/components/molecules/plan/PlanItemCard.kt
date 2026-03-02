@@ -47,7 +47,7 @@ fun PlanItemCard(p: Place) {
             modifier = Modifier
                 .weight(4f)
                 .aspectRatio(1f)
-                .padding(start=8.dp,end=8.dp,bottom=8.dp,top=2.dp)
+                .padding(start = 8.dp, end = 8.dp, bottom = 8.dp, top = 2.dp)
                 .clip(MaterialTheme.shapes.medium)
                 .background(MaterialTheme.colorScheme.secondaryContainer),
             contentAlignment = Alignment.Center
@@ -65,7 +65,10 @@ fun PlanItemCard(p: Place) {
                 })
         }
         Column(
-            modifier = Modifier.weight(6f).padding(top = 2.dp, end = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier
+                .weight(6f)
+                .padding(top = 2.dp, end = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
                 text = p.name,

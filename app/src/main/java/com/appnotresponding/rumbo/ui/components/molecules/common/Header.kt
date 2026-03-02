@@ -27,8 +27,7 @@ import java.util.Locale
  */
 @Composable
 fun LocationHeader(
-    title: String,
-    locationName: String = "Desconocida"
+    title: String, locationName: String = "Desconocida"
 ) {
 
     Column(modifier = Modifier.fillMaxWidth()) {

@@ -38,18 +38,13 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  */
 @Composable
 fun AuthPlainText(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    placeholder: String
+    value: String, onValueChange: (String) -> Unit, label: String, placeholder: String
 ) {
     RumboTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = label,
-        placeholder = placeholder
+        value = value, onValueChange = onValueChange, label = label, placeholder = placeholder
     )
 }
+
 /**
  * VisualTransformation que muestra dígitos crudos (ej: +573012345678)
  * con formato: +57 301 234 5678
@@ -243,8 +238,7 @@ private fun AuthTextFieldsLightPreview() {
         var email by remember { mutableStateOf("sa.pico@javeriana.edu.co") }
         var password by remember { mutableStateOf("1ManzanaGrande!") }
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             AuthPlainText(
                 value = name,
@@ -268,8 +262,7 @@ private fun AuthTextFieldsDarkPreview() {
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             AuthPlainText(
                 value = name,

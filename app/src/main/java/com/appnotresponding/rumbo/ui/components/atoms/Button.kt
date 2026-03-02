@@ -32,21 +32,16 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 // Definición de tipos de botón
 enum class RumboButtonStyle {
-    Primary,
-    Secondary,
-    Tertiary
+    Primary, Secondary, Tertiary
 }
 
 //Definición de estilos y tamaños para el botón, con valores de padding e iconos asociados
 enum class RumboButtonSize(
-    val height: Dp,
-    val horizontalPadding: Dp,
-    val verticalPadding: Dp,
-    val iconSize: Dp
+    val height: Dp, val horizontalPadding: Dp, val verticalPadding: Dp, val iconSize: Dp
 ) {
-    Small(32.dp, 12.dp, 6.dp, 16.dp),
-    Medium(44.dp, 20.dp, 10.dp, 18.dp),
-    Large(52.dp, 28.dp, 14.dp, 20.dp)
+    Small(32.dp, 12.dp, 6.dp, 16.dp), Medium(44.dp, 20.dp, 10.dp, 18.dp), Large(
+        52.dp, 28.dp, 14.dp, 20.dp
+    )
 }
 
 
@@ -121,14 +116,15 @@ fun RumboButton(
                 contentPadding = contentPadding,
                 shape = shape,
                 border = BorderStroke(
-                    1.dp,
-                    if (enabled && !loading) MaterialTheme.colorScheme.secondary
+                    1.dp, if (enabled && !loading) MaterialTheme.colorScheme.secondary
                     else if (loading) MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
                     else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
                 ),
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = if (loading) MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSecondaryContainer,
+                    contentColor = if (loading) MaterialTheme.colorScheme.onSecondaryContainer.copy(
+                        alpha = 0.6f
+                    ) else MaterialTheme.colorScheme.onSecondaryContainer,
                     disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
                     disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
@@ -203,9 +199,7 @@ private fun ButtonContent(
     // Definición del icono de carga
     if (loading) {
         CircularProgressIndicator(
-            modifier = Modifier.size(18.dp),
-            color = loaderColor,
-            strokeWidth = 2.dp
+            modifier = Modifier.size(18.dp), color = loaderColor, strokeWidth = 2.dp
         )
         Spacer(modifier = Modifier.width(8.dp))
     }

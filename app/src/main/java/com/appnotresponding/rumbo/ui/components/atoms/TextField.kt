@@ -114,8 +114,7 @@ fun RumboTextField(
             unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
             disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
         ),
-        textStyle = MaterialTheme.typography.bodyMedium
-    )
+        textStyle = MaterialTheme.typography.bodyMedium)
 }
 
 
@@ -126,8 +125,7 @@ private fun TextFieldLightPreview() {
         var text by remember { mutableStateOf("") }
         var emailText by remember { mutableStateOf("bad-email") }
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             RumboTextField(
                 value = text,
@@ -142,13 +140,15 @@ private fun TextFieldLightPreview() {
                 label = "Email",
                 validationRegex = Regex("^[\\w.-]+@[\\w.-]+\\.\\w+$"),
                 keyboardType = KeyboardType.Email,
-                trailingIcon = { Icon(painter = painterResource(id = R.drawable.ic_eye_open), contentDescription = "Eye Icon", tint = MaterialTheme.colorScheme.onSurface) }
-            )
+                trailingIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_eye_open),
+                        contentDescription = "Eye Icon",
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
+                })
             RumboTextField(
-                value = "",
-                onValueChange = {},
-                placeholder = "Deshabilitado",
-                enabled = false
+                value = "", onValueChange = {}, placeholder = "Deshabilitado", enabled = false
             )
             RumboTextField(
                 value = "Error externo",
@@ -166,8 +166,7 @@ private fun TextFieldDarkPreview() {
         var text by remember { mutableStateOf("") }
         var emailText by remember { mutableStateOf("bad-email") }
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             RumboTextField(
                 value = text,
@@ -182,13 +181,15 @@ private fun TextFieldDarkPreview() {
                 label = "Email",
                 validationRegex = Regex("^[\\w.-]+@[\\w.-]+\\.\\w+$"),
                 keyboardType = KeyboardType.Email,
-                trailingIcon = { Icon(painter = painterResource(id = R.drawable.ic_eye_open), contentDescription = "Eye Icon", tint = MaterialTheme.colorScheme.onSurface) }
-            )
+                trailingIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_eye_open),
+                        contentDescription = "Eye Icon",
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
+                })
             RumboTextField(
-                value = "",
-                onValueChange = {},
-                placeholder = "Deshabilitado",
-                enabled = false
+                value = "", onValueChange = {}, placeholder = "Deshabilitado", enabled = false
             )
             RumboTextField(
                 value = "Error externo",

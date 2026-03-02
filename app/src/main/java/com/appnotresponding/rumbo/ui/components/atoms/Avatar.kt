@@ -1,5 +1,6 @@
 package com.appnotresponding.rumbo.ui.components.atoms
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -17,20 +18,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.Image
-import androidx.compose.ui.graphics.ColorFilter
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.SubcomposeAsyncImageContent
+import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.models.User
 import com.appnotresponding.rumbo.models.sampleUser
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
-import com.appnotresponding.rumbo.R
 
 //Tamaños predefinidos para el Avatar, con tamaños de texto asociados para las iniciales
 enum class AvatarSize(val size: Dp) {
@@ -121,8 +121,7 @@ fun Avatar(
                         },
                         success = {
                             SubcomposeAsyncImageContent()
-                        }
-                    )
+                        })
                 }
 
                 displayInitials != null -> {

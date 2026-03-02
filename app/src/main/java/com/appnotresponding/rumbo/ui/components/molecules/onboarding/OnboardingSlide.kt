@@ -1,6 +1,5 @@
 package com.appnotresponding.rumbo.ui.components.molecules.onboarding
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
+
 
 /**
  * Composable representing a single onboarding slide with a title, subtitle, illustration, and description.
@@ -57,8 +57,7 @@ fun OnboardingSlide(
         }
         //Illustration
         Image(
-            modifier = Modifier
-                .fillMaxSize(0.6f),
+            modifier = Modifier.fillMaxSize(0.6f),
             painter = painterResource(illustrationRes),
             contentDescription = null
         )

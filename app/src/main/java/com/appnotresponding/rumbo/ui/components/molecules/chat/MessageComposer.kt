@@ -55,8 +55,7 @@ fun MessageComposer(
         tonalElevation = 2.dp
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Text input area
             BasicTextField(
@@ -79,8 +78,7 @@ fun MessageComposer(
                         }
                         innerTextField()
                     }
-                }
-            )
+                })
 
             // Bottom row: action icons on the left, send button on the right
             Row(

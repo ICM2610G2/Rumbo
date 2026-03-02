@@ -65,11 +65,9 @@ fun RumboRatingStar(
                     .size(starSize)
                     .then(
                         if (onRatingChanged != null) {
-                            Modifier.clickable { onRatingChanged(i.toFloat()) }
-                        } else Modifier
-                    ),
-                tint = tint
-            )
+                        Modifier.clickable { onRatingChanged(i.toFloat()) }
+                    } else Modifier),
+                tint = tint)
         }
     }
 }
@@ -132,10 +130,7 @@ private fun RatingStarLightPreview() {
 
             var rating by remember { mutableFloatStateOf(3f) }
             RumboRatingStar(
-                rating = rating,
-                starSize = 32.dp,
-                onRatingChanged = { rating = it }
-            )
+                rating = rating, starSize = 32.dp, onRatingChanged = { rating = it })
             Text(
                 text = "Toca para valorar: ${rating.toInt()}/5",
                 style = MaterialTheme.typography.labelMedium,
@@ -160,10 +155,7 @@ private fun RatingStarDarkPreview() {
 
             var rating by remember { mutableFloatStateOf(3f) }
             RumboRatingStar(
-                rating = rating,
-                starSize = 32.dp,
-                onRatingChanged = { rating = it }
-            )
+                rating = rating, starSize = 32.dp, onRatingChanged = { rating = it })
             Text(
                 text = "Toca para valorar: ${rating.toInt()}/5",
                 style = MaterialTheme.typography.labelMedium,

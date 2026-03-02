@@ -5,13 +5,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +24,6 @@ import coil3.compose.SubcomposeAsyncImage
 import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.models.Place
 import com.appnotresponding.rumbo.models.Review
-import com.appnotresponding.rumbo.models.User
 import com.appnotresponding.rumbo.models.samplePlace
 import com.appnotresponding.rumbo.models.sampleReview
 import com.appnotresponding.rumbo.ui.components.atoms.Avatar

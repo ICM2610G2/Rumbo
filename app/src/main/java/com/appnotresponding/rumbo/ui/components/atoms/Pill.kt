@@ -28,9 +28,7 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 // Definición de los estilos de las pills
 enum class RumboPillStyle {
-    Filled,
-    Outlined,
-    Tonal
+    Filled, Outlined, Tonal
 }
 
 /**
@@ -96,13 +94,10 @@ fun RumboPill(
                 if (borderColor != Color.Transparent) Modifier.border(1.dp, borderColor, shape)
                 else Modifier
             )
-            .then(
-                if (onClick != null) Modifier.clickable { onClick() }
-                else Modifier
-            )
+            .then(if (onClick != null) Modifier.clickable { onClick() }
+            else Modifier)
             .padding(horizontal = 12.dp, vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+        verticalAlignment = Alignment.CenterVertically) {
         if (icon != null) {
             Icon(
                 painter = icon,
@@ -123,7 +118,6 @@ fun RumboPill(
 }
 
 
-
 @Preview(showBackground = true, name = "Pill - Light")
 @Composable
 private fun PillLightPreview() {
@@ -133,7 +127,12 @@ private fun PillLightPreview() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                RumboPill(text = "Playa", style = RumboPillStyle.Filled, selected = true, icon = painterResource(id = R.drawable.ic_globe))
+                RumboPill(
+                    text = "Playa",
+                    style = RumboPillStyle.Filled,
+                    selected = true,
+                    icon = painterResource(id = R.drawable.ic_globe)
+                )
                 RumboPill(text = "Montaña", style = RumboPillStyle.Filled)
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -157,7 +156,12 @@ private fun PillDarkPreview() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                RumboPill(text = "Playa", style = RumboPillStyle.Filled, selected = true, icon = painterResource(id = R.drawable.ic_globe))
+                RumboPill(
+                    text = "Playa",
+                    style = RumboPillStyle.Filled,
+                    selected = true,
+                    icon = painterResource(id = R.drawable.ic_globe)
+                )
                 RumboPill(text = "Montaña", style = RumboPillStyle.Filled)
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

@@ -33,7 +33,7 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 @Composable
 fun MainTopBar(u: User) {
     val bottomRoundedShape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
-    Surface() {
+    Surface {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -74,7 +74,7 @@ fun MainTopBar(u: User) {
 @Composable
 fun ChatTopBar(u: User, activity: String? = null) {
     val bottomRoundedShape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
-    Surface() {
+    Surface {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -83,7 +83,7 @@ fun ChatTopBar(u: User, activity: String? = null) {
                 .padding(top = 32.dp), horizontalArrangement = Arrangement.Start
         ) {
             Avatar(user = u)
-            Column() {
+            Column {
 
                 Text(
                     text = u.name,

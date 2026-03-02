@@ -37,7 +37,7 @@ fun ChatListItem(
     timestamp: String,
 ) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        Box() {
+        Box {
             Avatar(user = user)
         }
 

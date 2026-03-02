@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -18,6 +16,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,15 +37,27 @@ enum class NavItem {
 @Composable
 fun Nav() {
     var activeItem by remember { mutableStateOf(NavItem.Map) }
-    Surface(modifier = Modifier.padding(16.dp), shape = MaterialTheme.shapes.medium, shadowElevation = 8.dp) {
+    Surface(
+        modifier = Modifier.padding(16.dp),
+        shape = MaterialTheme.shapes.medium,
+        shadowElevation = 8.dp
+    ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
             //Map
-            Button(onClick = { activeItem = NavItem.Map }, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
-                Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+            Button(
+                onClick = { activeItem = NavItem.Map },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_map),
                         contentDescription = "Mapa",
@@ -59,8 +71,14 @@ fun Nav() {
             }
 
             //Chat
-            Button(onClick = { activeItem = NavItem.Chat }, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
-                Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+            Button(
+                onClick = { activeItem = NavItem.Chat },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_messages),
                         contentDescription = "Chat",
@@ -74,8 +92,14 @@ fun Nav() {
             }
 
             //Plan
-            Button(onClick = { activeItem = NavItem.Plan }, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
-                Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+            Button(
+                onClick = { activeItem = NavItem.Plan },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_search),
                         contentDescription = "Plan",
@@ -89,8 +113,14 @@ fun Nav() {
             }
 
             //Itinerary
-            Button(onClick = { activeItem = NavItem.Itinerary }, colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
-                Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+            Button(
+                onClick = { activeItem = NavItem.Itinerary },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_list),
                         contentDescription = "Itinerario",

@@ -60,8 +60,7 @@ fun PlacePreviewCard(place: Place, reviews: List<Review>) {
 }
 
 private val sampleReviews = listOf(
-    sampleReview,
-    Review(
+    sampleReview, Review(
         id = "2",
         user = User(
             id = "2",
@@ -73,8 +72,7 @@ private val sampleReviews = listOf(
         rating = 3.0f,
         text = "Buen lugar, pero estaba muy lleno.",
         time = System.currentTimeMillis()
-    ),
-    Review(
+    ), Review(
         id = "3",
         user = User(
             id = "3",
