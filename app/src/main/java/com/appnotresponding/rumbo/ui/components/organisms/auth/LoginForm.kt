@@ -28,10 +28,7 @@ import com.appnotresponding.rumbo.ui.components.molecules.auth.AuthEmailText
 import com.appnotresponding.rumbo.ui.components.molecules.auth.AuthPasswordText
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
-/**
- * Organismo que representa el formulario completo de inicio de sesión.
- * Incluye campos de correo, contraseña, botón de inicio de sesión y opción para recuperar la contraseña.
- */
+
 @Composable
 fun LoginForm(
     onLoginClick: (String, String) -> Unit = { _, _ -> },
@@ -44,13 +41,13 @@ fun LoginForm(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            // Configuración del contenedor tipo "Card" oscura (según mockup)
+            
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Campo de Correo
+     
         AuthEmailText(
             value = email,
             onValueChange = { email = it },
@@ -60,7 +57,7 @@ fun LoginForm(
         
         Spacer(modifier = Modifier.height(4.dp))
 
-        // Campo de Contraseña
+     
         AuthPasswordText(
             value = password,
             onValueChange = { password = it },
@@ -70,7 +67,7 @@ fun LoginForm(
         
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Botón Iniciar Sesión
+    
         RumboButton(
             text = "Iniciar Sesión",
             onClick = { onLoginClick(email, password) },
@@ -78,7 +75,7 @@ fun LoginForm(
             modifier = Modifier.fillMaxWidth(),
         )
 
-        // Botón/Texto Recuperar contraseña
+     
         Text(
             text = "Recuperar contraseña",
             style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),
