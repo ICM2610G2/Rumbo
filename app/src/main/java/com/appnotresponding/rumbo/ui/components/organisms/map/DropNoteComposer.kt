@@ -32,7 +32,6 @@ import com.appnotresponding.rumbo.ui.components.atoms.RumboCard
 import com.appnotresponding.rumbo.ui.components.atoms.RumboTextField
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
-//TODO
 @Composable
 fun DropNoteComposer(
     modifier: Modifier = Modifier,

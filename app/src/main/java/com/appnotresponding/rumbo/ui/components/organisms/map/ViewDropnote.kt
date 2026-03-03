@@ -77,6 +77,6 @@ fun ViewDropNote(
 @Composable
 private fun ViewDropNoteDarkPreview() {
     RumboTheme(darkTheme = true) {
-        ViewDropNote(user = sampleUser, "Los mejores tacos del universo")
+        ViewDropNote(user = sampleUser, "Los mejores tacos del universo, realemente nadie los hace igual!!!")
     }
 }
