@@ -44,10 +44,7 @@ import com.appnotresponding.rumbo.ui.components.molecules.auth.AuthPhoneText
 import com.appnotresponding.rumbo.ui.components.molecules.auth.AuthPlainText
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
-/**
- * Organismo que representa el formulario completo de registro (Sign Up).
- * Incluye campos para nombre, celular, correo, contraseña, selección de país y términos.
- */
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpForm(
@@ -59,12 +56,11 @@ fun SignUpForm(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     
-    // Variables para el Dropdown (País)
     var expanded by remember { mutableStateOf(false) }
     val countries = listOf("Colombia", "México", "Argentina", "España", "Perú", "Chile")
     var selectedCountry by remember { mutableStateOf(countries[0]) }
 
-    // Variable para Checkbox de términos
+ 
     var termsAccepted by remember { mutableStateOf(false) }
 
     Column(
@@ -113,7 +109,7 @@ fun SignUpForm(
             onExpandedChange = { expanded = !expanded },
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Usamos RumboTextField configurado para ser el trigger del dropdown
+         
             RumboTextField(
                 value = selectedCountry,
                 onValueChange = {},
@@ -144,7 +140,7 @@ fun SignUpForm(
             }
         }
 
-        // Casilla: Términos y Condiciones
+        
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -160,7 +156,7 @@ fun SignUpForm(
                 modifier = Modifier.size(20.dp)
             )
             
-            // Texto estilizado simulando enlaces
+        
             val termsText = buildAnnotatedString {
                 withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
                     append("He leído y acepto los términos y condiciones de uso.\n")
