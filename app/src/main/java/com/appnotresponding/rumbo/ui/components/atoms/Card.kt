@@ -7,11 +7,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 /**
- * Generic card component for the Rumbo application.
- * Wraps the provided content inside a [Box] container with configurable padding.
+ * Componente de tarjeta genérico para la aplicación Rumbo.
+ * Envuelve el contenido proporcionado dentro de un contenedor [Box] con padding configurable.
  *
- * @param modifier Modifier to customize the card's layout and appearance (defaults to 16.dp padding).
- * @param content The composable content to be displayed inside the card.
+ * @param modifier Modificador para personalizar el diseño y la apariencia de la tarjeta (por defecto 16.dp de padding).
+ * @param content El contenido composable que se mostrará dentro de la tarjeta.
  */
 @Composable
 fun RumboCard(modifier: Modifier = Modifier.padding(16.dp), content: @Composable () -> Unit) {

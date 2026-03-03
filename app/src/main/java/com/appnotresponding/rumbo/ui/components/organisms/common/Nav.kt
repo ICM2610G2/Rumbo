@@ -30,9 +30,10 @@ enum class NavItem {
 }
 
 /**
- * Bottom navigation bar for the Rumbo application.
- * Displays four navigation buttons (Map, Chat, Plan, Itinerary) with icons and text, highlighting the active item with the theme's primary color.
- * Navigation state is managed internally with [NavItem].
+ * Barra de navegación inferior para la aplicación Rumbo.
+ * Muestra cuatro botones de navegación (Mapa, Chat, Plan, Itinerario) con íconos y texto,
+ * resaltando el elemento activo con el color primario del tema.
+ * El estado de navegación se gestiona internamente con [NavItem].
  */
 @Composable
 fun Nav() {

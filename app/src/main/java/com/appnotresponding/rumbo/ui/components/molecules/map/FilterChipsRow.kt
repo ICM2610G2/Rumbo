@@ -4,8 +4,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 
 /**
- * A composable that displays a horizontal row of filter chips for the map,
- * allowing the user to filter points of interest by category.
+ * Un composable que muestra una fila horizontal de chips de filtro para el mapa,
+ * permitiendo al usuario filtrar puntos de interés por categoría.
  */
 @Composable
 fun FilterChipsRow() {

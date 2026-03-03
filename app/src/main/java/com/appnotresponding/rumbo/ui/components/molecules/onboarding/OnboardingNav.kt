@@ -21,12 +21,12 @@ import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 /**
- * Navigation buttons for onboarding screens.
+ * Botones de navegación para las pantallas de introducción (onboarding).
  *
- * @param onNext Callback for when the "Next" button is clicked.
- * @param onBack Callback for when the "Back" button is clicked.
- * @param isFirstPage Whether the current page is the first page (hides "Back" if true).
- * @param isLastPage Whether the current page is the last page (hides "Next" if true).
+ * @param onNext Callback que se ejecuta cuando se hace clic en el botón "Siguiente".
+ * @param onBack Callback que se ejecuta cuando se hace clic en el botón "Atrás".
+ * @param isFirstPage Indica si la página actual es la primera (oculta "Atrás" si es true).
+ * @param isLastPage Indica si la página actual es la última (oculta "Siguiente" si es true).
  */
 @Composable
 fun OnboardingNav(
