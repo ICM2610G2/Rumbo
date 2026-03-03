@@ -22,8 +22,7 @@ fun SignUpScreen(
 
         SignUpForm(
             onSignUpClick = { fullName, phone, email, password, country, termsAccepted ->
-                // Aquí iría la validación lógica y la llamada a Firebase Auth o API.
-                // Por razones de demostración, simulamos la navegación si completaron:
+           
                 onSignUpComplete()
             },
             modifier = Modifier
