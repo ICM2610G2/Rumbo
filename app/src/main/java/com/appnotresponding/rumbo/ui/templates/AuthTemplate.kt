@@ -26,18 +26,18 @@ fun AuthTemplate(
     modifier: Modifier = Modifier,
     content: @Composable BoxScope.() -> Unit
 ) {
-    // Definimos el color verde resplandeciente del diseño simulando el Light Saber/Aurora
-    val highlightGreen = Color(0xFFC4F031) // Color primario aprox de RumboButton
-    val darkBackground = Color(0xFF151515) // Fondo oscuro
 
-    // Simulación del resplandor radial/lineal de la imagen
+    val highlightGreen = Color(0xFFC4F031) 
+    val darkBackground = Color(0xFF151515) 
+
+  
     val backgroundBrush = Brush.radialGradient(
         colors = listOf(
-            highlightGreen.copy(alpha = 0.35f), // Resplandor centro/izquierda
+            highlightGreen.copy(alpha = 0.35f), 
             darkBackground,
             Color.Black
         ),
-        center = Offset(x = 100f, y = 800f), // Ajustado para que surja desde la izquierda media baja
+        center = Offset(x = 100f, y = 800f),
         radius = 1200f
     )
 
@@ -45,7 +45,7 @@ fun AuthTemplate(
         modifier = modifier
             .fillMaxSize()
             .background(brush = backgroundBrush)
-            .padding(24.dp), // Padding general de la pantalla
+            .padding(24.dp), 
         contentAlignment = Alignment.Center
     ) {
         content()
