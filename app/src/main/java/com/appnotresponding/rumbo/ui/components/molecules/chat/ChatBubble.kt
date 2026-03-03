@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,22 +34,38 @@ import com.appnotresponding.rumbo.ui.components.atoms.RumboButtonSize
 import com.appnotresponding.rumbo.ui.components.atoms.RumboButtonStyle
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
-//TODO: Separator Component
-
+@Composable
+fun ChatSeparator(text: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp, horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .height(1.dp)
+                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f))
+        )
+        Text(
+            text = text,
+            modifier = Modifier.padding(horizontal = 8.dp),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+        )
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .height(1.dp)
+                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f))
+        )
+    }
+}
 enum class ChatBubbleType {
     Regular, Location, LiveActivity
 }
 
-/**
- * Componente que representa un mensaje en el chat, con soporte para texto e imagen.
- *
- * @param message El texto del mensaje.
- * @param messageImage Una imagen opcional asociada al mensaje.
- * @param isUserMessage Indica si el mensaje es del usuario o de otro participante.
- * @param senderName El nombre del remitente, opcional para mensajes del usuario.
- * @param type El tipo de burbuja de chat (Regular, Location, LiveActivity), que determina el diseño y contenido mostrado.
- * @param place El objeto [Place] asociado al mensaje, requerido cuando el tipo es [ChatBubbleType.LiveActivity].
- */
 @Composable
 fun ChatBubble(
     message: String,
@@ -90,7 +107,6 @@ fun ChatBubble(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth(.75f)
-                        .padding(8.dp)
                         .background(backgroundColor, MaterialTheme.shapes.large),
                     horizontalAlignment = horizontalAlignment,
                     verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -133,43 +149,40 @@ fun ChatBubble(
             ) {
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth(.75f)
-                        .padding(8.dp)
-                        .background(backgroundColor, MaterialTheme.shapes.large),
-                    horizontalAlignment = horizontalAlignment,
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                        .fillMaxWidth(0.6f)
+                        .background(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.shapes.extraLarge)
+                        .clip(MaterialTheme.shapes.extraLarge)
                 ) {
-
-                    Column(
-                        modifier = Modifier.padding(12.dp),
-                        horizontalAlignment = horizontalAlignment,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 6.dp),
+                        horizontalArrangement = Arrangement.End
                     ) {
-                        if (senderName != null) {
-                            Text(
-                                text = senderName,
-                                style = MaterialTheme.typography.labelLarge,
-                                color = contentColor
-                            )
-                        }
-
                         Text(
-                            text = "Ubicación compartida",
+                            text = "Ubicación",
                             style = MaterialTheme.typography.labelMedium,
-                            color = contentColor,
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontStyle = FontStyle.Italic
                         )
-
-                        //Location Preview Image
-                        AsyncImage(
-                            modifier = Modifier
-                                .clip(MaterialTheme.shapes.medium)
-                                .fillMaxWidth(),
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .data(R.drawable.img_map).build(),
-                            contentDescription = null
-                        )
                     }
+
+                    Image(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(0.8f)
+                            .clip(
+                                androidx.compose.foundation.shape.RoundedCornerShape(
+                                    bottomStart = 28.dp,
+                                    bottomEnd = 28.dp,
+                                    topStart = 0.dp,
+                                    topEnd = 0.dp
+                                )
+                            ),
+                        painter = painterResource(R.drawable.img_map),
+                        contentScale = ContentScale.Crop,
+                        contentDescription = "Mapa de ubicación compartida"
+                    )
                 }
             }
         }
