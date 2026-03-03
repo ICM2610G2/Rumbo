@@ -73,6 +73,14 @@ fun ViewDropNote(
     }
 }
 
+@Preview(showBackground = true, name = "PlacePreviewCard - Light")
+@Composable
+private fun ViewDropNoteLightPreview() {
+    RumboTheme(darkTheme = false) {
+        ViewDropNote(user = sampleUser, "Los mejores tacos del universo, realemente nadie los hace igual!!!")
+    }
+}
+
 @Preview(showBackground = true, backgroundColor = 0xFF1E1E1E, name = "PlacePreviewCard - Dark")
 @Composable
 private fun ViewDropNoteDarkPreview() {

@@ -113,9 +113,17 @@ fun DropNoteComposer(
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFF1E1E1E, name = "PlacePreviewCard - Dark")
+@Preview(showBackground = true, name = "PlacePreviewCard - Dark")
 @Composable
 private fun DropNoteComposerDarkPreview() {
+    RumboTheme(darkTheme = true) {
+        DropNoteComposer()
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF1E1E1E, name = "PlacePreviewCard - Dark")
+@Composable
+private fun DropNoteComposerLightPreview() {
     RumboTheme(darkTheme = true) {
         DropNoteComposer()
     }

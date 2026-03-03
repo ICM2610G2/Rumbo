@@ -16,7 +16,7 @@ data class Place(
 val samplePlace = Place(
     id = "1",
     name = "Museo del Oro",
-    description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed consectetur bibendum diam a interdum. Donec tempus fringilla auctor. Vivamus imperdiet, orci eu consectetur placerat, dolor nibh tristique lorem, dictum faucibus augue massa in purus.",
+    description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed consectetur bibendum diam a interdum. Donec tempus fringilla auctor. Vivamus imperdiet, orci eu consectetur placerat.",
     openHours = "9:00 AM - 5:00 PM",
     price = "Gratis",
     latitude = 4.6018,
