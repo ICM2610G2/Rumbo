@@ -9,6 +9,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.okhttp.OkHttpNetworkFetcherFactory
+import com.appnotresponding.rumbo.navigation.Navigation
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 class MainActivity : ComponentActivity() {
@@ -27,6 +28,7 @@ class MainActivity : ComponentActivity() {
             RumboTheme {
 
             }
+            Navigation()
         }
     }
 }

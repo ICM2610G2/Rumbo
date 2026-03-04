@@ -3,6 +3,9 @@ package com.appnotresponding.rumbo.ui.screens.auth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.appnotresponding.rumbo.navigation.AppScreens
 import com.appnotresponding.rumbo.ui.components.organisms.auth.LoginForm
 import com.appnotresponding.rumbo.ui.templates.AuthTemplate
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
@@ -10,19 +13,16 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 @Composable
 fun LoginScreen(
-    onNavigateToHome: () -> Unit = {},
-    onNavigateToSignUp: () -> Unit = {},
-    onNavigateToForgotPassword: () -> Unit = {}
+    controller: NavHostController
 ) {
     AuthTemplate {
 
         LoginForm(
             onLoginClick = { email, password ->
-
-                onNavigateToHome()
+                controller.navigate(AppScreens.Map.name)
             },
             onForgotPasswordClick = {
-                onNavigateToForgotPassword()
+
             },
             modifier = Modifier
         )
@@ -34,6 +34,6 @@ fun LoginScreen(
 @Composable
 private fun LoginScreenPreview() {
     RumboTheme(darkTheme = true) {
-        LoginScreen()
+        LoginScreen(controller = rememberNavController())
     }
 }
