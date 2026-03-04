@@ -31,7 +31,7 @@ fun ChatTemplate(
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(top = paddingValues.calculateTopPadding())
         ) {
             Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
                 Text(
