@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 @Composable
@@ -77,7 +78,7 @@ fun DropNoteComposer(
                 ) {
                     IconButton(onClick = onImageClick, modifier = Modifier.size(40.dp)) {
                         Icon(
-                            painter = painterResource(id = com.appnotresponding.rumbo.R.drawable.ic_add_image),
+                            painter = painterResource(id = R.drawable.ic_add_image),
                             contentDescription = "Adjuntar imagen",
                             modifier = Modifier.size(22.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
@@ -94,7 +95,7 @@ fun DropNoteComposer(
                         .background(MaterialTheme.colorScheme.secondary)
                 ) {
                     Icon(
-                        painter = painterResource(id = com.appnotresponding.rumbo.R.drawable.ic_send),
+                        painter = painterResource(id = R.drawable.ic_send),
                         contentDescription = "Enviar mensaje",
                         modifier = Modifier.size(20.dp),
                         tint = MaterialTheme.colorScheme.onSecondary

@@ -63,7 +63,7 @@ fun MapTemplate(user: User) {
         },
         bottomBar = { Nav() }) { paddingValues ->
         // Main content area with the map
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().padding(top = paddingValues.calculateTopPadding()/2)) {
             Image(
                 modifier = Modifier
                     .fillMaxSize()

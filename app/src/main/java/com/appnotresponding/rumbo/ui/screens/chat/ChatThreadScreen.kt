@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
+import com.appnotresponding.rumbo.models.User
 import com.appnotresponding.rumbo.models.samplePlace
 import com.appnotresponding.rumbo.models.sampleUser
 import com.appnotresponding.rumbo.ui.components.molecules.chat.ChatBubbleType
@@ -18,7 +19,7 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 fun ChatThreadScreen(
     chatTitle: String,
     chatSubtitle: String,
-    chatAvatarUser: com.appnotresponding.rumbo.models.User,
+    chatAvatarUser: User,
     messages: List<ChatMessageData>,
     onBackClick: () -> Unit = {}
 ) {
@@ -28,7 +29,6 @@ fun ChatThreadScreen(
         chatTitle = chatTitle,
         chatSubtitle = chatSubtitle,
         chatAvatarUser = chatAvatarUser,
-        onBackClick = onBackClick,
         messageInputValue = messageInput,
         onMessageInputValueChange = { messageInput = it },
         onSendClick = {

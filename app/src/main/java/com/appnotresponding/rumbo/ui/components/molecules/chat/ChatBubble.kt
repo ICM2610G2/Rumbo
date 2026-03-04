@@ -162,12 +162,12 @@ fun ChatBubble(
             ) {
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth(0.6f)
+                        .widthIn(max = 280.dp)
                         .background(
-                            MaterialTheme.colorScheme.surfaceVariant,
-                            MaterialTheme.shapes.extraLarge
+                            backgroundColor,
+                            MaterialTheme.shapes.large
                         )
-                        .clip(MaterialTheme.shapes.extraLarge)
+                        .clip(MaterialTheme.shapes.large),
                 ) {
                     Row(
                         modifier = Modifier
@@ -178,7 +178,7 @@ fun ChatBubble(
                         Text(
                             text = "Ubicación",
                             style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = contentColor,
                             fontStyle = FontStyle.Italic
                         )
                     }
@@ -186,7 +186,7 @@ fun ChatBubble(
                     Image(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .aspectRatio(0.8f)
+                            .aspectRatio(3f / 2f)
                             .clip(
                                 RoundedCornerShape(
                                     bottomStart = 28.dp,
@@ -211,7 +211,6 @@ fun ChatBubble(
                     Column(
                         modifier = Modifier
                             .widthIn(max = 280.dp)
-                            .padding(8.dp)
                             .background(backgroundColor, MaterialTheme.shapes.large),
                         horizontalAlignment = horizontalAlignment,
                         verticalArrangement = Arrangement.spacedBy(4.dp),

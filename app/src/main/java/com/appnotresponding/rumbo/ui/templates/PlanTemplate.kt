@@ -28,7 +28,7 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  * con la barra superior, la barra de navegacion inferior, el encabezado de ubicacion
  * y la lista de lugares disponibles.
  *
- * @param user El usuario actual, utilizado para mostrar su informacion en la barra superior.
+ * @param user El usuario actual, utilizado para mostrar su información en la barra superior.
  * @param placesList La lista de lugares (Place) que se mostraran en el planificador.
  */
 

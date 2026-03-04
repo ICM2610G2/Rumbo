@@ -46,7 +46,7 @@ fun AuthPlainText(
 }
 
 /**
- * VisualTransformation que muestra dígitos crudos (ej: +573012345678)
+ * VisualTransformation que muestra dígitos crudos (Ej. +573012345678)
  * con formato: +57 301 234 5678
  *
  * El valor almacenado siempre es solo +dígitos, sin espacios.
@@ -132,7 +132,7 @@ private class PhoneVisualTransformation : VisualTransformation {
 
 //PHONE TEXT FIELD
 /**
- * Este TextField almacena el número de teléfono en formato E.164 (ej: +573012345678)
+ * Este TextField almacena el número de teléfono en formato E.164 (Ej. +573012345678)
  * pero lo muestra formateado como +57 301 234 5678.
  *
  * Solo permite ingresar dígitos y un "+" al inicio. No se permiten espacios en la entrada.

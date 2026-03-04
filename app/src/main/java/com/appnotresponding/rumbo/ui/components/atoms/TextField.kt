@@ -37,7 +37,7 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  * @param maxLines Número máximo de líneas a mostrar (solo relevante si singleLine es false)
  * @param validationRegex Expresión regular para validar el formato del texto (opcional)
  * @param errorMessage Mensaje de error personalizado a mostrar cuando la validación falla (opcional, reemplaza "Formato inválido")
- * @param externalError Mensaje de error externo que fuerza el estado de error (opcional, ej: error de servidor)
+ * @param externalError Mensaje de error externo que fuerza el estado de error (opcional, Ej. error de servidor)
  * @param keyboardType Tipo de teclado a mostrar (por ejemplo, Email, Number, etc.)
  * @param visualTransformation Transformación visual para ocultar o formatear el texto (por ejemplo, para contraseñas)
  * @param leadingIcon Icono opcional para mostrar al inicio del campo de texto
