@@ -43,7 +43,6 @@ fun ChatThreadScreen(
         chatTitle = brandonUser.name,
         chatSubtitle = "",
         chatAvatarUser = brandonUser,
-        onBackClick = { controller.navigate(AppScreens.Chat.name) },
         messageInputValue = messageInput,
         onMessageInputValueChange = { messageInput = it },
         onSendClick = {

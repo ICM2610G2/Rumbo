@@ -19,32 +19,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             // Se usa la integración de coil para mejorar el rendimiento de carga de imágenes, especialmente para listas con muchas imágenes docs: https://coil-kt.github.io/coil/network/
             setSingletonImageLoaderFactory { context ->
-                ImageLoader.Builder(context)
-                    .components {
+                ImageLoader.Builder(context).components {
                         add(OkHttpNetworkFetcherFactory())
-                    }
-                    .build()
+                    }.build()
             }
             RumboTheme {
-
+                Navigation()
             }
-            Navigation()
         }
-    }
-}
-
-@Preview(showBackground = true, name = "Light Theme")
-@Composable
-fun LightPreview() {
-    RumboTheme(darkTheme = false) {
-
-    }
-}
-
-@Preview(showBackground = true, name = "Dark Theme", backgroundColor = 0xFF1E1E1E)
-@Composable
-fun DarkPreview() {
-    RumboTheme(darkTheme = true) {
-
     }
 }

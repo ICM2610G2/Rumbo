@@ -69,7 +69,7 @@ fun SplashScreen(
     ) {
 
         Image(
-            painter = painterResource(id = R.drawable.img_logo_splash),
+            painter = painterResource(id = R.mipmap.img_logo_splash),
             contentDescription = "Rumbo logo",
             modifier = Modifier
                 .align(Alignment.Center)

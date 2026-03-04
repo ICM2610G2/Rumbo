@@ -72,14 +72,15 @@ fun Nav(
                     .padding(8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
-            //Map
-            Button(
-                onClick = {
-                    activeItem = NavItem.Map
-                    controller.navigate(AppScreens.Map.name)
-                          },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-            ) {   
+            ) {
+                //Map
+                Button(
+                    onClick = {
+                        activeItem = NavItem.Map
+                        controller.navigate(AppScreens.Map.name)
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                ) {
                     Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -96,81 +97,91 @@ fun Nav(
                     }
                 }
 
-            //Chat
-            Button(
-                onClick = { activeItem = NavItem.Chat
-                    controller.navigate(AppScreens.Chat.name)  },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+
+                //Chat
+                Button(
+                    onClick = {
+                        activeItem = NavItem.Chat
+                        controller.navigate(AppScreens.Chat.name)
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
                 ) {
                     Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_messages),
-                            contentDescription = "Chat",
-                            tint = if (activeItem == NavItem.Chat) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "Chat",
-                            color = if (activeItem == NavItem.Chat) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                        )
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_messages),
+                                contentDescription = "Chat",
+                                tint = if (activeItem == NavItem.Chat) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "Chat",
+                                color = if (activeItem == NavItem.Chat) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
                 }
 
-            //Plan
-            Button(
-                onClick = { activeItem = NavItem.Plan
-                    controller.navigate(AppScreens.Plan.name)  },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                //Plan
+                Button(
+                    onClick = {
+                        activeItem = NavItem.Plan
+                        controller.navigate(AppScreens.Plan.name)
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
                 ) {
                     Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_search),
-                            contentDescription = "Plan",
-                            tint = if (activeItem == NavItem.Plan) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "Plan",
-                            color = if (activeItem == NavItem.Plan) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                        )
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_search),
+                                contentDescription = "Plan",
+                                tint = if (activeItem == NavItem.Plan) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "Plan",
+                                color = if (activeItem == NavItem.Plan) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
                 }
 
-            //Itinerary
-            Button(
-                onClick = { activeItem = NavItem.Itinerary
-                    controller.navigate(AppScreens.Itinerary.name)  },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                //Itinerary
+                Button(
+                    onClick = {
+                        activeItem = NavItem.Itinerary
+                        controller.navigate(AppScreens.Itinerary.name)
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
                 ) {
                     Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_list),
-                            contentDescription = "Itinerario",
-                            tint = if (activeItem == NavItem.Itinerary) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "Itinerario",
-                            color = if (activeItem == NavItem.Itinerary) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                        )
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_list),
+                                contentDescription = "Itinerario",
+                                tint = if (activeItem == NavItem.Itinerary) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "Itinerario",
+                                color = if (activeItem == NavItem.Itinerary) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
                 }
             }
