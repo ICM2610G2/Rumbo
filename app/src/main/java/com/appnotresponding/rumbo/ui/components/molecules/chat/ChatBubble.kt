@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -66,6 +68,16 @@ enum class ChatBubbleType {
     Regular, Location, LiveActivity
 }
 
+/**
+ * Componente que representa un mensaje en el chat, con soporte para texto e imagen.
+ *
+ * @param message El texto del mensaje.
+ * @param messageImage Una imagen opcional asociada al mensaje.
+ * @param isUserMessage Indica si el mensaje es del usuario o de otro participante.
+ * @param senderName El nombre del remitente, opcional para mensajes del usuario.
+ * @param type El tipo de burbuja de chat (Regular, Location, LiveActivity), que determina el diseño y contenido mostrado.
+ * @param place El objeto [Place] asociado al mensaje, requerido cuando el tipo es [ChatBubbleType.LiveActivity].
+ */
 @Composable
 fun ChatBubble(
     message: String,
@@ -106,7 +118,7 @@ fun ChatBubble(
             ) {
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth(.75f)
+                        .widthIn(max = 280.dp)
                         .background(backgroundColor, MaterialTheme.shapes.large),
                     horizontalAlignment = horizontalAlignment,
                     verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -172,7 +184,7 @@ fun ChatBubble(
                             .fillMaxWidth()
                             .aspectRatio(0.8f)
                             .clip(
-                                androidx.compose.foundation.shape.RoundedCornerShape(
+                                RoundedCornerShape(
                                     bottomStart = 28.dp,
                                     bottomEnd = 28.dp,
                                     topStart = 0.dp,
@@ -194,7 +206,7 @@ fun ChatBubble(
                 ) {
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth(.75f)
+                            .widthIn(max = 280.dp)
                             .padding(8.dp)
                             .background(backgroundColor, MaterialTheme.shapes.large),
                         horizontalAlignment = horizontalAlignment,

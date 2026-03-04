@@ -24,6 +24,16 @@ import com.appnotresponding.rumbo.models.sampleUser
 import com.appnotresponding.rumbo.ui.components.atoms.Avatar
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
+/**
+ * Componente que representa un elemento de la lista de chats, mostrando el nombre del remitente, el último mensaje, el estado (opcional) y la hora del último mensaje.
+ *
+ * @param user El objeto User que representa al remitente del mensaje, del cual se obtiene el nombre y las iniciales para el avatar.
+ * @param lastMessage El texto del último mensaje enviado o recibido en el chat.
+ * @param status Un estado opcional que muestra la ruta de la persona "Rumbo al Museo Nacional".
+ * @param timestamp La hora o fecha del último mensaje, como "12:30", "Ayer" o "Lun".
+ * @param modifier Modificador para ajustar el diseño del componente.
+ * @param hasUnread Indica si hay mensajes no leídos en el chat.
+ */
 @Composable
 fun ChatListItem(
     user: User,
@@ -87,7 +97,7 @@ fun ChatListItem(
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
-                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f)
                     )
                     

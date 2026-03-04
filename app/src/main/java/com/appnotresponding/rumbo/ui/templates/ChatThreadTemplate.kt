@@ -16,7 +16,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.models.User
 import com.appnotresponding.rumbo.ui.components.atoms.Avatar
 import com.appnotresponding.rumbo.ui.components.molecules.chat.MessageComposer
@@ -47,7 +49,7 @@ fun ChatThreadTemplate(
         ) {
             IconButton(onClick = onBackClick, modifier = Modifier.size(24.dp)) {
                 Icon(
-                    painter = androidx.compose.ui.res.painterResource(id = com.appnotresponding.rumbo.R.drawable.ic_arrow_left),
+                    painter = painterResource(id = R.drawable.ic_arrow_left),
                     contentDescription = "Volver",
                     tint = MaterialTheme.colorScheme.onSurface
                 )
