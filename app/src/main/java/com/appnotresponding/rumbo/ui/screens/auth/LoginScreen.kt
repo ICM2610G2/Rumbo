@@ -16,14 +16,8 @@ fun LoginScreen(
     controller: NavHostController
 ) {
     AuthTemplate {
-
         LoginForm(
-            onLoginClick = { email, password ->
-                controller.navigate(AppScreens.Map.name)
-            },
-            onForgotPasswordClick = {
-
-            },
+            onLoginClick = { controller.navigate(AppScreens.Map.name) },
             modifier = Modifier
         )
     }

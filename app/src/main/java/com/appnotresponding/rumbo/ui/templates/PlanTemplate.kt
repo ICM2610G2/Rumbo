@@ -10,6 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.appnotresponding.rumbo.models.Place
 import com.appnotresponding.rumbo.models.User
 import com.appnotresponding.rumbo.models.samplePlace
@@ -32,10 +34,11 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  */
 
 @Composable
-fun PlanTemplate(user: User, placesList: List<Place>) {
+fun PlanTemplate(user: User, placesList: List<Place>,
+                 controller: NavHostController) {
     Scaffold(
         topBar = { MainTopBar(u = user) },
-        bottomBar = { Nav() }
+        bottomBar = { Nav(controller) }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -57,7 +60,8 @@ private fun PlanTemplateLightPreview() {
     RumboTheme(darkTheme = false) {
         PlanTemplate(
             user = sampleUser,
-            placesList = listOf(samplePlace, samplePlace, samplePlace) // Simulamos una lista con 3 lugares
+            placesList = listOf(samplePlace, samplePlace, samplePlace), // Simulamos una lista con 3 lugares
+            controller = rememberNavController()
         )
     }
 }
@@ -68,7 +72,8 @@ private fun PlanTemplateDarkPreview() {
     RumboTheme(darkTheme = true) {
         PlanTemplate(
             user = sampleUser,
-            placesList = listOf(samplePlace, samplePlace, samplePlace)
+            placesList = listOf(samplePlace, samplePlace, samplePlace),
+            controller = rememberNavController()
         )
     }
 }

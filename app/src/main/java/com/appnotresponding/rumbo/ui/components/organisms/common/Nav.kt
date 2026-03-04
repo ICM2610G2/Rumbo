@@ -22,7 +22,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.appnotresponding.rumbo.R
+import com.appnotresponding.rumbo.navigation.AppScreens
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 enum class NavItem {
@@ -36,7 +39,9 @@ enum class NavItem {
  * El estado de navegación se gestiona internamente con [NavItem].
  */
 @Composable
-fun Nav() {
+fun Nav(
+    controller: NavController
+) {
     var activeItem by remember { mutableStateOf(NavItem.Map) }
     Surface(
         modifier = Modifier.padding(16.dp),
@@ -52,7 +57,10 @@ fun Nav() {
         ) {
             //Map
             Button(
-                onClick = { activeItem = NavItem.Map },
+                onClick = {
+                    activeItem = NavItem.Map
+                    controller.navigate(AppScreens.Map.name)
+                          },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
             ) {
                 Column(
@@ -73,7 +81,8 @@ fun Nav() {
 
             //Chat
             Button(
-                onClick = { activeItem = NavItem.Chat },
+                onClick = { activeItem = NavItem.Chat
+                    controller.navigate(AppScreens.Chat.name)  },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
             ) {
                 Column(
@@ -94,7 +103,8 @@ fun Nav() {
 
             //Plan
             Button(
-                onClick = { activeItem = NavItem.Plan },
+                onClick = { activeItem = NavItem.Plan
+                    controller.navigate(AppScreens.Plan.name)  },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
             ) {
                 Column(
@@ -115,7 +125,8 @@ fun Nav() {
 
             //Itinerary
             Button(
-                onClick = { activeItem = NavItem.Itinerary },
+                onClick = { activeItem = NavItem.Itinerary
+                    controller.navigate(AppScreens.Itinerary.name)  },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
             ) {
                 Column(
@@ -141,7 +152,7 @@ fun Nav() {
 @Composable
 private fun NavLightPreview() {
     RumboTheme(darkTheme = false) {
-        Nav()
+        Nav(controller = rememberNavController())
     }
 }
 
@@ -149,7 +160,7 @@ private fun NavLightPreview() {
 @Composable
 private fun NavDarkPreview() {
     RumboTheme(darkTheme = true) {
-        Nav()
+        Nav(controller = rememberNavController())
     }
 }
 

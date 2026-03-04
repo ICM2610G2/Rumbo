@@ -10,6 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.appnotresponding.rumbo.models.Place
 import com.appnotresponding.rumbo.models.User
 import com.appnotresponding.rumbo.models.samplePlace
@@ -32,10 +34,11 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  */
 
 @Composable
-fun ItineraryTemplate(user: User, itineraryList: List<Place>) {
+fun ItineraryTemplate(user: User, itineraryList: List<Place>,
+                      controller: NavHostController) {
     Scaffold(
         topBar = { MainTopBar(u = user) },
-        bottomBar = { Nav() }
+        bottomBar = { Nav(controller) }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -56,7 +59,8 @@ private fun ItineraryTemplateLightPreview() {
     RumboTheme(darkTheme = false) {
         ItineraryTemplate(
             user = sampleUser,
-            itineraryList = listOf(samplePlace, samplePlace, samplePlace)
+            itineraryList = listOf(samplePlace, samplePlace, samplePlace),
+            controller = rememberNavController()
         )
     }
 }
@@ -67,7 +71,8 @@ private fun ItineraryTemplateDarkPreview() {
     RumboTheme(darkTheme = true) {
         ItineraryTemplate(
             user = sampleUser,
-            itineraryList = listOf(samplePlace, samplePlace, samplePlace)
+            itineraryList = listOf(samplePlace, samplePlace, samplePlace),
+            controller = rememberNavController()
         )
     }
 }

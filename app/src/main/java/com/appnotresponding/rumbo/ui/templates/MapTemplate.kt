@@ -27,6 +27,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.models.User
 import com.appnotresponding.rumbo.models.samplePlace
@@ -41,7 +43,8 @@ import com.appnotresponding.rumbo.ui.components.organisms.map.PlacePreviewCard
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 @Composable
-fun MapTemplate(user: User) {
+fun MapTemplate(user: User,
+                controller: NavHostController) {
 
     var popupStateDNComposer by remember { mutableStateOf(false) }
     var popupStateReview by remember { mutableStateOf(false) }
@@ -62,7 +65,7 @@ fun MapTemplate(user: User) {
                 LocateMe { }
             }
         },
-        bottomBar = { Nav() }) { paddingValues ->
+        bottomBar = { Nav(controller) }) { paddingValues ->
         // Main content area with the map
         Box(modifier = Modifier.fillMaxSize()) {
             Image(
@@ -101,7 +104,8 @@ fun MapTemplate(user: User) {
 @Composable
 private fun MapTemplateLightPreview() {
     RumboTheme(darkTheme = true) {
-        MapTemplate(sampleUser)
+        MapTemplate(sampleUser,
+            controller = rememberNavController())
     }
 }
 
@@ -109,6 +113,7 @@ private fun MapTemplateLightPreview() {
 @Composable
 private fun MapTemplateDarkPreview() {
     RumboTheme(darkTheme = false) {
-        MapTemplate(sampleUser)
+        MapTemplate(sampleUser,
+            controller = rememberNavController())
     }
 }

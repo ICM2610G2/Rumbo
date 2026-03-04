@@ -2,7 +2,10 @@ package com.appnotresponding.rumbo.ui.screens.chat
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.appnotresponding.rumbo.models.sampleUser
+import com.appnotresponding.rumbo.navigation.AppScreens
 import com.appnotresponding.rumbo.ui.components.organisms.chat.ChatList
 import com.appnotresponding.rumbo.ui.components.organisms.chat.ChatPreviewData
 import com.appnotresponding.rumbo.ui.templates.ChatTemplate
@@ -10,9 +13,7 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 
 @Composable
-fun ChatListScreen(
-    onChatClick: (ChatPreviewData) -> Unit = {}
-) {
+fun ChatListScreen( controller: NavHostController ) {
     val currentUser = sampleUser.copy(name = "Ana")
 
     val mockChats = listOf(
@@ -28,11 +29,12 @@ fun ChatListScreen(
     ChatTemplate(
         currentUser = currentUser,
         title = "Chats",
-        subtitle = "Ubicación actual: Bogotá"
+        subtitle = "Ubicación actual: Bogotá",
+        controller = controller
     ) {
         ChatList(
             chatItems = mockChats,
-            onChatClick = onChatClick
+            onChatClick = { controller.navigate(AppScreens.ChatThread.name) }
         )
     }
 }
@@ -42,6 +44,6 @@ fun ChatListScreen(
 @Composable
 private fun ChatListScreenPreview() {
     RumboTheme(darkTheme = true) { 
-        ChatListScreen()
+        ChatListScreen(controller = rememberNavController())
     }
 }

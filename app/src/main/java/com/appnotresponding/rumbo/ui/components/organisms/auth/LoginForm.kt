@@ -31,7 +31,7 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 @Composable
 fun LoginForm(
-    onLoginClick: (String, String) -> Unit = { _, _ -> },
+    onLoginClick: () -> Unit = {},
     onForgotPasswordClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -70,7 +70,7 @@ fun LoginForm(
     
         RumboButton(
             text = "Iniciar Sesión",
-            onClick = { onLoginClick(email, password) },
+            onClick = { onLoginClick() },
             style = RumboButtonStyle.Primary,
             modifier = Modifier.fillMaxWidth(),
         )
