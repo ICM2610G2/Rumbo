@@ -1,7 +1,6 @@
 package com.appnotresponding.rumbo.ui.components.organisms.auth
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,7 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
@@ -48,19 +46,19 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpForm(
+    modifier: Modifier = Modifier,
     onSignUpClick: (String, String, String, String, String, Boolean) -> Unit = { _, _, _, _, _, _ -> },
-    modifier: Modifier = Modifier
 ) {
     var fullName by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    
+
     var expanded by remember { mutableStateOf(false) }
     val countries = listOf("Colombia", "México", "Argentina", "España", "Perú", "Chile")
     var selectedCountry by remember { mutableStateOf(countries[0]) }
 
- 
+
     var termsAccepted by remember { mutableStateOf(false) }
 
     Column(
@@ -109,7 +107,7 @@ fun SignUpForm(
             onExpandedChange = { expanded = !expanded },
             modifier = Modifier.fillMaxWidth()
         ) {
-         
+
             RumboTextField(
                 value = selectedCountry,
                 onValueChange = {},
@@ -129,18 +127,20 @@ fun SignUpForm(
                 modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 countries.forEach { selectionOption ->
-                    DropdownMenuItem(
-                        text = { Text(text = selectionOption, color = MaterialTheme.colorScheme.onSurface) },
-                        onClick = {
-                            selectedCountry = selectionOption
-                            expanded = false
-                        }
-                    )
+                    DropdownMenuItem(text = {
+                        Text(
+                            text = selectionOption,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }, onClick = {
+                        selectedCountry = selectionOption
+                        expanded = false
+                    })
                 }
             }
         }
 
-        
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -155,8 +155,8 @@ fun SignUpForm(
                 ),
                 modifier = Modifier.size(20.dp)
             )
-            
-        
+
+
             val termsText = buildAnnotatedString {
                 withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
                     append("He leído y acepto los términos y condiciones de uso.\n")

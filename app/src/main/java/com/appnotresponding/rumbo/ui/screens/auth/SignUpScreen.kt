@@ -13,8 +13,7 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 @Composable
 fun SignUpScreen(
-    onNavigateBack: () -> Unit = {},
-    onSignUpComplete: () -> Unit = {}
+    onNavigateBack: () -> Unit = {}, onSignUpComplete: () -> Unit = {}
 ) {
     AuthTemplate {
 
@@ -22,10 +21,8 @@ fun SignUpScreen(
 
         SignUpForm(
             onSignUpClick = { fullName, phone, email, password, country, termsAccepted ->
-           
                 onSignUpComplete()
-            },
-            modifier = Modifier
+            }, modifier = Modifier
                 .verticalScroll(scrollState)
                 .fillMaxSize()
         )
@@ -33,7 +30,9 @@ fun SignUpScreen(
 }
 
 
-@Preview(showBackground = true, name = "antalla Registro demostración ", backgroundColor = 0xFF121212)
+@Preview(
+    showBackground = true, name = "antalla Registro demostración ", backgroundColor = 0xFF121212
+)
 @Composable
 private fun SignUpScreenPreview() {
     RumboTheme(darkTheme = true) {

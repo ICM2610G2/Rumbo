@@ -36,11 +36,11 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  */
 @Composable
 fun ChatListItem(
+    modifier: Modifier = Modifier,
     user: User,
     lastMessage: String,
     status: String? = null,
     timestamp: String,
-    modifier: Modifier = Modifier,
     hasUnread: Boolean = false
 ) {
     Box(
@@ -100,7 +100,7 @@ fun ChatListItem(
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f)
                     )
-                    
+
                     if (timestamp.isNotEmpty()) {
                         Text(
                             text = timestamp,
@@ -112,8 +112,7 @@ fun ChatListItem(
                             modifier = Modifier
                                 .size(8.dp)
                                 .background(
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    shape = CircleShape
+                                    color = MaterialTheme.colorScheme.onSurface, shape = CircleShape
                                 )
                         )
                     }

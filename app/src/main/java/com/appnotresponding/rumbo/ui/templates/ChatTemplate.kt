@@ -27,8 +27,7 @@ fun ChatTemplate(
     Scaffold(
         contentWindowInsets = WindowInsets(0),
         topBar = { MainTopBar(u = currentUser) },
-        bottomBar = { Nav() }
-    ) { paddingValues ->
+        bottomBar = { Nav() }) { paddingValues ->
         Column(
             modifier = modifier
                 .fillMaxSize()

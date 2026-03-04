@@ -33,10 +33,7 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 @Composable
 fun PlanTemplate(user: User, placesList: List<Place>) {
-    Scaffold(
-        topBar = { MainTopBar(u = user) },
-        bottomBar = { Nav() }
-    ) { paddingValues ->
+    Scaffold(topBar = { MainTopBar(u = user) }, bottomBar = { Nav() }) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -57,7 +54,11 @@ private fun PlanTemplateLightPreview() {
     RumboTheme(darkTheme = false) {
         PlanTemplate(
             user = sampleUser,
-            placesList = listOf(samplePlace, samplePlace, samplePlace) // Simulamos una lista con 3 lugares
+            placesList = listOf(
+                samplePlace,
+                samplePlace,
+                samplePlace
+            ) // Simulamos una lista con 3 lugares
         )
     }
 }
@@ -67,8 +68,7 @@ private fun PlanTemplateLightPreview() {
 private fun PlanTemplateDarkPreview() {
     RumboTheme(darkTheme = true) {
         PlanTemplate(
-            user = sampleUser,
-            placesList = listOf(samplePlace, samplePlace, samplePlace)
+            user = sampleUser, placesList = listOf(samplePlace, samplePlace, samplePlace)
         )
     }
 }

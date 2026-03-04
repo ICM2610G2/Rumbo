@@ -18,13 +18,10 @@ fun LoginScreen(
 
         LoginForm(
             onLoginClick = { email, password ->
-
-                onNavigateToHome()
-            },
-            onForgotPasswordClick = {
-                onNavigateToForgotPassword()
-            },
-            modifier = Modifier
+            onNavigateToHome()
+        }, onForgotPasswordClick = {
+            onNavigateToForgotPassword()
+        }, modifier = Modifier
         )
     }
 }

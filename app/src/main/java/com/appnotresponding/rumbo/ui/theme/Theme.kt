@@ -14,17 +14,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
@@ -267,10 +265,7 @@ private val highContrastDarkColorScheme = darkColorScheme(
 
 @Immutable
 data class ColorFamily(
-    val color: Color,
-    val onColor: Color,
-    val colorContainer: Color,
-    val onColorContainer: Color
+    val color: Color, val onColor: Color, val colorContainer: Color, val onColorContainer: Color
 )
 
 val unspecified_scheme = ColorFamily(
@@ -283,8 +278,7 @@ val unspecified_scheme = ColorFamily(
 fun RumboTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = false,
-    content: @Composable () -> Unit
+    dynamicColor: Boolean = false, content: @Composable () -> Unit
 ) {
     val rumboColorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -308,18 +302,14 @@ fun RumboTheme(
 
 @Composable
 private fun ColorSwatch(
-    label: String,
-    background: Color,
-    foreground: Color,
-    modifier: Modifier = Modifier
+    label: String, background: Color, foreground: Color, modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
             .clip(MaterialTheme.shapes.small)
             .background(background)
             .border(0.5.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.small)
-            .padding(horizontal = 8.dp, vertical = 6.dp),
-        contentAlignment = Alignment.CenterStart
+            .padding(horizontal = 8.dp, vertical = 6.dp), contentAlignment = Alignment.CenterStart
     ) {
         Text(
             text = label,
@@ -333,25 +323,26 @@ private fun ColorSwatch(
 
 @Composable
 private fun ColorPairRow(
-    label: String,
-    containerColor: Color,
-    contentColor: Color
+    label: String, containerColor: Color, contentColor: Color
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(6.dp)
+        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         ColorSwatch(
             label = label,
             background = containerColor,
             foreground = contentColor,
-            modifier = Modifier.weight(1f).height(36.dp)
+            modifier = Modifier
+                .weight(1f)
+                .height(36.dp)
         )
         ColorSwatch(
             label = "on $label",
             background = contentColor,
             foreground = containerColor,
-            modifier = Modifier.weight(1f).height(36.dp)
+            modifier = Modifier
+                .weight(1f)
+                .height(36.dp)
         )
     }
 }
@@ -418,7 +409,9 @@ private fun ColorsPreviewContent() {
                         label = name,
                         background = color,
                         foreground = cs.onSurface,
-                        modifier = Modifier.weight(1f).height(40.dp)
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(40.dp)
                     )
                 }
             }
@@ -433,13 +426,17 @@ private fun ColorsPreviewContent() {
                     label = "Outline",
                     background = cs.outline,
                     foreground = cs.surface,
-                    modifier = Modifier.weight(1f).height(36.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(36.dp)
                 )
                 ColorSwatch(
                     label = "OutlineVariant",
                     background = cs.outlineVariant,
                     foreground = cs.onSurface,
-                    modifier = Modifier.weight(1f).height(36.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(36.dp)
                 )
             }
         }
@@ -452,7 +449,13 @@ fun ColorsPreviewLight() {
     RumboTheme(darkTheme = false) { ColorsPreviewContent() }
 }
 
-@Preview(showBackground = true, name = "Colors — Dark", widthDp = 420, heightDp = 900, backgroundColor = 0xFF1E1E1E)
+@Preview(
+    showBackground = true,
+    name = "Colors — Dark",
+    widthDp = 420,
+    heightDp = 900,
+    backgroundColor = 0xFF1E1E1E
+)
 @Composable
 fun ColorsPreviewDark() {
     RumboTheme(darkTheme = true) { ColorsPreviewContent() }
@@ -516,7 +519,13 @@ fun TypoPreviewLight() {
     RumboTheme(darkTheme = false) { TypographyPreviewContent() }
 }
 
-@Preview(showBackground = true, name = "Typography — Dark", widthDp = 1200, heightDp = 600, backgroundColor = 0xFF1E1E1E)
+@Preview(
+    showBackground = true,
+    name = "Typography — Dark",
+    widthDp = 1200,
+    heightDp = 600,
+    backgroundColor = 0xFF1E1E1E
+)
 @Composable
 fun TypoPreviewDark() {
     RumboTheme(darkTheme = true) { TypographyPreviewContent() }
@@ -526,8 +535,7 @@ fun TypoPreviewDark() {
 
 @Composable
 private fun ShapeCard(
-    label: String,
-    shape: androidx.compose.ui.graphics.Shape
+    label: String, shape: androidx.compose.ui.graphics.Shape
 ) {
     val cs = MaterialTheme.colorScheme
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -536,8 +544,7 @@ private fun ShapeCard(
                 .size(120.dp, 80.dp)
                 .clip(shape)
                 .background(cs.primaryContainer)
-                .border(1.dp, cs.outline, shape),
-            contentAlignment = Alignment.Center
+                .border(1.dp, cs.outline, shape), contentAlignment = Alignment.Center
         ) {
             Text(
                 text = label,
@@ -547,9 +554,7 @@ private fun ShapeCard(
         }
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = label,
-            style = MaterialTheme.typography.bodySmall,
-            color = cs.onSurfaceVariant
+            text = label, style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant
         )
     }
 }
@@ -561,14 +566,12 @@ private fun ShapesPreviewContent() {
 
     Surface(color = cs.background, modifier = Modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text("Shapes", style = MaterialTheme.typography.titleLarge, color = cs.onSurface)
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 ShapeCard("Extra Small", shapes.extraSmall)
                 ShapeCard("Small (4dp)", shapes.small)
@@ -576,8 +579,7 @@ private fun ShapesPreviewContent() {
             }
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 ShapeCard("Large (16dp)", shapes.large)
                 ShapeCard("Extra Large", shapes.extraLarge)
@@ -601,7 +603,11 @@ private fun ShapesPreviewContent() {
                         .border(0.5.dp, cs.outlineVariant, shape)
                         .padding(16.dp)
                 ) {
-                    Text(text = desc, style = MaterialTheme.typography.bodyMedium, color = cs.onSurface)
+                    Text(
+                        text = desc,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = cs.onSurface
+                    )
                 }
             }
         }
@@ -614,7 +620,13 @@ fun ShapesPreviewLight() {
     RumboTheme(darkTheme = false) { ShapesPreviewContent() }
 }
 
-@Preview(showBackground = true, name = "Shapes — Dark", widthDp = 420, heightDp = 550, backgroundColor = 0xFF1E1E1E)
+@Preview(
+    showBackground = true,
+    name = "Shapes — Dark",
+    widthDp = 420,
+    heightDp = 550,
+    backgroundColor = 0xFF1E1E1E
+)
 @Composable
 fun ShapesPreviewDark() {
     RumboTheme(darkTheme = true) { ShapesPreviewContent() }

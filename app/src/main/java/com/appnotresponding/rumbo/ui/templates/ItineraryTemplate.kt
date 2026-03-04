@@ -33,10 +33,7 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 @Composable
 fun ItineraryTemplate(user: User, itineraryList: List<Place>) {
-    Scaffold(
-        topBar = { MainTopBar(u = user) },
-        bottomBar = { Nav() }
-    ) { paddingValues ->
+    Scaffold(topBar = { MainTopBar(u = user) }, bottomBar = { Nav() }) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -55,8 +52,7 @@ fun ItineraryTemplate(user: User, itineraryList: List<Place>) {
 private fun ItineraryTemplateLightPreview() {
     RumboTheme(darkTheme = false) {
         ItineraryTemplate(
-            user = sampleUser,
-            itineraryList = listOf(samplePlace, samplePlace, samplePlace)
+            user = sampleUser, itineraryList = listOf(samplePlace, samplePlace, samplePlace)
         )
     }
 }
@@ -66,8 +62,7 @@ private fun ItineraryTemplateLightPreview() {
 private fun ItineraryTemplateDarkPreview() {
     RumboTheme(darkTheme = true) {
         ItineraryTemplate(
-            user = sampleUser,
-            itineraryList = listOf(samplePlace, samplePlace, samplePlace)
+            user = sampleUser, itineraryList = listOf(samplePlace, samplePlace, samplePlace)
         )
     }
 }

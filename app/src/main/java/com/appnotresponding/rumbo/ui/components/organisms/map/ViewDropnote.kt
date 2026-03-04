@@ -1,20 +1,16 @@
 package com.appnotresponding.rumbo.ui.components.organisms.map
 
-import android.R.attr.icon
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.R
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,10 +22,10 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 @Composable
 fun ViewDropNote(
+    modifier: Modifier = Modifier,
     user: User,
-    content: String="",
+    content: String = "",
     isPrivate: Boolean = false,
-    modifier: Modifier = Modifier
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -45,8 +41,7 @@ fun ViewDropNote(
             verticalAlignment = Alignment.Top
         ) {
             Avatar(
-                user = user,
-                size = AvatarSize.Medium
+                user = user, size = AvatarSize.Medium
             )
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -77,7 +72,10 @@ fun ViewDropNote(
 @Composable
 private fun ViewDropNoteLightPreview() {
     RumboTheme(darkTheme = false) {
-        ViewDropNote(user = sampleUser, "Los mejores tacos del universo, realemente nadie los hace igual!!!")
+        ViewDropNote(
+            user = sampleUser,
+            content = "Los mejores tacos del universo, realemente nadie los hace igual!!!"
+        )
     }
 }
 
@@ -85,6 +83,9 @@ private fun ViewDropNoteLightPreview() {
 @Composable
 private fun ViewDropNoteDarkPreview() {
     RumboTheme(darkTheme = true) {
-        ViewDropNote(user = sampleUser, "Los mejores tacos del universo, realemente nadie los hace igual!!!")
+        ViewDropNote(
+            user = sampleUser,
+            content = "Los mejores tacos del universo, realemente nadie los hace igual!!!"
+        )
     }
 }

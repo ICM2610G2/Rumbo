@@ -17,9 +17,9 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 @Composable
 fun ChatList(
+    modifier: Modifier = Modifier,
     chatItems: List<ChatPreviewData>,
     onChatClick: (ChatPreviewData) -> Unit = {},
-    modifier: Modifier = Modifier
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -32,8 +32,7 @@ fun ChatList(
                 lastMessage = chat.lastMessage,
                 status = chat.status,
                 timestamp = chat.timestamp,
-                modifier = Modifier.clickable { onChatClick(chat) }
-            )
+                modifier = Modifier.clickable { onChatClick(chat) })
         }
     }
 }
@@ -46,20 +45,48 @@ data class ChatPreviewData(
     val hasUnread: Boolean = false
 )
 
-@Preview(showBackground = true, backgroundColor = 0xFF121212, name = "Chat List Organism")
+private val mockChats = listOf(
+    ChatPreviewData(
+        sampleUser.copy(name = "Brandon"),
+        "¡Ya estoy cerca! ...",
+        "Rumbo al Museo Nacional",
+        ""
+    ),
+    ChatPreviewData(
+        sampleUser.copy(name = "Aylean"),
+        "¿Nos vemos allá?",
+        "Rumbo al Museo Nacional",
+        ""
+    ),
+    ChatPreviewData(
+        sampleUser.copy(name = "Ahbdul"),
+        "¡Ya estoy cerca! ...",
+        "Rumbo al Museo Nacional",
+        ""
+    ),
+    ChatPreviewData(
+        sampleUser.copy(name = "Los Mochileros"),
+        "@Ana, dónde estás?!",
+        "Rumbo al Museo N...",
+        ""
+    ),
+    ChatPreviewData(sampleUser.copy(name = "Kyle"), "Fué un gusto conocerte!", null, ""),
+    ChatPreviewData(sampleUser.copy(name = "Ashley"), "¡Ya estoy cerca! ...", null, ""),
+    ChatPreviewData(sampleUser.copy(name = "Tatiana"), "¡Ya estoy cerca! ...", null, "")
+)
+
+@Preview(showBackground = true, name = "Chat List - Dark", backgroundColor = 0xFF1E1E1E)
 @Composable
-private fun ChatListPreview() {
-    val mockChats = listOf(
-        ChatPreviewData(sampleUser.copy(name = "Brandon"), "¡Ya estoy cerca! ...", "Rumbo al Museo Nacional", ""),
-        ChatPreviewData(sampleUser.copy(name = "Aylean"), "¿Nos vemos allá?", "Rumbo al Museo Nacional", ""),
-        ChatPreviewData(sampleUser.copy(name = "Ahbdul"), "¡Ya estoy cerca! ...", "Rumbo al Museo Nacional", ""),
-        ChatPreviewData(sampleUser.copy(name = "Los Mochileros"), "@Ana, dónde estás?!", "Rumbo al Museo N...", ""),
-        ChatPreviewData(sampleUser.copy(name = "Kyle"), "Fué un gusto conocerte!", null, ""),
-        ChatPreviewData(sampleUser.copy(name = "Ashley"), "¡Ya estoy cerca! ...", null, ""),
-        ChatPreviewData(sampleUser.copy(name = "Tatiana"), "¡Ya estoy cerca! ...", null, "")
-    )
-    
+private fun AuthPrimaryCTADarkPreview() {
     RumboTheme(darkTheme = true) {
+        ChatList(chatItems = mockChats)
+    }
+}
+
+@Preview(showBackground = true, name = "Chat List - Light")
+@Composable
+private fun AuthPrimaryCTALightPreview() {
+    RumboTheme(darkTheme = false) {
         ChatList(chatItems = mockChats)
     }
 }
