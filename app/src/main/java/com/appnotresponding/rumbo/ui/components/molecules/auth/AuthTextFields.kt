@@ -28,13 +28,13 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 //PLAIN TEXT FIELD
 /**
- * Plain text field for authentication forms, without additional validation.
- * Uses [RumboTextField] internally with basic configuration.
+ * Campo de texto simple para formularios de autenticación, sin validación adicional.
+ * Utiliza [RumboTextField] internamente con una configuración básica.
  *
- * @param value The current value of the text field.
- * @param onValueChange Callback invoked with the new value each time the user changes the text.
- * @param label Label displayed above the text field.
- * @param placeholder Placeholder text shown when the field is empty.
+ * @param value El valor actual del campo de texto.
+ * @param onValueChange Callback que se invoca con el nuevo valor cada vez que el usuario cambia el texto.
+ * @param label Etiqueta mostrada encima del campo de texto.
+ * @param placeholder Texto de marcador de posición que se muestra cuando el campo está vacío.
  */
 @Composable
 fun AuthPlainText(

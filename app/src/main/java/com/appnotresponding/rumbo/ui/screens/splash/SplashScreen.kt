@@ -24,7 +24,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.appnotresponding.rumbo.R
+import com.appnotresponding.rumbo.navigation.AppScreens
 import com.appnotresponding.rumbo.ui.components.atoms.RumboButton
 import com.appnotresponding.rumbo.ui.components.atoms.RumboButtonStyle
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
@@ -52,8 +56,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(
-    onNavigateToLogin: () -> Unit = {},
-    onNavigateToSignUp: () -> Unit = {}
+    controller: NavHostController
 ) {
     var ctaVisible by remember { mutableStateOf(false) }
 
@@ -69,7 +72,7 @@ fun SplashScreen(
     ) {
 
         Image(
-            painter = painterResource(id = R.drawable.img_logo_splash),
+            painter = painterResource(id = R.mipmap.img_logo_splash),
             contentDescription = "Rumbo logo",
             modifier = Modifier
                 .align(Alignment.Center)
@@ -96,13 +99,13 @@ fun SplashScreen(
             ) {
                 RumboButton(
                     text = "Iniciar Sesión",
-                    onClick = onNavigateToLogin,
+                    onClick = {controller.navigate(AppScreens.LogIn.name)},
                     modifier = Modifier.fillMaxWidth()
                 )
                 RumboButton(
                     text = "Registrarse",
                     style = RumboButtonStyle.Secondary,
-                    onClick = onNavigateToSignUp,
+                    onClick = {controller.navigate(AppScreens.SignUp.name)},
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -114,7 +117,7 @@ fun SplashScreen(
 @Composable
 private fun SplashScreenDarkPreview() {
     RumboTheme(darkTheme = true) {
-        SplashScreen()
+        SplashScreen(controller = rememberNavController())
     }
 }
 

@@ -25,7 +25,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.appnotresponding.rumbo.R
+import com.appnotresponding.rumbo.navigation.AppScreens
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 enum class NavItem {
@@ -33,12 +36,15 @@ enum class NavItem {
 }
 
 /**
- * Bottom navigation bar for the Rumbo application.
- * Displays four navigation buttons (Map, Chat, Plan, Itinerary) with icons and text, highlighting the active item with the theme's primary color.
- * Navigation state is managed internally with [NavItem].
+ * Barra de navegación inferior para la aplicación Rumbo.
+ * Muestra cuatro botones de navegación (Mapa, Chat, Plan, Itinerario) con íconos y texto,
+ * resaltando el elemento activo con el color primario del tema.
+ * El estado de navegación se gestiona internamente con [NavItem].
  */
 @Composable
-fun Nav() {
+fun Nav(
+    controller: NavController
+) {
     var activeItem by remember { mutableStateOf(NavItem.Map) }
     Box {
         Box(
@@ -69,7 +75,10 @@ fun Nav() {
             ) {
                 //Map
                 Button(
-                    onClick = { activeItem = NavItem.Map },
+                    onClick = {
+                        activeItem = NavItem.Map
+                        controller.navigate(AppScreens.Map.name)
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
                 ) {
                     Column(
@@ -88,66 +97,91 @@ fun Nav() {
                     }
                 }
 
+
                 //Chat
                 Button(
-                    onClick = { activeItem = NavItem.Chat },
+                    onClick = {
+                        activeItem = NavItem.Chat
+                        controller.navigate(AppScreens.Chat.name)
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
                 ) {
                     Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_messages),
-                            contentDescription = "Chat",
-                            tint = if (activeItem == NavItem.Chat) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "Chat",
-                            color = if (activeItem == NavItem.Chat) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                        )
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_messages),
+                                contentDescription = "Chat",
+                                tint = if (activeItem == NavItem.Chat) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "Chat",
+                                color = if (activeItem == NavItem.Chat) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
                 }
 
                 //Plan
                 Button(
-                    onClick = { activeItem = NavItem.Plan },
+                    onClick = {
+                        activeItem = NavItem.Plan
+                        controller.navigate(AppScreens.Plan.name)
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
                 ) {
                     Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_search),
-                            contentDescription = "Plan",
-                            tint = if (activeItem == NavItem.Plan) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "Plan",
-                            color = if (activeItem == NavItem.Plan) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                        )
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_search),
+                                contentDescription = "Plan",
+                                tint = if (activeItem == NavItem.Plan) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "Plan",
+                                color = if (activeItem == NavItem.Plan) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
                 }
 
                 //Itinerary
                 Button(
-                    onClick = { activeItem = NavItem.Itinerary },
+                    onClick = {
+                        activeItem = NavItem.Itinerary
+                        controller.navigate(AppScreens.Itinerary.name)
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
                 ) {
                     Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_list),
-                            contentDescription = "Itinerario",
-                            tint = if (activeItem == NavItem.Itinerary) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = "Itinerario",
-                            color = if (activeItem == NavItem.Itinerary) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                        )
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_list),
+                                contentDescription = "Itinerario",
+                                tint = if (activeItem == NavItem.Itinerary) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "Itinerario",
+                                color = if (activeItem == NavItem.Itinerary) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
                 }
             }
@@ -159,7 +193,7 @@ fun Nav() {
 @Composable
 private fun NavLightPreview() {
     RumboTheme(darkTheme = false) {
-        Nav()
+        Nav(controller = rememberNavController())
     }
 }
 
@@ -167,7 +201,7 @@ private fun NavLightPreview() {
 @Composable
 private fun NavDarkPreview() {
     RumboTheme(darkTheme = true) {
-        Nav()
+        Nav(controller = rememberNavController())
     }
 }
 

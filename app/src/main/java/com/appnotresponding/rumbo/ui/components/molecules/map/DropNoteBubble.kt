@@ -23,14 +23,14 @@ import com.appnotresponding.rumbo.ui.components.atoms.AvatarSize
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 /**
- * A composable that represents a DropNote as a speech bubble with the author's avatar and two "thought" dots.
+ * Un composable que representa una DropNote como un globo de pensamiento con el avatar del autor y dos "puntos" de pensamiento.
  *
- * The main bubble is a circle containing the avatar, with a border and shadow for depth. Below it are two smaller circles
- * representing the "thought" dots, positioned to create a visual connection to the main bubble.
+ * El globo principal es un círculo que contiene el avatar, con un borde y sombra para dar profundidad. Debajo se encuentran
+ * dos círculos más pequeños que representan los "puntos" de pensamiento, posicionados para crear una conexión visual con el globo principal.
  *
- * @param d The DropNote data to display in the bubble.
- * @param modifier Optional Modifier for styling and layout adjustments.
- * @param avatar A composable lambda that defines how to display the avatar. By default, it uses the Avatar composable with the author's information.
+ * @param d Los datos de la DropNote que se mostrarán en el globo.
+ * @param modifier Modifier opcional para ajustes de estilo y diseño.
+ * @param avatar Lambda composable que define cómo mostrar el avatar. Por defecto, utiliza el composable Avatar con la información del autor.
  */
 @Composable
 fun DropNoteBubble(

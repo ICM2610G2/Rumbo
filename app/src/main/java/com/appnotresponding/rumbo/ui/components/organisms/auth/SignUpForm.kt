@@ -47,7 +47,7 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 @Composable
 fun SignUpForm(
     modifier: Modifier = Modifier,
-    onSignUpClick: (String, String, String, String, String, Boolean) -> Unit = { _, _, _, _, _, _ -> },
+    onClick: ()->Unit = {},
 ) {
     var fullName by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
@@ -182,9 +182,7 @@ fun SignUpForm(
         // Botón: Registrarse
         RumboButton(
             text = "Registrarse",
-            onClick = {
-                onSignUpClick(fullName, phone, email, password, selectedCountry, termsAccepted)
-            },
+            onClick = onClick,
             style = RumboButtonStyle.Primary,
             modifier = Modifier.fillMaxWidth(),
         )

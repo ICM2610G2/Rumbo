@@ -24,10 +24,11 @@ import com.appnotresponding.rumbo.ui.components.atoms.Avatar
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 /**
- * Main top bar for the Rumbo application.
- * Displays the app logo on the left and a greeting with the user's avatar on the right.
+ * Barra superior principal para la aplicación Rumbo.
+ * Muestra el logotipo de la aplicación a la izquierda y un saludo con el avatar del usuario a la derecha.
  *
- * @param u The [User] object for the current user, used to obtain the name and profile picture for the avatar.
+ * @param u El objeto [User] del usuario actual, utilizado para obtener el nombre
+ * y la foto de perfil para el avatar.
  */
 @Composable
 fun MainTopBar(u: User) {
@@ -65,11 +66,14 @@ fun MainTopBar(u: User) {
 }
 
 /**
- * Top bar for the individual chat screen.
- * Displays the contact's avatar along with their name and, optionally, their current activity (e.g., "Rumbo al Museo Nacional").
+ * Barra superior para la pantalla de chat individual.
+ * Muestra el avatar del contacto junto con su nombre y, opcionalmente,
+ * su actividad actual (por ejemplo, "Rumbo al Museo Nacional").
  *
- * @param u The [User] object for the contact being chatted with, used to obtain the name and profile picture.
- * @param activity Optional text describing the user's current activity (e.g., "Rumbo al Museo Nacional").
+ * @param u El objeto [User] del contacto con el que se está chateando,
+ * utilizado para obtener el nombre y la foto de perfil.
+ * @param activity Texto opcional que describe la actividad actual del usuario
+ * (por ejemplo, "Rumbo al Museo Nacional").
  */
 @Composable
 fun ChatTopBar(u: User, activity: String? = null) {
