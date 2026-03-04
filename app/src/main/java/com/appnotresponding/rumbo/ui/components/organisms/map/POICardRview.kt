@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -30,30 +31,31 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  */
 @Composable
 fun PlacePreviewCard(place: Place, reviews: List<Review>) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp)
-            .clip(MaterialTheme.shapes.medium)
-    ) {
-        PlaceInfo(p = place)
-        LazyColumn(
+    Surface(shape = MaterialTheme.shapes.large) {
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(vertical = 8.dp)
+                .padding(vertical = 8.dp)
         ) {
-            item {
-                Text(
-                    text = "Reseñas de ${place.name}",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-            }
-            items(items = reviews, key = { it.id }) { review ->
-                ReviewItem(r = review)
+            PlaceInfo(p = place)
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(vertical = 8.dp)
+            ) {
+                item {
+                    Text(
+                        text = "Reseñas de ${place.name}",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+                items(items = reviews, key = { it.id }) { review ->
+                    ReviewItem(r = review)
+                }
             }
         }
     }
