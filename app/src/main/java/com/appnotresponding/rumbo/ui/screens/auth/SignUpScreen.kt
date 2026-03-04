@@ -23,7 +23,7 @@ fun SignUpScreen(
         val scrollState = rememberScrollState()
 
         SignUpForm(
-            onClick = { controller.navigate(AppScreens.Map.name) },
+            onClick = { controller.navigate(AppScreens.OnBoarding.name) },
             modifier = Modifier
                 .verticalScroll(scrollState)
                 .fillMaxSize()

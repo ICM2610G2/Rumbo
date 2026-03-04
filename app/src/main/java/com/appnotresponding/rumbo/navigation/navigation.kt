@@ -14,8 +14,10 @@ import com.appnotresponding.rumbo.ui.screens.itinerary.ItineraryScreen
 import com.appnotresponding.rumbo.ui.screens.map.MapScreen
 import com.appnotresponding.rumbo.ui.screens.onboarding.OnBoardingScreen
 import com.appnotresponding.rumbo.ui.screens.plan.PlanScreen
+import com.appnotresponding.rumbo.ui.screens.splash.SplashScreen
 
 enum class AppScreens{
+    Splash,
     LogIn,
     SignUp,
     Map,
@@ -29,7 +31,10 @@ enum class AppScreens{
 @Composable
 fun Navigation(){
     val navController = rememberNavController()
-    NavHost(navController=navController, startDestination = AppScreens.LogIn.name){
+    NavHost(navController=navController, startDestination = AppScreens.Splash.name){
+        composable (route = AppScreens.Splash.name){
+            SplashScreen(navController)
+        }
         composable(route = AppScreens.LogIn.name){
             LoginScreen(navController)
         }
