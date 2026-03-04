@@ -1,9 +1,11 @@
 package com.appnotresponding.rumbo.ui.templates
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,8 +26,8 @@ fun OnboardingTemplate(onFinishOnboarding: () -> Unit) {
     var currentSlide by remember { mutableIntStateOf(0) }
 
     Surface(modifier = Modifier
-        .fillMaxSize()
-        .padding(32.dp)) {
+        .fillMaxSize().background(MaterialTheme.colorScheme.background)
+        .padding(vertical = 48.dp, horizontal = 24.dp)) {
         Column(modifier = Modifier.fillMaxSize()) {
 
             Box(modifier = Modifier.weight(1f)) {
