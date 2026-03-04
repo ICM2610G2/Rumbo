@@ -39,7 +39,7 @@ fun AuthPrimaryCTA() {
 
 @Preview(showBackground = true, name = "Auth CTA - Dark", backgroundColor = 0xFF1E1E1E)
 @Composable
-fun AuthPrimaryCTADarkPreview() {
+private fun AuthPrimaryCTADarkPreview() {
     RumboTheme(darkTheme = true) {
         AuthPrimaryCTA()
     }
@@ -47,7 +47,7 @@ fun AuthPrimaryCTADarkPreview() {
 
 @Preview(showBackground = true, name = "Auth CTA - Light")
 @Composable
-fun AuthPrimaryCTALightPreview() {
+private fun AuthPrimaryCTALightPreview() {
     RumboTheme(darkTheme = false) {
         AuthPrimaryCTA()
     }

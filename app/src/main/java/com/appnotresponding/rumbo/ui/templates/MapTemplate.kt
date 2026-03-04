@@ -8,12 +8,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -61,17 +59,20 @@ fun MapTemplate(user: User,
                 verticalArrangement = Arrangement.spacedBy(30.dp)
             ) {
                 WriteDropNote {
-                    popupStateDNComposer = !popupStateDNComposer }
+                    popupStateDNComposer = !popupStateDNComposer
+                }
                 LocateMe { }
             }
         },
         bottomBar = { Nav(controller) }) { paddingValues ->
         // Main content area with the map
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().padding(top = paddingValues.calculateTopPadding()/2)) {
             Image(
-                modifier = Modifier.fillMaxSize().clickable(onClick = {popupStateReview = !popupStateReview}),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable(onClick = { popupStateReview = !popupStateReview }),
                 contentScale = ContentScale.FillHeight,
-                painter = painterResource(R.drawable.img_map),
+                painter = painterResource(R.mipmap.img_map),
                 contentDescription = "Map"
             )
 
@@ -88,11 +89,12 @@ fun MapTemplate(user: User,
             DropNoteComposer()
         }
     }
-    if (popupStateReview){
+    if (popupStateReview) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp).offset(y=-(90).dp),
+                .padding(16.dp)
+                .offset(y = -(90).dp),
             contentAlignment = Alignment.BottomCenter
         ) {
             PlacePreviewCard(place = samplePlace, reviews = listOf(sampleReview))

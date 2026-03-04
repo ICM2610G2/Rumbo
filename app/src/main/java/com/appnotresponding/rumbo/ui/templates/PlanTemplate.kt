@@ -2,6 +2,7 @@ package com.appnotresponding.rumbo.ui.templates
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -29,7 +30,7 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  * con la barra superior, la barra de navegacion inferior, el encabezado de ubicacion
  * y la lista de lugares disponibles.
  *
- * @param user El usuario actual, utilizado para mostrar su informacion en la barra superior.
+ * @param user El usuario actual, utilizado para mostrar su información en la barra superior.
  * @param placesList La lista de lugares (Place) que se mostraran en el planificador.
  */
 
@@ -37,13 +38,14 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 fun PlanTemplate(user: User, placesList: List<Place>,
                  controller: NavHostController) {
     Scaffold(
+        contentWindowInsets = WindowInsets(0),
         topBar = { MainTopBar(u = user) },
         bottomBar = { Nav(controller) }
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(top = paddingValues.calculateTopPadding())
         ) {
             LocationHeader(title = "Planea Tu Día", locationName = "Bogotá")
 
@@ -60,7 +62,7 @@ private fun PlanTemplateLightPreview() {
     RumboTheme(darkTheme = false) {
         PlanTemplate(
             user = sampleUser,
-            placesList = listOf(samplePlace, samplePlace, samplePlace), // Simulamos una lista con 3 lugares
+            placesList = listOf(samplePlace, samplePlace, samplePlace),
             controller = rememberNavController()
         )
     }

@@ -23,29 +23,24 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun AuthTemplate(
-    modifier: Modifier = Modifier,
-    content: @Composable BoxScope.() -> Unit
+    modifier: Modifier = Modifier, content: @Composable BoxScope.() -> Unit
 ) {
 
-    val highlightGreen = Color(0xFFC4F031) 
-    val darkBackground = Color(0xFF151515) 
+    val highlightGreen = Color(0xFFC4F031)
+    val darkBackground = Color(0xFF151515)
 
-  
+
     val backgroundBrush = Brush.radialGradient(
         colors = listOf(
-            highlightGreen.copy(alpha = 0.35f), 
-            darkBackground,
-            Color.Black
-        ),
-        center = Offset(x = 100f, y = 800f),
-        radius = 1200f
+            highlightGreen.copy(alpha = 0.35f), darkBackground, Color.Black
+        ), center = Offset(x = 100f, y = 800f), radius = 1200f
     )
 
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(brush = backgroundBrush)
-            .padding(24.dp), 
+            .padding(24.dp),
         contentAlignment = Alignment.Center
     ) {
         content()

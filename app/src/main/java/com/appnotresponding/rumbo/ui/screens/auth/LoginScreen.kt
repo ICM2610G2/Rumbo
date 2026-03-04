@@ -17,8 +17,8 @@ fun LoginScreen(
 ) {
     AuthTemplate {
         LoginForm(
+            modifier = Modifier,
             onLoginClick = { controller.navigate(AppScreens.Map.name) },
-            modifier = Modifier
         )
     }
 }

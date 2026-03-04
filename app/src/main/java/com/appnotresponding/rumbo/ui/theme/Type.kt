@@ -48,87 +48,59 @@ val rumboTypography = Typography(
     ),
     //H2
     displayMedium = baseline.displayMedium.copy(
-        fontFamily = displayFontFamily,
-        fontSize = 45.sp,
-        fontWeight = FontWeight.Bold
+        fontFamily = displayFontFamily, fontSize = 45.sp, fontWeight = FontWeight.Bold
     ),
     //H3
     displaySmall = baseline.displaySmall.copy(
-        fontFamily = displayFontFamily,
-        fontSize = 36.sp,
-        fontWeight = FontWeight.Bold
+        fontFamily = displayFontFamily, fontSize = 36.sp, fontWeight = FontWeight.Bold
     ),
     //H4
     headlineLarge = baseline.headlineLarge.copy(
-        fontFamily = displayFontFamily,
-        fontSize = 32.sp,
-        fontWeight = FontWeight.Bold
+        fontFamily = displayFontFamily, fontSize = 32.sp, fontWeight = FontWeight.Bold
     ),
     //H5
     headlineMedium = baseline.headlineMedium.copy(
-        fontFamily = displayFontFamily,
-        fontSize = 28.sp,
-        fontWeight = FontWeight.Bold
+        fontFamily = displayFontFamily, fontSize = 28.sp, fontWeight = FontWeight.Bold
     ),
     //H6
     headlineSmall = baseline.headlineSmall.copy(
-        fontFamily = displayFontFamily,
-        fontSize = 24.sp,
-        fontWeight = FontWeight.Bold
+        fontFamily = displayFontFamily, fontSize = 24.sp, fontWeight = FontWeight.Bold
     ),
     //Subtitle 1
     titleLarge = baseline.titleLarge.copy(
-        fontFamily = displayFontFamily,
-        fontSize = 22.sp,
-        fontWeight = FontWeight.SemiBold
+        fontFamily = displayFontFamily, fontSize = 22.sp, fontWeight = FontWeight.SemiBold
     ),
     //Subtitle 2
     titleMedium = baseline.titleMedium.copy(
-        fontFamily = displayFontFamily,
-        fontSize = 16.sp,
-        fontWeight = FontWeight.SemiBold
+        fontFamily = displayFontFamily, fontSize = 16.sp, fontWeight = FontWeight.SemiBold
     ),
     //Subtitle 3
     titleSmall = baseline.titleSmall.copy(
-        fontFamily = displayFontFamily,
-        fontSize = 14.sp,
-        fontWeight = FontWeight.SemiBold
+        fontFamily = displayFontFamily, fontSize = 14.sp, fontWeight = FontWeight.SemiBold
     ),
     //Body 1
     bodyLarge = baseline.bodyLarge.copy(
-        fontFamily = bodyFontFamily,
-        fontSize = 16.sp,
-        fontWeight = FontWeight.Normal
+        fontFamily = bodyFontFamily, fontSize = 16.sp, fontWeight = FontWeight.Normal
     ),
     //Body 2
     bodyMedium = baseline.bodyMedium.copy(
-        fontFamily = bodyFontFamily,
-        fontSize = 14.sp,
-        fontWeight = FontWeight.Normal
+        fontFamily = bodyFontFamily, fontSize = 14.sp, fontWeight = FontWeight.Normal
     ),
     //Body 3
     bodySmall = baseline.bodySmall.copy(
-        fontFamily = bodyFontFamily,
-        fontSize = 12.sp,
-        fontWeight = FontWeight.Normal
+        fontFamily = bodyFontFamily, fontSize = 12.sp, fontWeight = FontWeight.Normal
     ),
     //Label 1
     labelLarge = baseline.labelLarge.copy(
-        fontFamily = bodyFontFamily,
-        fontSize = 14.sp,
-        fontWeight = FontWeight.SemiBold
+        fontFamily = bodyFontFamily, fontSize = 14.sp, fontWeight = FontWeight.SemiBold
     ),
     //Label 2
     labelMedium = baseline.labelMedium.copy(
-        fontFamily = bodyFontFamily,
-        fontSize = 12.sp,
-        fontWeight = FontWeight.Medium
+        fontFamily = bodyFontFamily, fontSize = 12.sp, fontWeight = FontWeight.Medium
     ),
     //Label 3
     labelSmall = baseline.labelSmall.copy(
-        fontFamily = bodyFontFamily,
-        fontSize = 11.sp,
-        fontWeight = FontWeight.Medium
+        fontFamily = bodyFontFamily, fontSize = 11.sp, fontWeight = FontWeight.Medium
     ),
 )
 

@@ -64,6 +64,7 @@ fun ChatSeparator(text: String) {
         )
     }
 }
+
 enum class ChatBubbleType {
     Regular, Location, LiveActivity
 }
@@ -161,9 +162,12 @@ fun ChatBubble(
             ) {
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth(0.6f)
-                        .background(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.shapes.extraLarge)
-                        .clip(MaterialTheme.shapes.extraLarge)
+                        .widthIn(max = 280.dp)
+                        .background(
+                            backgroundColor,
+                            MaterialTheme.shapes.large
+                        )
+                        .clip(MaterialTheme.shapes.large),
                 ) {
                     Row(
                         modifier = Modifier
@@ -174,7 +178,7 @@ fun ChatBubble(
                         Text(
                             text = "Ubicación",
                             style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = contentColor,
                             fontStyle = FontStyle.Italic
                         )
                     }
@@ -182,7 +186,7 @@ fun ChatBubble(
                     Image(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .aspectRatio(0.8f)
+                            .aspectRatio(3f / 2f)
                             .clip(
                                 RoundedCornerShape(
                                     bottomStart = 28.dp,
@@ -191,7 +195,7 @@ fun ChatBubble(
                                     topEnd = 0.dp
                                 )
                             ),
-                        painter = painterResource(R.drawable.img_map),
+                        painter = painterResource(R.mipmap.img_map),
                         contentScale = ContentScale.Crop,
                         contentDescription = "Mapa de ubicación compartida"
                     )
@@ -207,7 +211,6 @@ fun ChatBubble(
                     Column(
                         modifier = Modifier
                             .widthIn(max = 280.dp)
-                            .padding(8.dp)
                             .background(backgroundColor, MaterialTheme.shapes.large),
                         horizontalAlignment = horizontalAlignment,
                         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -232,7 +235,7 @@ fun ChatBubble(
                                 color = contentColor,
                             )
 
-                            Row() {
+                            Row {
                                 Box(
                                     modifier = Modifier
                                         .weight(3f)
@@ -293,7 +296,7 @@ fun ChatBubble(
 @Composable
 private fun ChatBubblePreviewContent() {
     val context = LocalContext.current
-    val placeholderImage = ImageRequest.Builder(context).data(R.drawable.img_mock).build()
+    val placeholderImage = ImageRequest.Builder(context).data(R.mipmap.img_mock).build()
 
     Column(
         modifier = Modifier

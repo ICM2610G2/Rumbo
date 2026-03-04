@@ -17,10 +17,34 @@ fun ChatListScreen( controller: NavHostController ) {
     val currentUser = sampleUser.copy(name = "Ana")
 
     val mockChats = listOf(
-        ChatPreviewData(sampleUser.copy(name = "Brandon"), "¡Ya estoy cerca! ...", "Rumbo al Museo Nacional", "", true),
-        ChatPreviewData(sampleUser.copy(name = "Aylean"), "¿Nos vemos allá?", "Rumbo al Museo Nacional", "", false),
-        ChatPreviewData(sampleUser.copy(name = "Ahbdul"), "¡Ya estoy cerca! ...", "Rumbo al Museo Nacional", "", false),
-        ChatPreviewData(sampleUser.copy(name = "Los Mochileros"), "@Ana, dónde estás?!", "Rumbo al Museo N...", "", true),
+        ChatPreviewData(
+            sampleUser.copy(name = "Brandon"),
+            "¡Ya estoy cerca! ...",
+            "Rumbo al Museo Nacional",
+            "",
+            true
+        ),
+        ChatPreviewData(
+            sampleUser.copy(name = "Aylean"),
+            "¿Nos vemos allá?",
+            "Rumbo al Museo Nacional",
+            "",
+            false
+        ),
+        ChatPreviewData(
+            sampleUser.copy(name = "Ahbdul"),
+            "¡Ya estoy cerca! ...",
+            "Rumbo al Museo Nacional",
+            "",
+            false
+        ),
+        ChatPreviewData(
+            sampleUser.copy(name = "Los Mochileros"),
+            "@Ana, dónde estás?!",
+            "Rumbo al Museo N...",
+            "",
+            true
+        ),
         ChatPreviewData(sampleUser.copy(name = "Kyle"), "Fué un gusto conocerte!", null, "", false),
         ChatPreviewData(sampleUser.copy(name = "Ashley"), "¡Ya estoy cerca! ...", null, "", false),
         ChatPreviewData(sampleUser.copy(name = "Tatiana"), "¡Ya estoy cerca! ...", null, "", false)
@@ -40,7 +64,11 @@ fun ChatListScreen( controller: NavHostController ) {
 }
 
 
-@Preview(showBackground = true, name = "3. Pantalla Lista de Chats demostracion", backgroundColor = 0xFF121212)
+@Preview(
+    showBackground = true,
+    name = "3. Pantalla Lista de Chats demostracion",
+    backgroundColor = 0xFF121212
+)
 @Composable
 private fun ChatListScreenPreview() {
     RumboTheme(darkTheme = true) { 

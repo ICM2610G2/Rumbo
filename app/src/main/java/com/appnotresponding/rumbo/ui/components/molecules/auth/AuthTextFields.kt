@@ -46,12 +46,17 @@ fun AuthPlainText(
 }
 
 /**
- * VisualTransformation que muestra dígitos crudos (ej: +573012345678)
+ * VisualTransformation que muestra dígitos crudos (Ej. +573012345678)
  * con formato: +57 301 234 5678
  *
  * El valor almacenado siempre es solo +dígitos, sin espacios.
- * Los espacios se insertan visualmente después del indicativo (pos 3)
- * y luego cada 3 dígitos del número local.
+ * Los espacios se insertan visualmente después del indicativo (pos 3) y luego cada 3 dígitos del número local.
+ *
+ * Fuentes:
+ * - https://stackoverflow.com/questions/71274129/phone-number-visual-transformation-in-jetpack-compose
+ * - https://stackoverflow.com/questions/75843369/visualtransformation-for-the-american-phone-number-in-compose
+ * - https://ngengesenior.medium.com/how-to-usevisualtransformation-to-create-phone-number-textfield-and-others-in-jetpack-compose-f7a62f8fbe95
+ * - https://developer.android.com/reference/kotlin/androidx/compose/ui/text/input/VisualTransformation
  */
 private class PhoneVisualTransformation : VisualTransformation {
 
@@ -127,7 +132,7 @@ private class PhoneVisualTransformation : VisualTransformation {
 
 //PHONE TEXT FIELD
 /**
- * Este TextField almacena el número de teléfono en formato E.164 (ej: +573012345678)
+ * Este TextField almacena el número de teléfono en formato E.164 (Ej. +573012345678)
  * pero lo muestra formateado como +57 301 234 5678.
  *
  * Solo permite ingresar dígitos y un "+" al inicio. No se permiten espacios en la entrada.

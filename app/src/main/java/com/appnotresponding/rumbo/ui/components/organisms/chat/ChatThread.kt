@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.appnotresponding.rumbo.models.Place
 import com.appnotresponding.rumbo.ui.components.molecules.chat.ChatBubble
 import com.appnotresponding.rumbo.ui.components.molecules.chat.ChatBubbleType
+import com.appnotresponding.rumbo.ui.components.molecules.chat.ChatSeparator
 
 data class ChatMessageData(
     val message: String,
@@ -24,8 +25,7 @@ data class ChatMessageData(
 
 @Composable
 fun ChatThread(
-    messages: List<ChatMessageData>,
-    modifier: Modifier = Modifier
+    messages: List<ChatMessageData>, modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
 
@@ -38,7 +38,7 @@ fun ChatThread(
     ) {
         messages.forEach { msg ->
             if (msg.isSeparator) {
-                com.appnotresponding.rumbo.ui.components.molecules.chat.ChatSeparator(text = msg.message)
+                ChatSeparator(text = msg.message)
             } else {
                 ChatBubble(
                     message = msg.message,

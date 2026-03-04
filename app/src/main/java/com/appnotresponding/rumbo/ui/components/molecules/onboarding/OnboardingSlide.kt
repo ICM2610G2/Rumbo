@@ -83,7 +83,7 @@ private fun OnboardingSlideLightPreview() {
         OnboardingSlide(
             title = "¡Bienvenido a Rumbo!",
             subtitle = "Tu copiloto de viaje que entiende lo que ves, te traduce al instante y reordena tu día cuando algo cambia.",
-            illustrationRes = R.drawable.img_onboaring_1,
+            illustrationRes = R.mipmap.img_onboaring_1,
             description = "Rumbo te ayuda a descubrir lugares como un local, traducir al instante lo que ves, reorganizar tu día cuando algo cambia y navegar con mapas que funcionan incluso sin conexión. Todo en un solo lugar."
         )
     }
@@ -96,7 +96,7 @@ private fun OnboardingSlideDarkPreview() {
         OnboardingSlide(
             title = "¡Bienvenido a Rumbo!",
             subtitle = "Tu copiloto de viaje que entiende lo que ves, te traduce al instante y reordena tu día cuando algo cambia.",
-            illustrationRes = R.drawable.img_onboaring_1,
+            illustrationRes = R.mipmap.img_onboaring_1,
             description = "Rumbo te ayuda a descubrir lugares como un local, traducir al instante lo que ves, reorganizar tu día cuando algo cambia y navegar con mapas que funcionan incluso sin conexión. Todo en un solo lugar."
         )
     }

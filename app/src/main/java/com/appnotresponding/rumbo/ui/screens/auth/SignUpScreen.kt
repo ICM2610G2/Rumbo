@@ -32,7 +32,9 @@ fun SignUpScreen(
 }
 
 
-@Preview(showBackground = true, name = "antalla Registro demostración ", backgroundColor = 0xFF121212)
+@Preview(
+    showBackground = true, name = "antalla Registro demostración ", backgroundColor = 0xFF121212
+)
 @Composable
 private fun SignUpScreenPreview() {
     RumboTheme(darkTheme = true) {
