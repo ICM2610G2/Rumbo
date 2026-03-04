@@ -40,7 +40,7 @@ fun Nav() {
     var activeItem by remember { mutableStateOf(NavItem.Map) }
     Surface(
         modifier = Modifier.padding(16.dp),
-        shape = MaterialTheme.shapes.medium,
+        shape = MaterialTheme.shapes.large,
         shadowElevation = 8.dp
     ) {
         Row(
