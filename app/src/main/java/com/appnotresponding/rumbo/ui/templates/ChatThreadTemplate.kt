@@ -1,7 +1,6 @@
 package com.appnotresponding.rumbo.ui.templates
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,11 +17,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.models.User
-import com.appnotresponding.rumbo.ui.components.organisms.common.ChatTopBar
 import com.appnotresponding.rumbo.ui.components.molecules.chat.MessageComposer
+import com.appnotresponding.rumbo.ui.components.organisms.common.ChatTopBar
 
 @Composable
 fun ChatThreadTemplate(
+    modifier: Modifier = Modifier,
     chatTitle: String,
     chatSubtitle: String,
     chatAvatarUser: User,
@@ -30,36 +30,32 @@ fun ChatThreadTemplate(
     messageInputValue: String = "",
     onMessageInputValueChange: (String) -> Unit = {},
     onSendClick: () -> Unit = {},
-    modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
-    Scaffold(
-        contentWindowInsets = WindowInsets(0),
-        topBar = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(
-                    onClick = onBackClick,
-                    modifier = Modifier.padding(start = 8.dp).size(24.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_arrow_left),
-                        contentDescription = "Volver",
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-                ChatTopBar(u = chatAvatarUser, activity = chatSubtitle)
-            }
-        },
-        bottomBar = {
-            Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
-                MessageComposer(
-                    value = messageInputValue,
-                    onValueChange = onMessageInputValueChange,
-                    onSendClick = onSendClick
+    Scaffold(contentWindowInsets = WindowInsets(0), topBar = {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton(
+                onClick = onBackClick, modifier = Modifier
+                    .padding(start = 8.dp)
+                    .size(24.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_arrow_left),
+                    contentDescription = "Volver",
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
+            ChatTopBar(u = chatAvatarUser, activity = chatSubtitle)
         }
-    ) { paddingValues ->
+    }, bottomBar = {
+        Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
+            MessageComposer(
+                value = messageInputValue,
+                onValueChange = onMessageInputValueChange,
+                onSendClick = onSendClick
+            )
+        }
+    }) { paddingValues ->
         Box(
             modifier = modifier
                 .fillMaxSize()

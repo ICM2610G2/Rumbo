@@ -18,7 +18,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,9 +30,9 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 @Composable
 fun LoginForm(
+    modifier: Modifier = Modifier,
     onLoginClick: (String, String) -> Unit = { _, _ -> },
     onForgotPasswordClick: () -> Unit = {},
-    modifier: Modifier = Modifier
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -41,33 +40,33 @@ fun LoginForm(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            
+
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f))
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-     
+
         AuthEmailText(
             value = email,
             onValueChange = { email = it },
             label = "Correo",
             placeholder = "correo@gmail.com"
         )
-        
+
         Spacer(modifier = Modifier.height(4.dp))
 
-     
+
         AuthPasswordText(
             value = password,
             onValueChange = { password = it },
             label = "Contraseña",
             placeholder = "********"
         )
-        
+
         Spacer(modifier = Modifier.height(8.dp))
 
-    
+
         RumboButton(
             text = "Iniciar Sesión",
             onClick = { onLoginClick(email, password) },
@@ -75,7 +74,7 @@ fun LoginForm(
             modifier = Modifier.fillMaxWidth(),
         )
 
-     
+
         Text(
             text = "Recuperar contraseña",
             style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant),

@@ -2,6 +2,7 @@ package com.appnotresponding.rumbo.ui.templates
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,13 +35,13 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 @Composable
 fun ItineraryTemplate(user: User, itineraryList: List<Place>) {
     Scaffold(
+        contentWindowInsets = WindowInsets(0),
         topBar = { MainTopBar(u = user) },
-        bottomBar = { Nav() }
-    ) { paddingValues ->
+        bottomBar = { Nav() }) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(top = paddingValues.calculateTopPadding())
         ) {
             DayHeader(title = "Así Se Ve Tu Día")
             Spacer(modifier = Modifier.height(16.dp))
@@ -55,8 +56,7 @@ fun ItineraryTemplate(user: User, itineraryList: List<Place>) {
 private fun ItineraryTemplateLightPreview() {
     RumboTheme(darkTheme = false) {
         ItineraryTemplate(
-            user = sampleUser,
-            itineraryList = listOf(samplePlace, samplePlace, samplePlace)
+            user = sampleUser, itineraryList = listOf(samplePlace, samplePlace, samplePlace)
         )
     }
 }
@@ -66,8 +66,7 @@ private fun ItineraryTemplateLightPreview() {
 private fun ItineraryTemplateDarkPreview() {
     RumboTheme(darkTheme = true) {
         ItineraryTemplate(
-            user = sampleUser,
-            itineraryList = listOf(samplePlace, samplePlace, samplePlace)
+            user = sampleUser, itineraryList = listOf(samplePlace, samplePlace, samplePlace)
         )
     }
 }

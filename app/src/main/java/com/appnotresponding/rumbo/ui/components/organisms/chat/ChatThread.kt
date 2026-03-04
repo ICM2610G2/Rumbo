@@ -24,8 +24,7 @@ data class ChatMessageData(
 
 @Composable
 fun ChatThread(
-    messages: List<ChatMessageData>,
-    modifier: Modifier = Modifier
+    messages: List<ChatMessageData>, modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
 

@@ -16,20 +16,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.R
-import com.appnotresponding.rumbo.ui.components.atoms.RumboButton
-import com.appnotresponding.rumbo.ui.components.atoms.RumboCard
-import com.appnotresponding.rumbo.ui.components.atoms.RumboTextField
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 @Composable
@@ -39,7 +31,7 @@ fun DropNoteComposer(
     onValueChange: (String) -> Unit = {},
     onSendClick: () -> Unit = {},
     onImageClick: () -> Unit = {}
-){
+) {
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,

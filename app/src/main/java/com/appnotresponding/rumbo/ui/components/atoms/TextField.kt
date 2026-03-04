@@ -45,9 +45,9 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  */
 @Composable
 fun RumboTextField(
+    modifier: Modifier = Modifier,
     value: String = "",
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
     placeholder: String = "",
     label: String? = null,
     enabled: Boolean = true,
