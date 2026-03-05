@@ -1,6 +1,7 @@
 package com.appnotresponding.rumbo.ui.components.molecules.onboarding
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -44,7 +45,8 @@ fun OnboardingNav(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.secondary),
+                    .background(MaterialTheme.colorScheme.secondary)
+                    .clickable { onBack() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -56,22 +58,21 @@ fun OnboardingNav(
         } else {
             Box(modifier = Modifier.size(48.dp))
         }
-        if (!isLastPage) {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrow_right),
-                    contentDescription = "Next",
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
-            }
-        } else {
-            Box(modifier = Modifier.size(48.dp))
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary)
+                .clickable { onNext() },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(
+                    if (isLastPage) R.drawable.ic_check else R.drawable.ic_arrow_right
+                ),
+                contentDescription = if (isLastPage) "Finish" else "Next",
+                tint = MaterialTheme.colorScheme.onPrimary
+            )
         }
     }
 }

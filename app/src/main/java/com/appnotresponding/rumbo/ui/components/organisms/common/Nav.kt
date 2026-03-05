@@ -15,9 +15,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -26,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.navigation.AppScreens
@@ -45,7 +43,15 @@ enum class NavItem {
 fun Nav(
     controller: NavController
 ) {
-    var activeItem by remember { mutableStateOf(NavItem.Map) }
+    val navBackStackEntry by controller.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    val activeItem = when (currentRoute) {
+        AppScreens.Map.name -> NavItem.Map
+        AppScreens.Chat.name, AppScreens.ChatThread.name -> NavItem.Chat
+        AppScreens.Plan.name -> NavItem.Plan
+        AppScreens.Itinerary.name -> NavItem.Itinerary
+        else -> NavItem.Map
+    }
     Box {
         Box(
             modifier = Modifier
@@ -76,7 +82,6 @@ fun Nav(
                 //Map
                 Button(
                     onClick = {
-                        activeItem = NavItem.Map
                         controller.navigate(AppScreens.Map.name)
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
@@ -101,7 +106,6 @@ fun Nav(
                 //Chat
                 Button(
                     onClick = {
-                        activeItem = NavItem.Chat
                         controller.navigate(AppScreens.Chat.name)
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
@@ -130,7 +134,6 @@ fun Nav(
                 //Plan
                 Button(
                     onClick = {
-                        activeItem = NavItem.Plan
                         controller.navigate(AppScreens.Plan.name)
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
@@ -159,7 +162,6 @@ fun Nav(
                 //Itinerary
                 Button(
                     onClick = {
-                        activeItem = NavItem.Itinerary
                         controller.navigate(AppScreens.Itinerary.name)
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
