@@ -1,8 +1,6 @@
 package com.appnotresponding.rumbo.ui.templates
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,14 +13,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -39,14 +38,31 @@ import com.appnotresponding.rumbo.ui.components.organisms.common.Nav
 import com.appnotresponding.rumbo.ui.components.organisms.map.DropNoteComposer
 import com.appnotresponding.rumbo.ui.components.organisms.map.PlacePreviewCard
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMapOptions
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapColorScheme
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapEffect
+import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
-fun MapTemplate(user: User,
-                controller: NavHostController) {
+fun MapTemplate(
+    user: User, controller: NavHostController
+) {
 
     var popupStateDNComposer by remember { mutableStateOf(false) }
     var popupStateReview by remember { mutableStateOf(false) }
 
+    var latitude by remember { mutableDoubleStateOf(4.627293) }
+    var longitude by remember { mutableDoubleStateOf(-74.063228) }
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(LatLng(latitude, longitude), 15f)
+    }
+    var currentMapStyle by remember { mutableIntStateOf(MapColorScheme.FOLLOW_SYSTEM) }
+    val mapId = stringResource(R.string.map_id)                                                             // Controla el estilo de color del mapa (claro, oscuro o seguir el sistema) y se actualiza dinámicamente según los cambios en el sensor de luz ambiental
 
     Scaffold(
         contentWindowInsets = WindowInsets(0),
@@ -66,16 +82,36 @@ fun MapTemplate(user: User,
         },
         bottomBar = { Nav(controller) }) { paddingValues ->
         // Main content area with the map
-        Box(modifier = Modifier.fillMaxSize().padding(top = paddingValues.calculateTopPadding()/2)) {
-            Image(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable(onClick = { popupStateReview = !popupStateReview }),
-                contentScale = ContentScale.FillHeight,
-                painter = painterResource(R.mipmap.img_map),
-                contentDescription = "Map"
-            )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = paddingValues.calculateTopPadding() / 2)
+        ) {
+            GoogleMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+                contentDescription = "Mapa de Rumbo",
+                uiSettings = MapUiSettings(
+                    zoomControlsEnabled = false,
+                    myLocationButtonEnabled = false,
+                    mapToolbarEnabled = false
+                ),
+                googleMapOptionsFactory = {
+                    GoogleMapOptions().apply {
+                        mapId(mapId)
+                        mapType(GoogleMap.MAP_TYPE_NORMAL)
 
+                    }
+                }) {
+                // https://medium.com/@ferobregon03/compose-multiplatform-displaying-and-updating-geojson-on-a-mapbox-96f025d8024a
+                // https://gitee.com/coolleizhu/android-maps-compose#obtaining-access-to-the-raw-googlemap-experimental
+                // https://googlemaps.github.io/android-maps-compose/maps-compose/com.google.maps.android.compose/-map-effect.html
+                MapEffect(currentMapStyle) { googleMap ->
+                    googleMap.mapColorScheme = currentMapStyle
+                }
+
+
+            }
         }
     }
     if (popupStateDNComposer) {
@@ -106,8 +142,9 @@ fun MapTemplate(user: User,
 @Composable
 private fun MapTemplateLightPreview() {
     RumboTheme(darkTheme = true) {
-        MapTemplate(sampleUser,
-            controller = rememberNavController())
+        MapTemplate(
+            sampleUser, controller = rememberNavController()
+        )
     }
 }
 
@@ -115,7 +152,8 @@ private fun MapTemplateLightPreview() {
 @Composable
 private fun MapTemplateDarkPreview() {
     RumboTheme(darkTheme = false) {
-        MapTemplate(sampleUser,
-            controller = rememberNavController())
+        MapTemplate(
+            sampleUser, controller = rememberNavController()
+        )
     }
 }

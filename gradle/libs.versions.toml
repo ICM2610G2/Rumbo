@@ -1,5 +1,5 @@
 [versions]
-agp = "9.0.1"
+agp = "9.1.1"
 coilCompose = "3.4.0"
 coreKtx = "1.17.0"
 junit = "4.13.2"
@@ -9,12 +9,15 @@ lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.12.4"
 kotlin = "2.3.10"
 composeBom = "2026.02.00"
+mapsCompose = "8.3.0"
+playServicesMaps = "20.0.0"
 uiTextGoogleFonts = "1.10.3"
 ui = "1.10.3"
 uiText = "1.10.3"
 navigationCompose = "2.9.7"
 material3 = "1.4.0"
 foundationLayout = "1.10.4"
+secretsPlugin ="2.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -39,8 +42,11 @@ androidx-compose-ui-text = { group = "androidx.compose.ui", name = "ui-text", ve
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
+maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
+play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+mapsplatform-secrets-plugin= {id="com.google.android.libraries.mapsplatform.secrets-gradle-plugin",version.ref="secretsPlugin"}
 
