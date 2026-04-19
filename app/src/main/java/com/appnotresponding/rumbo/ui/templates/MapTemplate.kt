@@ -39,6 +39,9 @@ import com.appnotresponding.rumbo.ui.components.organisms.common.Nav
 import com.appnotresponding.rumbo.ui.components.organisms.map.DropNoteComposer
 import com.appnotresponding.rumbo.ui.components.organisms.map.PlacePreviewCard
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
+import com.appnotresponding.rumbo.ui.utils.rememberLocationManager
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun MapTemplate(user: User,
@@ -46,6 +49,8 @@ fun MapTemplate(user: User,
 
     var popupStateDNComposer by remember { mutableStateOf(false) }
     var popupStateReview by remember { mutableStateOf(false) }
+    val locationState = rememberLocationManager()
+    val context = LocalContext.current
 
 
     Scaffold(
@@ -61,7 +66,13 @@ fun MapTemplate(user: User,
                 WriteDropNote {
                     popupStateDNComposer = !popupStateDNComposer
                 }
-                LocateMe { }
+                LocateMe {
+                    if (locationState.hasPermission) {
+                        Toast.makeText(context, "Ubicación: ${locationState.latitude}, ${locationState.longitude}", Toast.LENGTH_SHORT).show()
+                    } else {
+                        locationState.requestPermission()
+                    }
+                }
             }
         },
         bottomBar = { Nav(controller) }) { paddingValues ->
