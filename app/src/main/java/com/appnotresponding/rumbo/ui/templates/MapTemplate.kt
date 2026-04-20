@@ -39,6 +39,7 @@ import com.appnotresponding.rumbo.ui.components.organisms.common.Nav
 import com.appnotresponding.rumbo.ui.components.organisms.map.DropNoteComposer
 import com.appnotresponding.rumbo.ui.components.organisms.map.PlacePreviewCard
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
+import com.appnotresponding.rumbo.ui.utils.SensorOverlay
 
 @Composable
 fun MapTemplate(user: User,
@@ -65,7 +66,6 @@ fun MapTemplate(user: User,
             }
         },
         bottomBar = { Nav(controller) }) { paddingValues ->
-        // Main content area with the map
         Box(modifier = Modifier.fillMaxSize().padding(top = paddingValues.calculateTopPadding()/2)) {
             Image(
                 modifier = Modifier
@@ -76,6 +76,11 @@ fun MapTemplate(user: User,
                 contentDescription = "Map"
             )
 
+            SensorOverlay(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(16.dp)
+            )
         }
     }
     if (popupStateDNComposer) {
