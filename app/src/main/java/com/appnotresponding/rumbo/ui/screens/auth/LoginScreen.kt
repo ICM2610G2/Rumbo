@@ -19,7 +19,12 @@ fun LogInScreen(
     controller: NavHostController
 ) {
     LaunchedEffect(Unit) {
-        auth.currentUser?.let { controller.navigate(AppScreens.Map.name) }
+        auth.currentUser?.let {
+            controller.navigate(AppScreens.Map.name) {
+                popUpTo(AppScreens.Splash.name) { inclusive = true }
+                launchSingleTop = true
+            }
+        }
 
     }
     AuthTemplate {
@@ -28,7 +33,10 @@ fun LogInScreen(
             onLoginClick = { email, password ->
                 auth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
                     if (it.isSuccessful) {
-                        controller.navigate(AppScreens.Map.name)
+                        controller.navigate(AppScreens.Map.name) {
+                            popUpTo(AppScreens.Splash.name) { inclusive = true }
+                            launchSingleTop = true
+                        }
                     } else {
                         Log.e("LogInScreen", "Login fallido", it.exception)
                     }

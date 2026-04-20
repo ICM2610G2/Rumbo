@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.appnotresponding.rumbo.R
@@ -64,7 +63,12 @@ fun SplashScreen(
     LaunchedEffect(Unit) {
         delay(800)
         ctaVisible = true
-        auth.currentUser?.let { controller.navigate(AppScreens.Map.name) }
+        auth.currentUser?.let {
+            controller.navigate(AppScreens.Map.name) {
+                popUpTo(AppScreens.Splash.name) { inclusive = true }
+                launchSingleTop = true
+            }
+        }
 
     }
 
