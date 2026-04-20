@@ -24,9 +24,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.layout.height
+import android.net.Uri
 import coil3.compose.AsyncImage
 import com.appnotresponding.rumbo.R
-import com.appnotresponding.rumbo.ui.utils.rememberMediaHardwareManager
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 @Composable
@@ -35,7 +35,8 @@ fun DropNoteComposer(
     value: String = "",
     onValueChange: (String) -> Unit = {},
     onSendClick: () -> Unit = {},
-    onImageClick: () -> Unit = {}
+    onImageClick: () -> Unit = {},
+    imageUri: Uri? = null
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -43,7 +44,6 @@ fun DropNoteComposer(
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
         tonalElevation = 2.dp
     ) {
-        val mediaManager = rememberMediaHardwareManager()
 
         Column(
             modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -71,9 +71,9 @@ fun DropNoteComposer(
                     }
                 })
 
-            if (mediaManager.imageUri != null) {
+            if (imageUri != null) {
                 AsyncImage(
-                    model = mediaManager.imageUri,
+                    model = imageUri,
                     contentDescription = "Imagen adjunta",
                     modifier = Modifier
                         .fillMaxWidth()
@@ -94,7 +94,7 @@ fun DropNoteComposer(
                     horizontalArrangement = Arrangement.spacedBy(0.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = { mediaManager.launchCamera() }, modifier = Modifier.size(40.dp)) {
+                    IconButton(onClick = onImageClick, modifier = Modifier.size(40.dp)) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_add_image),
                             contentDescription = "Cámara",

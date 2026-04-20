@@ -1,9 +1,9 @@
 package com.appnotresponding.rumbo.ui.utils
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Looper
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -21,6 +21,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import androidx.compose.runtime.SideEffect
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 
@@ -33,17 +34,35 @@ class LocationState(
     val requestPermission: () -> Unit
 )
 
+private fun startLocationUpdates(
+    context: android.content.Context,
+    locationClient: FusedLocationProviderClient,
+    locationRequest: LocationRequest,
+    locationCallback: LocationCallback
+) {
+    if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        try {
+            locationClient.requestLocationUpdates(
+                locationRequest,
+                locationCallback,
+                Looper.getMainLooper()
+            )
+        } catch (e: SecurityException) {
+            Log.e("LocationManager", "Error al solicitar ubicacion: ${e.message}")
+        }
+    }
+}
+
 @OptIn(ExperimentalPermissionsApi::class)
-@SuppressLint("MissingPermission")
 @Composable
 fun rememberLocationManager(): LocationState {
     val context = LocalContext.current
     val locationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
-    
+
     var latitude by remember { mutableDoubleStateOf(0.0) }
     var longitude by remember { mutableDoubleStateOf(0.0) }
     var altitude by remember { mutableDoubleStateOf(0.0) }
-    
+
     val locationPermissionState = rememberPermissionState(
         Manifest.permission.ACCESS_FINE_LOCATION
     )
@@ -82,13 +101,7 @@ fun rememberLocationManager(): LocationState {
 
     DisposableEffect(locationPermissionState.status.isGranted) {
         if (locationPermissionState.status.isGranted) {
-            if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                locationClient.requestLocationUpdates(
-                    locationRequest,
-                    locationCallback,
-                    Looper.getMainLooper()
-                )
-            }
+            startLocationUpdates(context, locationClient, locationRequest, locationCallback)
         }
         onDispose {
             locationClient.removeLocationUpdates(locationCallback)

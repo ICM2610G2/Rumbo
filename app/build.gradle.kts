@@ -61,6 +61,6 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
-    implementation("com.google.android.gms:play-services-location:21.3.0")
-    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+    implementation(libs.play.services.location)
+    implementation(libs.accompanist.permissions)
 }

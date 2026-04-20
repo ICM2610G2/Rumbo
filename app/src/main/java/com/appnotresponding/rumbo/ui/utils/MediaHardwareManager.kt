@@ -13,7 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
 import java.io.File
 
-class MediaHardwareState(
+data class MediaHardwareState(
     val imageUri: Uri?,
     val launchCamera: () -> Unit,
     val launchGallery: () -> Unit,
@@ -21,8 +21,7 @@ class MediaHardwareState(
 )
 
 @Composable
-fun rememberMediaHardwareManager(): MediaHardwareState {
-    val context = LocalContext.current
+fun rememberMediaHardwareManager(context: Context = LocalContext.current): MediaHardwareState {
     var currentImageUri by remember { mutableStateOf<Uri?>(null) }
     var tempCameraUri by remember { mutableStateOf<Uri?>(null) }
 

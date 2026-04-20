@@ -40,7 +40,8 @@ import com.appnotresponding.rumbo.ui.components.organisms.map.DropNoteComposer
 import com.appnotresponding.rumbo.ui.components.organisms.map.PlacePreviewCard
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 import com.appnotresponding.rumbo.ui.utils.rememberLocationManager
-import android.widget.Toast
+import com.appnotresponding.rumbo.ui.utils.rememberMediaHardwareManager
+import android.util.Log
 import androidx.compose.ui.platform.LocalContext
 
 @Composable
@@ -50,6 +51,7 @@ fun MapTemplate(user: User,
     var popupStateDNComposer by remember { mutableStateOf(false) }
     var popupStateReview by remember { mutableStateOf(false) }
     val locationState = rememberLocationManager()
+    val mediaManager = rememberMediaHardwareManager()
     val context = LocalContext.current
 
 
@@ -68,7 +70,8 @@ fun MapTemplate(user: User,
                 }
                 LocateMe {
                     if (locationState.hasPermission) {
-                        Toast.makeText(context, "Ubicación: ${locationState.latitude}, ${locationState.longitude}", Toast.LENGTH_SHORT).show()
+                        // TODO: integrar con el mapa para centrar la camara en la ubicacion del usuario
+                        Log.d("MapTemplate", "Ubicacion: ${locationState.latitude}, ${locationState.longitude}")
                     } else {
                         locationState.requestPermission()
                     }
@@ -97,7 +100,10 @@ fun MapTemplate(user: User,
                 .padding(16.dp),
             contentAlignment = Alignment.Center
         ) {
-            DropNoteComposer()
+            DropNoteComposer(
+                onImageClick = { mediaManager.launchCamera() },
+                imageUri = mediaManager.imageUri
+            )
         }
     }
     if (popupStateReview) {
