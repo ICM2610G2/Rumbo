@@ -1,6 +1,7 @@
 package com.appnotresponding.rumbo.ui.components.organisms.common
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,7 +32,7 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  * y la foto de perfil para el avatar.
  */
 @Composable
-fun MainTopBar(u: User) {
+fun MainTopBar(u: User, onProfileClick: () -> Unit = {}) {
     val bottomRoundedShape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
     Surface(
         shape = bottomRoundedShape, color = MaterialTheme.colorScheme.surfaceContainerLow,
@@ -59,7 +60,7 @@ fun MainTopBar(u: User) {
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Avatar(user = u)
+                Avatar(modifier = Modifier.clickable(onClick = onProfileClick), user = u)
             }
         }
     }
