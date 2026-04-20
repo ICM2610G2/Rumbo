@@ -31,8 +31,9 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 @Composable
 fun LoginForm(
     modifier: Modifier = Modifier,
+    //https://kotlinlang.org/docs/lambdas.html#higher-order-functions
     onForgotPasswordClick: () -> Unit = {},
-    onLoginClick: (String, String) -> Unit = { _, _ -> },
+    onLoginClick: (email: String, password: String) -> Unit = { _, _ -> },
     model: LoginViewModel = viewModel()
 ) {
     val formData by model.loginSate.collectAsState()

@@ -47,7 +47,8 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 @Composable
 fun SignUpForm(
     modifier: Modifier = Modifier,
-    onClick: (String, String) -> Unit = { _, _ -> },
+    //https://kotlinlang.org/docs/lambdas.html#higher-order-functions
+    onClick: (email: String, password: String) -> Unit = { _, _ -> },
 ) {
     var fullName by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
