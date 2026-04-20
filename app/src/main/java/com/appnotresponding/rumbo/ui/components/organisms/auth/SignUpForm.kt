@@ -47,7 +47,7 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 @Composable
 fun SignUpForm(
     modifier: Modifier = Modifier,
-    onClick: ()->Unit = {},
+    onClick: (String, String) -> Unit = { _, _ -> },
 ) {
     var fullName by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
@@ -60,6 +60,15 @@ fun SignUpForm(
 
 
     var termsAccepted by remember { mutableStateOf(false) }
+    val phoneRegex = Regex("^\\+\\d{10,14}$")
+    val emailRegex = Regex("""^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$""")
+    val passwordRegex = Regex("""^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$""")
+    val isSignUpEnabled =
+        fullName.isNotBlank() &&
+            phoneRegex.matches(phone) &&
+            emailRegex.matches(email) &&
+            passwordRegex.matches(password) &&
+            termsAccepted
 
     Column(
         modifier = modifier
@@ -182,8 +191,9 @@ fun SignUpForm(
         // Botón: Registrarse
         RumboButton(
             text = "Registrarse",
-            onClick = onClick,
+            onClick = { onClick(email, password) },
             style = RumboButtonStyle.Primary,
+            enabled = isSignUpEnabled,
             modifier = Modifier.fillMaxWidth(),
         )
     }

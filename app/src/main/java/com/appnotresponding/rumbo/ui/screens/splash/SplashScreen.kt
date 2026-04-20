@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.appnotresponding.rumbo.R
+import com.appnotresponding.rumbo.auth
 import com.appnotresponding.rumbo.navigation.AppScreens
 import com.appnotresponding.rumbo.ui.components.atoms.RumboButton
 import com.appnotresponding.rumbo.ui.components.atoms.RumboButtonStyle
@@ -63,6 +64,8 @@ fun SplashScreen(
     LaunchedEffect(Unit) {
         delay(800)
         ctaVisible = true
+        auth.currentUser?.let { controller.navigate(AppScreens.Map.name) }
+
     }
 
     Box(
