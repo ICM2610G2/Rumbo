@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.appnotresponding.rumbo.auth
 import com.appnotresponding.rumbo.models.sampleUser
 import com.appnotresponding.rumbo.navigation.AppScreens
 import com.appnotresponding.rumbo.ui.components.organisms.chat.ChatList
@@ -54,7 +55,14 @@ fun ChatListScreen( controller: NavHostController ) {
         currentUser = currentUser,
         title = "Chats",
         subtitle = "Ubicación actual: Bogotá",
-        controller = controller
+        controller = controller,
+        onProfileClick = {
+            auth.signOut()
+            controller.navigate(AppScreens.Splash.name) {
+                popUpTo(controller.graph.startDestinationId) { inclusive = true }
+                launchSingleTop = true
+            }
+        }
     ) {
         ChatList(
             chatItems = mockChats,

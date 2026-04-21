@@ -46,7 +46,8 @@ import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun MapTemplate(user: User,
-                controller: NavHostController) {
+                controller: NavHostController,
+                onProfileClick: () -> Unit = {}) {
 
     var popupStateDNComposer by remember { mutableStateOf(false) }
     var popupStateReview by remember { mutableStateOf(false) }
@@ -57,7 +58,7 @@ fun MapTemplate(user: User,
 
     Scaffold(
         contentWindowInsets = WindowInsets(0),
-        topBar = { MainTopBar(user) },
+        topBar = { MainTopBar(user, onProfileClick = onProfileClick) },
         floatingActionButton = {
             Column(
                 modifier = Modifier

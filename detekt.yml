@@ -1,0 +1,10 @@
+style:
+  MagicNumber:
+    active: false
+
+  MaxLineLength:
+    active: false
+
+  NewLineAtEndOfFile:
+    active: false
+
