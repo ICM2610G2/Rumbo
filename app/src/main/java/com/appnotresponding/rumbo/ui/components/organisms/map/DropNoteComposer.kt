@@ -22,6 +22,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.foundation.layout.height
+import android.net.Uri
+import coil3.compose.AsyncImage
 import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
@@ -31,7 +35,8 @@ fun DropNoteComposer(
     value: String = "",
     onValueChange: (String) -> Unit = {},
     onSendClick: () -> Unit = {},
-    onImageClick: () -> Unit = {}
+    onImageClick: () -> Unit = {},
+    imageUri: Uri? = null
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -39,6 +44,7 @@ fun DropNoteComposer(
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
         tonalElevation = 2.dp
     ) {
+
         Column(
             modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -65,6 +71,18 @@ fun DropNoteComposer(
                     }
                 })
 
+            if (imageUri != null) {
+                AsyncImage(
+                    model = imageUri,
+                    contentDescription = "Imagen adjunta",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .clip(MaterialTheme.shapes.medium),
+                    contentScale = ContentScale.Crop
+                )
+            }
+
             // Bottom row: action icons on the left, send button on the right
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -79,7 +97,7 @@ fun DropNoteComposer(
                     IconButton(onClick = onImageClick, modifier = Modifier.size(40.dp)) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_add_image),
-                            contentDescription = "Adjuntar imagen",
+                            contentDescription = "Cámara",
                             modifier = Modifier.size(22.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )

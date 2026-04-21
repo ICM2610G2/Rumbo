@@ -40,18 +40,26 @@ import com.appnotresponding.rumbo.ui.components.organisms.map.DropNoteComposer
 import com.appnotresponding.rumbo.ui.components.organisms.map.PlacePreviewCard
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 import com.appnotresponding.rumbo.ui.utils.SensorOverlay
+import com.appnotresponding.rumbo.ui.utils.rememberLocationManager
+import com.appnotresponding.rumbo.ui.utils.rememberMediaHardwareManager
+import android.util.Log
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun MapTemplate(user: User,
-                controller: NavHostController) {
+                controller: NavHostController,
+                onProfileClick: () -> Unit = {}) {
 
     var popupStateDNComposer by remember { mutableStateOf(false) }
     var popupStateReview by remember { mutableStateOf(false) }
+    val locationState = rememberLocationManager()
+    val mediaManager = rememberMediaHardwareManager()
+    val context = LocalContext.current
 
 
     Scaffold(
         contentWindowInsets = WindowInsets(0),
-        topBar = { MainTopBar(user) },
+        topBar = { MainTopBar(user, onProfileClick = onProfileClick) },
         floatingActionButton = {
             Column(
                 modifier = Modifier
@@ -62,7 +70,14 @@ fun MapTemplate(user: User,
                 WriteDropNote {
                     popupStateDNComposer = !popupStateDNComposer
                 }
-                LocateMe { }
+                LocateMe {
+                    if (locationState.hasPermission) {
+                        // TODO: integrar con el mapa para centrar la camara en la ubicacion del usuario
+                        Log.d("MapTemplate", "Ubicacion: ${locationState.latitude}, ${locationState.longitude}")
+                    } else {
+                        locationState.requestPermission()
+                    }
+                }
             }
         },
         bottomBar = { Nav(controller) }) { paddingValues ->
@@ -91,7 +106,10 @@ fun MapTemplate(user: User,
                 .padding(16.dp),
             contentAlignment = Alignment.Center
         ) {
-            DropNoteComposer()
+            DropNoteComposer(
+                onImageClick = { mediaManager.launchCamera() },
+                imageUri = mediaManager.imageUri
+            )
         }
     }
     if (popupStateReview) {
