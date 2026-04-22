@@ -148,11 +148,11 @@ fun Nav(
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_search),
-                                contentDescription = "Plan",
+                                contentDescription = "Places",
                                 tint = if (activeItem == NavItem.Plan) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = "Plan",
+                                text = "Sitios",
                                 color = if (activeItem == NavItem.Plan) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                             )
                         }
@@ -180,7 +180,7 @@ fun Nav(
                                 tint = if (activeItem == NavItem.Itinerary) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                text = "Itinerario",
+                                text = "Itin.",
                                 color = if (activeItem == NavItem.Itinerary) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                             )
                         }

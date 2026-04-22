@@ -22,6 +22,7 @@ import com.appnotresponding.rumbo.ui.components.organisms.common.MainTopBar
 import com.appnotresponding.rumbo.ui.components.organisms.common.Nav
 import com.appnotresponding.rumbo.ui.components.organisms.plan.PlanPOIList
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
+import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 
 /**
  *
@@ -39,7 +40,8 @@ fun PlanTemplate(
     user: User,
     placesList: List<Place>,
     controller: NavHostController,
-    onProfileClick: () -> Unit = {}
+    onProfileClick: () -> Unit = {},
+    placesViewModel: PlacesViewModel
 ) {
     Scaffold(
         contentWindowInsets = WindowInsets(0),
@@ -54,11 +56,12 @@ fun PlanTemplate(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            PlanPOIList(places = placesList)
+            PlanPOIList(places = placesList, placesViewModel)
         }
     }
 }
 
+/**
 @Preview(showBackground = true, name = "PlanTemplate - Light")
 @Composable
 private fun PlanTemplateLightPreview() {
@@ -82,3 +85,4 @@ private fun PlanTemplateDarkPreview() {
         )
     }
 }
+        */

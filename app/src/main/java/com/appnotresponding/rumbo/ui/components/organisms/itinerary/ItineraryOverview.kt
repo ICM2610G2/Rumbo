@@ -8,10 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.appnotresponding.rumbo.models.Place
 import com.appnotresponding.rumbo.models.samplePlace
 import com.appnotresponding.rumbo.ui.components.molecules.itinerary.ItineraryItemCard
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
+import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 
 /**
  *
@@ -23,17 +25,18 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  */
 
 @Composable
-fun ItineraryOverview(itineraryList: List<Place>) {
+fun ItineraryOverview(itineraryList: List<Place>, placesViewModel: PlacesViewModel, controller: NavHostController) {
     LazyColumn(
         modifier = Modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(itineraryList) { place ->
-            ItineraryItemCard(p = place)
+            ItineraryItemCard(p = place, placesViewModel, controller)
         }
     }
 }
 
+/**
 @Preview(showBackground = true, name = "ItineraryOverview - Light")
 @Composable
 private fun ItineraryOverviewLightPreview() {
@@ -53,3 +56,4 @@ private fun ItineraryOverviewDarkPreview() {
         )
     }
 }
+        */

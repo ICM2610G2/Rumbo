@@ -20,13 +20,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import coil3.compose.SubcomposeAsyncImage
 import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.models.Place
 import com.appnotresponding.rumbo.models.samplePlace
+import com.appnotresponding.rumbo.navigation.AppScreens
 import com.appnotresponding.rumbo.ui.components.atoms.RumboButton
 import com.appnotresponding.rumbo.ui.components.atoms.RumboButtonStyle
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
+import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 
 /**
  * Componente que muestra la información de un lugar en el itinerario, incluyendo su imagen, nombre, horario, precio y un botón para iniciar el desplazamiento.
@@ -34,7 +37,7 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  * @param p El objeto Place que contiene la información del lugar a mostrar.
  */
 @Composable
-fun ItineraryItemCard(p: Place) {
+fun ItineraryItemCard(p: Place, placesViewModel: PlacesViewModel, controller: NavHostController) {
 
     Row(modifier = Modifier.fillMaxWidth()) {
         Box(
@@ -81,7 +84,10 @@ fun ItineraryItemCard(p: Place) {
             )
             RumboButton(
                 text = "Iniciar Desplazamiento",
-                onClick = { /* TODO */ },
+                onClick = {
+                    placesViewModel.selectForNavigation(p)
+                    controller.navigate(AppScreens.Map.name)
+                },
                 style = RumboButtonStyle.Secondary,
                 icon = painterResource(R.drawable.ic_map)
             )
@@ -90,7 +96,7 @@ fun ItineraryItemCard(p: Place) {
 
 }
 
-
+/**
 @Preview(showBackground = true, name = "ItineraryItemCard - Light")
 @Composable
 private fun ItineraryItemCardLightPreview() {
@@ -106,3 +112,4 @@ private fun ItineraryItemCardDarkPreview() {
         ItineraryItemCard(p = samplePlace)
     }
 }
+*/

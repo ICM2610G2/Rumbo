@@ -1,10 +1,13 @@
 package com.appnotresponding.rumbo
 
+import android.location.Geocoder
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.os.StrictMode
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
@@ -17,8 +20,11 @@ import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import com.appnotresponding.rumbo.navigation.Navigation
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 import com.google.firebase.auth.FirebaseAuth
+import org.osmdroid.bonuspack.routing.OSRMRoadManager
 
 lateinit var auth: FirebaseAuth
+lateinit var geocoder: Geocoder
+lateinit var roadManager: OSRMRoadManager
 lateinit var sensorManager: SensorManager
 var lightSensor: Sensor? = null
 var isDarkTheme by mutableStateOf(false)
@@ -29,6 +35,10 @@ class MainActivity : FragmentActivity(), SensorEventListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = FirebaseAuth.getInstance()
+        roadManager = OSRMRoadManager(this, "ANDROID")
+        val policy =
+            StrictMode.ThreadPolicy.Builder().permitAll().build()
+        StrictMode.setThreadPolicy(policy)
 
         // Inicializar sensor
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager

@@ -5,11 +5,13 @@ import androidx.navigation.NavHostController
 import com.appnotresponding.rumbo.auth
 import com.appnotresponding.rumbo.models.sampleUser
 import com.appnotresponding.rumbo.navigation.AppScreens
+import com.appnotresponding.rumbo.navigation.placesViewModel
 import com.appnotresponding.rumbo.ui.templates.MapTemplate
+import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 
 @Composable
 fun MapScreen(
-    controller: NavHostController
+    controller: NavHostController, placesViewModel: PlacesViewModel
 ) {
     MapTemplate(
         user = sampleUser.copy(name = "Ana"), controller = controller, onProfileClick = {
@@ -18,5 +20,6 @@ fun MapScreen(
                 popUpTo(controller.graph.startDestinationId) { inclusive = true }
                 launchSingleTop = true
             }
-        })
+        },
+        placesViewModel = placesViewModel)
 }

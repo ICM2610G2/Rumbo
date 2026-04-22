@@ -27,6 +27,7 @@ import com.appnotresponding.rumbo.models.samplePlace
 import com.appnotresponding.rumbo.ui.components.atoms.RumboButton
 import com.appnotresponding.rumbo.ui.components.atoms.RumboButtonStyle
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
+import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 
 /**
  * PlanItemCard.kt
@@ -37,7 +38,7 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  * @param p El lugar a mostrar en la tarjeta.
  */
 @Composable
-fun PlanItemCard(p: Place) {
+fun PlanItemCard(p: Place, placesViewModel: PlacesViewModel) {
 
     var icon = R.drawable.ic_plus
     var msg = "Añadir al Itinerario"
@@ -87,9 +88,9 @@ fun PlanItemCard(p: Place) {
             )
             RumboButton(
                 text = msg, onClick = {
-                    //Change icon to check
                     icon = R.drawable.ic_check
                     msg = "Añadido al Itinerario"
+                    placesViewModel.addToItinerary(p)
                 }, style = RumboButtonStyle.Secondary, icon = painterResource(icon)
             )
         }
@@ -97,6 +98,7 @@ fun PlanItemCard(p: Place) {
 
 }
 
+/**
 @Preview(showBackground = true, name = "PlanItemCard - Light")
 @Composable
 private fun PlanItemCardLightPreview() {
@@ -112,3 +114,4 @@ private fun PlanItemCardDarkPreview() {
         PlanItemCard(p = samplePlace)
     }
 }
+        */

@@ -69,6 +69,24 @@ fun LocateMe(onClick: () -> Unit = {}) {
     }
 }
 
+@Composable
+fun CancelRoute(onClick: () -> Unit = {}) {
+    Box(
+        modifier = Modifier
+            .aspectRatio(1f)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.primary), contentAlignment = Alignment.Center
+    ) {
+        IconButton(onClick = onClick) {
+            Icon(
+                painter = painterResource(R.drawable.outline_cancel_24),
+                contentDescription = "Locate Me",
+                tint = MaterialTheme.colorScheme.onPrimary,
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true, name = "MapFloatingActions - Light")
 @Composable
 private fun MapFloatingActionsLightPreview() {
@@ -81,6 +99,9 @@ private fun MapFloatingActionsLightPreview() {
             }
             Box(modifier = Modifier.size(56.dp)) {
                 LocateMe()
+            }
+            Box(modifier = Modifier.size(56.dp)) {
+                CancelRoute()
             }
         }
     }
@@ -98,6 +119,9 @@ private fun MapFloatingActionsDarkPreview() {
             }
             Box(modifier = Modifier.size(56.dp)) {
                 LocateMe()
+            }
+            Box(modifier = Modifier.size(56.dp)) {
+                CancelRoute()
             }
         }
     }
