@@ -1,13 +1,11 @@
 package com.appnotresponding.rumbo.ui.components.organisms.map
 
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -21,11 +19,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
@@ -35,8 +31,7 @@ fun DropNoteComposer(
     value: String = "",
     onValueChange: (String) -> Unit = {},
     onSendClick: () -> Unit = {},
-    onImageClick: () -> Unit = {},
-    imageUri: Uri? = null
+    onImageClick: () -> Unit = {}
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -44,7 +39,6 @@ fun DropNoteComposer(
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
         tonalElevation = 2.dp
     ) {
-
         Column(
             modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -71,18 +65,6 @@ fun DropNoteComposer(
                     }
                 })
 
-            if (imageUri != null) {
-                AsyncImage(
-                    model = imageUri,
-                    contentDescription = "Imagen adjunta",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
-                        .clip(MaterialTheme.shapes.medium),
-                    contentScale = ContentScale.Crop
-                )
-            }
-
             // Bottom row: action icons on the left, send button on the right
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -97,7 +79,7 @@ fun DropNoteComposer(
                     IconButton(onClick = onImageClick, modifier = Modifier.size(40.dp)) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_add_image),
-                            contentDescription = "Cámara",
+                            contentDescription = "Adjuntar imagen",
                             modifier = Modifier.size(22.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )

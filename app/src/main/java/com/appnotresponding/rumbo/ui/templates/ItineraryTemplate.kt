@@ -35,16 +35,13 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  */
 
 @Composable
-fun ItineraryTemplate(
-    user: User,
-    itineraryList: List<Place>,
-    controller: NavHostController,
-    onProfileClick: () -> Unit = {}
-) {
+fun ItineraryTemplate(user: User, itineraryList: List<Place>,
+                      controller: NavHostController) {
     Scaffold(
         contentWindowInsets = WindowInsets(0),
-        topBar = { MainTopBar(u = user, onProfileClick = onProfileClick) },
-        bottomBar = { Nav(controller) }) { paddingValues ->
+        topBar = { MainTopBar(u = user) },
+        bottomBar = { Nav(controller) }
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
