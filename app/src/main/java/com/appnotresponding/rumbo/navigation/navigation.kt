@@ -4,9 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.appnotresponding.rumbo.ui.components.organisms.chat.ChatPreviewData
-import com.appnotresponding.rumbo.ui.components.organisms.chat.ChatThread
-import com.appnotresponding.rumbo.ui.screens.auth.LoginScreen
+import com.appnotresponding.rumbo.ui.screens.auth.LogInScreen
 import com.appnotresponding.rumbo.ui.screens.auth.SignUpScreen
 import com.appnotresponding.rumbo.ui.screens.chat.ChatListScreen
 import com.appnotresponding.rumbo.ui.screens.chat.ChatThreadScreen
@@ -36,7 +34,7 @@ fun Navigation(){
             SplashScreen(navController)
         }
         composable(route = AppScreens.LogIn.name){
-            LoginScreen(navController)
+            LogInScreen(navController)
         }
         composable (route = AppScreens.SignUp.name){
             SignUpScreen(navController)

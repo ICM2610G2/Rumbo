@@ -36,10 +36,11 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 @Composable
 fun ItineraryTemplate(user: User, itineraryList: List<Place>,
-                      controller: NavHostController) {
+                      controller: NavHostController,
+                      onProfileClick: () -> Unit = {}) {
     Scaffold(
         contentWindowInsets = WindowInsets(0),
-        topBar = { MainTopBar(u = user) },
+        topBar = { MainTopBar(u = user, onProfileClick = onProfileClick) },
         bottomBar = { Nav(controller) }
     ) { paddingValues ->
         Column(

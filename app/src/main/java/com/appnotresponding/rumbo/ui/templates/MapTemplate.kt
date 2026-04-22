@@ -38,6 +38,11 @@ import com.appnotresponding.rumbo.ui.components.organisms.common.Nav
 import com.appnotresponding.rumbo.ui.components.organisms.map.DropNoteComposer
 import com.appnotresponding.rumbo.ui.components.organisms.map.PlacePreviewCard
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
+import com.appnotresponding.rumbo.ui.utils.SensorOverlay
+import com.appnotresponding.rumbo.ui.utils.rememberLocationManager
+import com.appnotresponding.rumbo.ui.utils.rememberMediaHardwareManager
+import android.util.Log
+import androidx.compose.ui.platform.LocalContext
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
@@ -49,12 +54,15 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
-fun MapTemplate(
-    user: User, controller: NavHostController
-) {
+fun MapTemplate(user: User,
+                controller: NavHostController,
+                onProfileClick: () -> Unit = {}) {
 
     var popupStateDNComposer by remember { mutableStateOf(false) }
     var popupStateReview by remember { mutableStateOf(false) }
+    val locationState = rememberLocationManager()
+    val mediaManager = rememberMediaHardwareManager()
+    val context = LocalContext.current
 
     var latitude by remember { mutableDoubleStateOf(4.627293) }
     var longitude by remember { mutableDoubleStateOf(-74.063228) }
@@ -66,7 +74,7 @@ fun MapTemplate(
 
     Scaffold(
         contentWindowInsets = WindowInsets(0),
-        topBar = { MainTopBar(user) },
+        topBar = { MainTopBar(user, onProfileClick = onProfileClick) },
         floatingActionButton = {
             Column(
                 modifier = Modifier
@@ -77,7 +85,14 @@ fun MapTemplate(
                 WriteDropNote {
                     popupStateDNComposer = !popupStateDNComposer
                 }
-                LocateMe { }
+                LocateMe {
+                    if (locationState.hasPermission) {
+                        // TODO: integrar con el mapa para centrar la camara en la ubicacion del usuario
+                        Log.d("MapTemplate", "Ubicacion: ${locationState.latitude}, ${locationState.longitude}")
+                    } else {
+                        locationState.requestPermission()
+                    }
+                }
             }
         },
         bottomBar = { Nav(controller) }) { paddingValues ->
@@ -112,6 +127,11 @@ fun MapTemplate(
 
 
             }
+            SensorOverlay(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(16.dp)
+            )
         }
     }
     if (popupStateDNComposer) {
@@ -122,7 +142,10 @@ fun MapTemplate(
                 .padding(16.dp),
             contentAlignment = Alignment.Center
         ) {
-            DropNoteComposer()
+            DropNoteComposer(
+                onImageClick = { mediaManager.launchCamera() },
+                imageUri = mediaManager.imageUri
+            )
         }
     }
     if (popupStateReview) {
