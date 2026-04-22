@@ -43,6 +43,10 @@ class MapViewModel: ViewModel() {
         _uiState.update { it.copy(additionalMarker = MyMarker(position), additionalMarkerVisible = true) }
     }
 
+    fun cancelAdditionalMarkerVisibility() {
+        _uiState.update { it.copy(additionalMarkerVisible = false) }
+    }
+
     fun updateRoutePoints(points: List<LatLng>) {
         _uiState.update { it.copy(routePoints = points) }
     }

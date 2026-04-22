@@ -144,11 +144,11 @@ fun MapTemplate(user: User,
     val locationCallback = createLocationCallback { result ->
         result.lastLocation?.let {
             viewModel.updateUserMarker(it.latitude, it.longitude)
+            viewModel.updateLastSafeLatLng(it.latitude, it.longitude)
             if (state.centerInUserFirstTime && (placesState.selectedPlace==null)) {
                 cameraPositionState.position =
                     CameraPosition.fromLatLngZoom(LatLng(it.latitude, it.longitude), 18f)
                 viewModel.updateCenterInUserFirstTime()
-                viewModel.updateLastSafeLatLng(it.latitude, it.longitude)
             }
             else if (state.centerInUserFirstTime && (placesState.selectedPlace!=null)) {
                 cameraPositionState.position =
@@ -203,6 +203,7 @@ fun MapTemplate(user: User,
                         CancelRoute{
                             placesViewModel.clearForNavigation()
                             viewModel.updateRoutePoints(emptyList())
+                            viewModel.cancelAdditionalMarkerVisibility()
                         }
                     }
                     WriteDropNote {
