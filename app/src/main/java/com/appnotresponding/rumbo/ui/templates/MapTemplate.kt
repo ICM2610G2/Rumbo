@@ -203,6 +203,7 @@ fun MapTemplate(user: User,
                         CancelRoute{
                             placesViewModel.clearForNavigation()
                             viewModel.updateRoutePoints(emptyList())
+                            viewModel.cancelAdditionalMarkerVisibility()
                         }
                     }
                     WriteDropNote {
