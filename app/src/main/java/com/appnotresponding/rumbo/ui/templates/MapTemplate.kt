@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
@@ -49,6 +50,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.geocoder
+import com.appnotresponding.rumbo.isDarkTheme
 import com.appnotresponding.rumbo.models.User
 import com.appnotresponding.rumbo.models.samplePlace
 import com.appnotresponding.rumbo.models.sampleReview
@@ -179,6 +181,11 @@ fun MapTemplate(user: User,
         viewModel.updateAdditionalMarker(LatLng(placesState.selectedPlace!!.latitude, placesState.selectedPlace!!.longitude), placesState.selectedPlace!!.name)
         val startPoint = GeoPoint(placesState.selectedPlace!!.latitude, placesState.selectedPlace!!.longitude)
     }
+
+    LaunchedEffect(isDarkTheme) {
+        currentMapStyle = if (isDarkTheme) MapColorScheme.DARK else MapColorScheme.LIGHT
+    }
+
 
     Scaffold(
         contentWindowInsets = WindowInsets(0),
