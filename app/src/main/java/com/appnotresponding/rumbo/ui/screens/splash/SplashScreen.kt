@@ -24,10 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.appnotresponding.rumbo.R
+import com.appnotresponding.rumbo.auth
 import com.appnotresponding.rumbo.navigation.AppScreens
 import com.appnotresponding.rumbo.ui.components.atoms.RumboButton
 import com.appnotresponding.rumbo.ui.components.atoms.RumboButtonStyle
@@ -63,6 +63,13 @@ fun SplashScreen(
     LaunchedEffect(Unit) {
         delay(800)
         ctaVisible = true
+        auth.currentUser?.let {
+            controller.navigate(AppScreens.Map.name) {
+                popUpTo(AppScreens.Splash.name) { inclusive = true }
+                launchSingleTop = true
+            }
+        }
+
     }
 
     Box(
@@ -82,15 +89,11 @@ fun SplashScreen(
         // Botones animados en la parte inferior
         AnimatedVisibility(
             visible = ctaVisible,
-            enter = fadeIn(animationSpec = tween(500)) +
-                    slideInVertically(
-                        animationSpec = tween(500),
-                        initialOffsetY = { it / 2 }
-                    ),
+            enter = fadeIn(animationSpec = tween(500)) + slideInVertically(
+                animationSpec = tween(500), initialOffsetY = { it / 2 }),
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-        ) {
+                .fillMaxWidth()) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -99,13 +102,13 @@ fun SplashScreen(
             ) {
                 RumboButton(
                     text = "Iniciar Sesión",
-                    onClick = {controller.navigate(AppScreens.LogIn.name)},
+                    onClick = { controller.navigate(AppScreens.LogIn.name) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 RumboButton(
                     text = "Registrarse",
                     style = RumboButtonStyle.Secondary,
-                    onClick = {controller.navigate(AppScreens.SignUp.name)},
+                    onClick = { controller.navigate(AppScreens.SignUp.name) },
                     modifier = Modifier.fillMaxWidth()
                 )
             }

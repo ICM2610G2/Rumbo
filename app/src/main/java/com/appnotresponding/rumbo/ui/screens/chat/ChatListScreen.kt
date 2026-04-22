@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.appnotresponding.rumbo.auth
 import com.appnotresponding.rumbo.models.sampleUser
 import com.appnotresponding.rumbo.navigation.AppScreens
 import com.appnotresponding.rumbo.ui.components.organisms.chat.ChatList
@@ -13,7 +14,7 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 
 @Composable
-fun ChatListScreen( controller: NavHostController ) {
+fun ChatListScreen(controller: NavHostController) {
     val currentUser = sampleUser.copy(name = "Ana")
 
     val mockChats = listOf(
@@ -54,12 +55,17 @@ fun ChatListScreen( controller: NavHostController ) {
         currentUser = currentUser,
         title = "Chats",
         subtitle = "Ubicación actual: Bogotá",
-        controller = controller
-    ) {
+        controller = controller,
+        onProfileClick = {
+            auth.signOut()
+            controller.navigate(AppScreens.Splash.name) {
+                popUpTo(controller.graph.startDestinationId) { inclusive = true }
+                launchSingleTop = true
+            }
+        }) {
         ChatList(
             chatItems = mockChats,
-            onChatClick = { controller.navigate(AppScreens.ChatThread.name) }
-        )
+            onChatClick = { controller.navigate(AppScreens.ChatThread.name) })
     }
 }
 
@@ -71,7 +77,7 @@ fun ChatListScreen( controller: NavHostController ) {
 )
 @Composable
 private fun ChatListScreenPreview() {
-    RumboTheme(darkTheme = true) { 
+    RumboTheme(darkTheme = true) {
         ChatListScreen(controller = rememberNavController())
     }
 }
