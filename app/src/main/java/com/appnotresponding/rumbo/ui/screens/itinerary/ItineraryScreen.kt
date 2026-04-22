@@ -9,9 +9,9 @@ import com.appnotresponding.rumbo.navigation.AppScreens
 import com.appnotresponding.rumbo.ui.templates.ItineraryTemplate
 
 @Composable
-fun ItineraryScreen(controller: NavHostController){
+fun ItineraryScreen(controller: NavHostController) {
     ItineraryTemplate(
-        user = sampleUser,
+        user = sampleUser.copy(name = "Ana"),
         itineraryList = listOf(samplePlace, samplePlace, samplePlace),
         controller = controller,
         onProfileClick = {
@@ -20,6 +20,5 @@ fun ItineraryScreen(controller: NavHostController){
                 popUpTo(controller.graph.startDestinationId) { inclusive = true }
                 launchSingleTop = true
             }
-        }
-    )
+        })
 }

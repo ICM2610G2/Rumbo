@@ -63,13 +63,12 @@ fun SignUpForm(
     var termsAccepted by remember { mutableStateOf(false) }
     val phoneRegex = Regex("^\\+\\d{10,14}$")
     val emailRegex = Regex("""^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$""")
-    val passwordRegex = Regex("""^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$""")
+    val passwordRegex =
+        Regex("""^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$""")
     val isSignUpEnabled =
-        fullName.isNotBlank() &&
-            phoneRegex.matches(phone) &&
-            emailRegex.matches(email) &&
-            passwordRegex.matches(password) &&
-            termsAccepted
+        fullName.isNotBlank() && phoneRegex.matches(phone) && emailRegex.matches(email) && passwordRegex.matches(
+            password
+        ) && termsAccepted
 
     Column(
         modifier = modifier
@@ -139,8 +138,7 @@ fun SignUpForm(
                 countries.forEach { selectionOption ->
                     DropdownMenuItem(text = {
                         Text(
-                            text = selectionOption,
-                            color = MaterialTheme.colorScheme.onSurface
+                            text = selectionOption, color = MaterialTheme.colorScheme.onSurface
                         )
                     }, onClick = {
                         selectedCountry = selectionOption

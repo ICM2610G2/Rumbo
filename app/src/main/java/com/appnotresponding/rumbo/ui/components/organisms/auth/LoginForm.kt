@@ -38,8 +38,10 @@ fun LoginForm(
 ) {
     val formData by model.loginSate.collectAsState()
     val emailRegex = Regex("""^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$""")
-    val passwordRegex = Regex("""^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$""")
-    val isLoginEnabled = emailRegex.matches(formData.email) && passwordRegex.matches(formData.password)
+    val passwordRegex =
+        Regex("""^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$""")
+    val isLoginEnabled =
+        emailRegex.matches(formData.email) && passwordRegex.matches(formData.password)
 
     Column(
         modifier = modifier

@@ -1,5 +1,6 @@
 package com.appnotresponding.rumbo.ui.templates
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,8 +43,6 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 import com.appnotresponding.rumbo.ui.utils.SensorOverlay
 import com.appnotresponding.rumbo.ui.utils.rememberLocationManager
 import com.appnotresponding.rumbo.ui.utils.rememberMediaHardwareManager
-import android.util.Log
-import androidx.compose.ui.platform.LocalContext
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
@@ -54,15 +54,15 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
-fun MapTemplate(user: User,
-                controller: NavHostController,
-                onProfileClick: () -> Unit = {}) {
+fun MapTemplate(
+    user: User, controller: NavHostController, onProfileClick: () -> Unit = {}
+) {
 
     var popupStateDNComposer by remember { mutableStateOf(false) }
     var popupStateReview by remember { mutableStateOf(false) }
     val locationState = rememberLocationManager()
     val mediaManager = rememberMediaHardwareManager()
-    val context = LocalContext.current
+    LocalContext.current
 
     var latitude by remember { mutableDoubleStateOf(4.627293) }
     var longitude by remember { mutableDoubleStateOf(-74.063228) }
@@ -70,7 +70,8 @@ fun MapTemplate(user: User,
         position = CameraPosition.fromLatLngZoom(LatLng(latitude, longitude), 15f)
     }
     var currentMapStyle by remember { mutableIntStateOf(MapColorScheme.FOLLOW_SYSTEM) }
-    val mapId = stringResource(R.string.map_id)                                                             // Controla el estilo de color del mapa (claro, oscuro o seguir el sistema) y se actualiza dinámicamente según los cambios en el sensor de luz ambiental
+    val mapId =
+        stringResource(R.string.map_id)                                                             // Controla el estilo de color del mapa (claro, oscuro o seguir el sistema) y se actualiza dinámicamente según los cambios en el sensor de luz ambiental
 
     Scaffold(
         contentWindowInsets = WindowInsets(0),
@@ -88,7 +89,10 @@ fun MapTemplate(user: User,
                 LocateMe {
                     if (locationState.hasPermission) {
                         // TODO: integrar con el mapa para centrar la camara en la ubicacion del usuario
-                        Log.d("MapTemplate", "Ubicacion: ${locationState.latitude}, ${locationState.longitude}")
+                        Log.d(
+                            "MapTemplate",
+                            "Ubicacion: ${locationState.latitude}, ${locationState.longitude}"
+                        )
                     } else {
                         locationState.requestPermission()
                     }
@@ -124,8 +128,6 @@ fun MapTemplate(user: User,
                 MapEffect(currentMapStyle) { googleMap ->
                     googleMap.mapColorScheme = currentMapStyle
                 }
-
-
             }
             SensorOverlay(
                 modifier = Modifier
@@ -143,8 +145,7 @@ fun MapTemplate(user: User,
             contentAlignment = Alignment.Center
         ) {
             DropNoteComposer(
-                onImageClick = { mediaManager.launchCamera() },
-                imageUri = mediaManager.imageUri
+                onImageClick = { mediaManager.launchCamera() }, imageUri = mediaManager.imageUri
             )
         }
     }

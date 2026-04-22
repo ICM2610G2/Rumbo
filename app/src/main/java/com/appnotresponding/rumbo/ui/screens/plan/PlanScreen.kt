@@ -9,17 +9,16 @@ import com.appnotresponding.rumbo.navigation.AppScreens
 import com.appnotresponding.rumbo.ui.templates.PlanTemplate
 
 @Composable
-fun PlanScreen(controller: NavHostController){
+fun PlanScreen(controller: NavHostController) {
     PlanTemplate(
-        user = sampleUser,
-        placesList = listOf(samplePlace, samplePlace, samplePlace), // Simulamos una lista con 3 lugares
-        controller = controller,
-        onProfileClick = {
+        user = sampleUser.copy(name = "Ana"), placesList = listOf(
+            samplePlace, samplePlace, samplePlace
+        ), // Simulamos una lista con 3 lugares
+        controller = controller, onProfileClick = {
             auth.signOut()
             controller.navigate(AppScreens.Splash.name) {
                 popUpTo(controller.graph.startDestinationId) { inclusive = true }
                 launchSingleTop = true
             }
-        }
-    )
+        })
 }

@@ -47,9 +47,7 @@ fun rememberAccelerometerManager(context: Context = LocalContext.current): Accel
         }
 
         sensorManager.registerListener(
-            listener,
-            accelerometerSensor,
-            SensorManager.SENSOR_DELAY_NORMAL
+            listener, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL
         )
 
         onDispose {

@@ -89,15 +89,11 @@ fun SplashScreen(
         // Botones animados en la parte inferior
         AnimatedVisibility(
             visible = ctaVisible,
-            enter = fadeIn(animationSpec = tween(500)) +
-                    slideInVertically(
-                        animationSpec = tween(500),
-                        initialOffsetY = { it / 2 }
-                    ),
+            enter = fadeIn(animationSpec = tween(500)) + slideInVertically(
+                animationSpec = tween(500), initialOffsetY = { it / 2 }),
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-        ) {
+                .fillMaxWidth()) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -106,13 +102,13 @@ fun SplashScreen(
             ) {
                 RumboButton(
                     text = "Iniciar Sesión",
-                    onClick = {controller.navigate(AppScreens.LogIn.name)},
+                    onClick = { controller.navigate(AppScreens.LogIn.name) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 RumboButton(
                     text = "Registrarse",
                     style = RumboButtonStyle.Secondary,
-                    onClick = {controller.navigate(AppScreens.SignUp.name)},
+                    onClick = { controller.navigate(AppScreens.SignUp.name) },
                     modifier = Modifier.fillMaxWidth()
                 )
             }

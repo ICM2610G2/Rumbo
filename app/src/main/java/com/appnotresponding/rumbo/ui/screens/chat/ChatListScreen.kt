@@ -14,7 +14,7 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
 
 @Composable
-fun ChatListScreen( controller: NavHostController ) {
+fun ChatListScreen(controller: NavHostController) {
     val currentUser = sampleUser.copy(name = "Ana")
 
     val mockChats = listOf(
@@ -62,12 +62,10 @@ fun ChatListScreen( controller: NavHostController ) {
                 popUpTo(controller.graph.startDestinationId) { inclusive = true }
                 launchSingleTop = true
             }
-        }
-    ) {
+        }) {
         ChatList(
             chatItems = mockChats,
-            onChatClick = { controller.navigate(AppScreens.ChatThread.name) }
-        )
+            onChatClick = { controller.navigate(AppScreens.ChatThread.name) })
     }
 }
 
@@ -79,7 +77,7 @@ fun ChatListScreen( controller: NavHostController ) {
 )
 @Composable
 private fun ChatListScreenPreview() {
-    RumboTheme(darkTheme = true) { 
+    RumboTheme(darkTheme = true) {
         ChatListScreen(controller = rememberNavController())
     }
 }

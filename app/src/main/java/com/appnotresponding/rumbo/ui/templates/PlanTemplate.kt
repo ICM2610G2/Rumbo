@@ -35,14 +35,16 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  */
 
 @Composable
-fun PlanTemplate(user: User, placesList: List<Place>,
-                 controller: NavHostController,
-                 onProfileClick: () -> Unit = {}) {
+fun PlanTemplate(
+    user: User,
+    placesList: List<Place>,
+    controller: NavHostController,
+    onProfileClick: () -> Unit = {}
+) {
     Scaffold(
         contentWindowInsets = WindowInsets(0),
         topBar = { MainTopBar(u = user, onProfileClick = onProfileClick) },
-        bottomBar = { Nav(controller) }
-    ) { paddingValues ->
+        bottomBar = { Nav(controller) }) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

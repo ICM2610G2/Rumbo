@@ -38,8 +38,7 @@ fun AuthTemplate(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .background(brush = backgroundBrush)
-            .padding(24.dp),
-        contentAlignment = Alignment.Center
+            .padding(24.dp), contentAlignment = Alignment.Center
     ) {
         content()
     }

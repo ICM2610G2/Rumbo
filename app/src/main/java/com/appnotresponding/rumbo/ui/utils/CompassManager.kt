@@ -14,21 +14,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 
 data class CompassState(
-    val degrees: Float,
-    val direction: String
+    val degrees: Float, val direction: String
 )
 
 // grados a cardinalidad
 private fun getCardinalDirection(degrees: Float): String {
     return when {
         degrees < 22.5f || degrees >= 337.5f -> "Norte ↑"
-        degrees < 67.5f                      -> "Noreste ↗"
-        degrees < 112.5f                     -> "Este →"
-        degrees < 157.5f                     -> "Sureste ↘"
-        degrees < 202.5f                     -> "Sur ↓"
-        degrees < 247.5f                     -> "Suroeste ↙"
-        degrees < 292.5f                     -> "Oeste ←"
-        else                                 -> "Noroeste ↖"
+        degrees < 67.5f -> "Noreste ↗"
+        degrees < 112.5f -> "Este →"
+        degrees < 157.5f -> "Sureste ↘"
+        degrees < 202.5f -> "Sur ↓"
+        degrees < 247.5f -> "Suroeste ↙"
+        degrees < 292.5f -> "Oeste ←"
+        else -> "Noroeste ↖"
     }
 }
 
@@ -61,6 +60,7 @@ fun rememberCompassManager(context: Context = LocalContext.current): CompassStat
                         gravity[1] = event.values[1]
                         gravity[2] = event.values[2]
                     }
+
                     Sensor.TYPE_MAGNETIC_FIELD -> {
                         geomagnetic[0] = event.values[0]
                         geomagnetic[1] = event.values[1]
@@ -71,10 +71,7 @@ fun rememberCompassManager(context: Context = LocalContext.current): CompassStat
                 val rotationMatrix = FloatArray(9)
                 val inclinationMatrix = FloatArray(9)
                 val success = SensorManager.getRotationMatrix(
-                    rotationMatrix,
-                    inclinationMatrix,
-                    gravity,
-                    geomagnetic
+                    rotationMatrix, inclinationMatrix, gravity, geomagnetic
                 )
 
                 if (success) {
@@ -90,14 +87,10 @@ fun rememberCompassManager(context: Context = LocalContext.current): CompassStat
         }
 
         sensorManager.registerListener(
-            listener,
-            magnetometerSensor,
-            SensorManager.SENSOR_DELAY_NORMAL
+            listener, magnetometerSensor, SensorManager.SENSOR_DELAY_NORMAL
         )
         sensorManager.registerListener(
-            listener,
-            accelerometerSensor,
-            SensorManager.SENSOR_DELAY_NORMAL
+            listener, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL
         )
 
         onDispose {
@@ -106,7 +99,6 @@ fun rememberCompassManager(context: Context = LocalContext.current): CompassStat
     }
 
     return CompassState(
-        degrees = degrees,
-        direction = getCardinalDirection(degrees)
+        degrees = degrees, direction = getCardinalDirection(degrees)
     )
 }

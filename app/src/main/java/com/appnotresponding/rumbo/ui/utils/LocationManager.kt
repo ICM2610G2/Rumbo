@@ -6,6 +6,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -17,11 +18,10 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
-import androidx.compose.runtime.SideEffect
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 
@@ -40,12 +40,14 @@ private fun startLocationUpdates(
     locationRequest: LocationRequest,
     locationCallback: LocationCallback
 ) {
-    if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+    if (ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    ) {
         try {
             locationClient.requestLocationUpdates(
-                locationRequest,
-                locationCallback,
-                Looper.getMainLooper()
+                locationRequest, locationCallback, Looper.getMainLooper()
             )
         } catch (e: SecurityException) {
             Log.e("LocationManager", "Error al solicitar ubicacion: ${e.message}")
@@ -81,9 +83,7 @@ fun rememberLocationManager(): LocationState {
 
     val locationRequest = remember {
         LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000)
-            .setWaitForAccurateLocation(true)
-            .setMinUpdateIntervalMillis(5000)
-            .build()
+            .setWaitForAccurateLocation(true).setMinUpdateIntervalMillis(5000).build()
     }
 
     val locationCallback = remember {
@@ -114,6 +114,5 @@ fun rememberLocationManager(): LocationState {
         altitude = altitude,
         hasPermission = locationPermissionState.status.isGranted,
         showRationale = showRationaleButton,
-        requestPermission = { locationPermissionState.launchPermissionRequest() }
-    )
+        requestPermission = { locationPermissionState.launchPermissionRequest() })
 }

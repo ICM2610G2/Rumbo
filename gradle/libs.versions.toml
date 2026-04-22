@@ -24,7 +24,7 @@ firebaseAuth = "24.0.1"
 credentials = "1.6.0"
 credentialsPlayServicesAuth = "1.6.0"
 googleid = "1.2.0"
-secretsPlugin ="2.0.1"
+secretsPlugin = "2.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -62,5 +62,5 @@ play-services-maps = { module = "com.google.android.gms:play-services-maps", ver
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
-mapsplatform-secrets-plugin= {id="com.google.android.libraries.mapsplatform.secrets-gradle-plugin",version.ref="secretsPlugin"}
+mapsplatform-secrets-plugin = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secretsPlugin" }
 

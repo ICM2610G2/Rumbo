@@ -66,8 +66,6 @@ fun rememberMediaHardwareManager(context: Context = LocalContext.current): Media
 private fun createImageUri(context: Context): Uri {
     val imageFile = File(context.filesDir, "cameraPic.jpg")
     return FileProvider.getUriForFile(
-        context,
-        "${context.packageName}.fileprovider",
-        imageFile
+        context, "${context.packageName}.fileprovider", imageFile
     )
 }
