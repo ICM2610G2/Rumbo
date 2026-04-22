@@ -50,7 +50,7 @@ fun Navigation(){
             SignUpScreen(navController)
         }
         composable (route = AppScreens.Map.name) {
-            MapScreen(navController)
+            MapScreen(navController, placesViewModel)
         }
         composable (route = AppScreens.Chat.name) {
             ChatListScreen(navController)

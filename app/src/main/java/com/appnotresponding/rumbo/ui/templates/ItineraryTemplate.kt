@@ -55,7 +55,7 @@ fun ItineraryTemplate(
             DayHeader(title = "Así Se Ve Tu Día")
             Spacer(modifier = Modifier.height(16.dp))
 
-            ItineraryOverview(itineraryList = itineraryList, placesViewModel)
+            ItineraryOverview(itineraryList = itineraryList, placesViewModel, controller)
         }
     }
 }

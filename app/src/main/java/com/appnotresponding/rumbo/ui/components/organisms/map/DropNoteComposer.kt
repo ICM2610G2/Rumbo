@@ -36,6 +36,7 @@ fun DropNoteComposer(
     onValueChange: (String) -> Unit = {},
     onSendClick: () -> Unit = {},
     onImageClick: () -> Unit = {},
+    onGalleryClick: () -> Unit = {},
     imageUri: Uri? = null
 ) {
     Surface(
@@ -44,9 +45,9 @@ fun DropNoteComposer(
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
         tonalElevation = 2.dp
     ) {
-
         Column(
-            modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Text input area
             BasicTextField(
@@ -69,7 +70,8 @@ fun DropNoteComposer(
                         }
                         innerTextField()
                     }
-                })
+                }
+            )
 
             if (imageUri != null) {
                 AsyncImage(
@@ -94,10 +96,20 @@ fun DropNoteComposer(
                     horizontalArrangement = Arrangement.spacedBy(0.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Botón cámara
                     IconButton(onClick = onImageClick, modifier = Modifier.size(40.dp)) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_add_image),
+                            painter = painterResource(id = R.drawable.ic_picture),
                             contentDescription = "Cámara",
+                            modifier = Modifier.size(22.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    // Botón galería
+                    IconButton(onClick = onGalleryClick, modifier = Modifier.size(40.dp)) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_add_image),
+                            contentDescription = "Galería",
                             modifier = Modifier.size(22.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -124,17 +136,17 @@ fun DropNoteComposer(
     }
 }
 
-@Preview(showBackground = true, name = "PlacePreviewCard - Dark")
+@Preview(showBackground = true, name = "DropNoteComposer - Light")
 @Composable
-private fun DropNoteComposerDarkPreview() {
-    RumboTheme(darkTheme = true) {
+private fun DropNoteComposerLightPreview() {
+    RumboTheme(darkTheme = false) {
         DropNoteComposer()
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFF1E1E1E, name = "PlacePreviewCard - Dark")
+@Preview(showBackground = true, backgroundColor = 0xFF1E1E1E, name = "DropNoteComposer - Dark")
 @Composable
-private fun DropNoteComposerLightPreview() {
+private fun DropNoteComposerDarkPreview() {
     RumboTheme(darkTheme = true) {
         DropNoteComposer()
     }
