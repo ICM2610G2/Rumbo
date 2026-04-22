@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.mapsplatform.secrets.plugin)
 }
 
 android {
@@ -68,4 +69,6 @@ dependencies {
     implementation(libs.coil.network.okhttp)
     implementation(libs.play.services.location)
     implementation(libs.accompanist.permissions)
+    implementation(libs.maps.compose)
+    implementation(libs.play.services.maps)
 }
