@@ -25,7 +25,6 @@ import org.osmdroid.bonuspack.routing.OSRMRoadManager
 lateinit var auth: FirebaseAuth
 lateinit var geocoder: Geocoder
 lateinit var roadManager: OSRMRoadManager
-class MainActivity : ComponentActivity() {
 lateinit var sensorManager: SensorManager
 var lightSensor: Sensor? = null
 var isDarkTheme by mutableStateOf(false)

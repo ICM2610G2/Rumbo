@@ -56,6 +56,7 @@ import com.appnotresponding.rumbo.models.samplePlace
 import com.appnotresponding.rumbo.models.sampleReview
 import com.appnotresponding.rumbo.models.sampleUser
 import com.appnotresponding.rumbo.roadManager
+import com.appnotresponding.rumbo.ui.components.molecules.map.CancelRoute
 import com.appnotresponding.rumbo.ui.components.molecules.map.LocateMe
 import com.appnotresponding.rumbo.ui.components.molecules.map.WriteDropNote
 import com.appnotresponding.rumbo.ui.components.organisms.common.MainTopBar
@@ -193,11 +194,16 @@ fun MapTemplate(user: User,
         floatingActionButton = {
             Column(
                 modifier = Modifier
-                    .height(120.dp)
+                    .height(150.dp)
                     .width(45.dp),
                 verticalArrangement = Arrangement.spacedBy(30.dp)
             ) {
                 if(permission.status.isGranted) {
+                    if(placesState.selectedPlace!=null){
+                        CancelRoute{
+                            placesViewModel.clearForNavigation()
+                        }
+                    }
                     WriteDropNote {
                         popupStateDNComposer = !popupStateDNComposer
                     }
@@ -213,6 +219,7 @@ fun MapTemplate(user: User,
                             locationState.requestPermission()
                         }
                     }
+
                 }
             }
         },
