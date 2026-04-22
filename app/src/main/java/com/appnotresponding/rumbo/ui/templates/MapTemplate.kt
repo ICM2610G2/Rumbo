@@ -202,6 +202,7 @@ fun MapTemplate(user: User,
                     if(placesState.selectedPlace!=null){
                         CancelRoute{
                             placesViewModel.clearForNavigation()
+                            viewModel.updateRoutePoints(emptyList())
                         }
                     }
                     WriteDropNote {
