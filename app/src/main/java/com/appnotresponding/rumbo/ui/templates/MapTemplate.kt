@@ -99,8 +99,9 @@ import org.osmdroid.util.GeoPoint
 val locationPermission = android.Manifest.permission.ACCESS_FINE_LOCATION
 var locationRequest : LocationRequest = createLocationRequest()
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun Mapa(user: User,
+fun MapTemplate(user: User,
          controller: NavHostController,
          onProfileClick: () -> Unit = {},
     viewModel: MapViewModel = viewModel(), placesViewModel: PlacesViewModel
@@ -124,6 +125,19 @@ fun Mapa(user: User,
     var currentMapStyle by remember { mutableIntStateOf(MapColorScheme.FOLLOW_SYSTEM) }
     val mapId =
         stringResource(R.string.map_id)                                                             // Controla el estilo de color del mapa (claro, oscuro o seguir el sistema) y se actualiza dinámicamente según los cambios en el sensor de luz ambiental
+
+    var permission = rememberPermissionState(locationPermission)
+    var showButton by remember { mutableStateOf(false) }
+    SideEffect {
+        if(!permission.status.isGranted){
+            if(permission.status.shouldShowRationale){
+                showButton = true
+            }else {
+                showButton = false
+                permission.launchPermissionRequest()
+            }
+        }
+    }
     val locationCallback = createLocationCallback { result ->
         result.lastLocation?.let {
             viewModel.updateUserMarker(it.latitude, it.longitude)
@@ -176,80 +190,114 @@ fun Mapa(user: User,
                     .width(45.dp),
                 verticalArrangement = Arrangement.spacedBy(30.dp)
             ) {
-                WriteDropNote {
-                    popupStateDNComposer = !popupStateDNComposer
-                }
-                LocateMe {
-                    if (locationState.hasPermission) {
-                        cameraPositionState.position = CameraPosition.fromLatLngZoom(state.userMarker.position, 16f)
-                        Log.d(
-                            "MapTemplate",
-                            "Ubicacion: ${locationState.latitude}, ${locationState.longitude}"
-                        )
-                    } else {
-                        locationState.requestPermission()
+                if(permission.status.isGranted) {
+                    WriteDropNote {
+                        popupStateDNComposer = !popupStateDNComposer
+                    }
+                    LocateMe {
+                        if (locationState.hasPermission) {
+                            cameraPositionState.position =
+                                CameraPosition.fromLatLngZoom(state.userMarker.position, 16f)
+                            Log.d(
+                                "MapTemplate",
+                                "Ubicacion: ${locationState.latitude}, ${locationState.longitude}"
+                            )
+                        } else {
+                            locationState.requestPermission()
+                        }
                     }
                 }
             }
         },
         bottomBar = { Nav(controller) }) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = paddingValues.calculateTopPadding() / 2)
-        ) {
-            GoogleMap(
-                modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState,
-                contentDescription = "Mapa de Rumbo",
-                uiSettings = MapUiSettings(
-                    zoomControlsEnabled = false,
-                    myLocationButtonEnabled = false,
-                    mapToolbarEnabled = false
-                ),
-                googleMapOptionsFactory = {
-                    GoogleMapOptions().apply {
-                        mapId(mapId)
-                        mapType(GoogleMap.MAP_TYPE_NORMAL)
+        if(permission.status.isGranted) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = paddingValues.calculateTopPadding() / 2)
+            ) {
+                GoogleMap(
+                    modifier = Modifier.fillMaxSize(),
+                    cameraPositionState = cameraPositionState,
+                    contentDescription = "Mapa de Rumbo",
+                    uiSettings = MapUiSettings(
+                        zoomControlsEnabled = false,
+                        myLocationButtonEnabled = false,
+                        mapToolbarEnabled = false
+                    ),
+                    googleMapOptionsFactory = {
+                        GoogleMapOptions().apply {
+                            mapId(mapId)
+                            mapType(GoogleMap.MAP_TYPE_NORMAL)
 
+                        }
+                    }) {
+                    // https://medium.com/@ferobregon03/compose-multiplatform-displaying-and-updating-geojson-on-a-mapbox-96f025d8024a
+                    // https://gitee.com/coolleizhu/android-maps-compose#obtaining-access-to-the-raw-googlemap-experimental
+                    // https://googlemaps.github.io/android-maps-compose/maps-compose/com.google.maps.android.compose/-map-effect.html
+                    MapEffect(currentMapStyle) { googleMap ->
+                        googleMap.mapColorScheme = currentMapStyle
                     }
-                }) {
-                // https://medium.com/@ferobregon03/compose-multiplatform-displaying-and-updating-geojson-on-a-mapbox-96f025d8024a
-                // https://gitee.com/coolleizhu/android-maps-compose#obtaining-access-to-the-raw-googlemap-experimental
-                // https://googlemaps.github.io/android-maps-compose/maps-compose/com.google.maps.android.compose/-map-effect.html
-                MapEffect(currentMapStyle) { googleMap ->
-                    googleMap.mapColorScheme = currentMapStyle
-                }
-                Marker(
-                    state = rememberUpdatedMarkerState(state.userMarker.position),
-                    title = "User"
-                )
-                Marker(
-                    state = rememberUpdatedMarkerState(state.additionalMarker.position),
-                    title = state.additionalMarker.title,
-                    visible = state.additionalMarkerVisible
-                )
-                if (state.routePoints.isNotEmpty()) {
-                    Polyline(
-                        points = state.routePoints,
-                        color = Color.Blue,
-                        width = 10f
+                    Marker(
+                        state = rememberUpdatedMarkerState(state.userMarker.position),
+                        title = "User"
                     )
-                }
+                    Marker(
+                        state = rememberUpdatedMarkerState(state.additionalMarker.position),
+                        title = state.additionalMarker.title,
+                        visible = state.additionalMarkerVisible
+                    )
+                    if (state.routePoints.isNotEmpty()) {
+                        Polyline(
+                            points = state.routePoints,
+                            color = Color.Blue,
+                            width = 10f
+                        )
+                    }
 
-                if (state.userRouteVisible) {
-                    Polyline(
-                        points = state.userRoutePoints,
-                        color = Color.Blue,
-                        width = 10f
-                    )
+                    if (state.userRouteVisible) {
+                        Polyline(
+                            points = state.userRoutePoints,
+                            color = Color.Blue,
+                            width = 10f
+                        )
+                    }
+                }
+                SensorOverlay(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(16.dp)
+                )
+            }
+        } else{
+            Column(
+                modifier = Modifier.fillMaxSize().padding(15.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                var message = "No se puede acceder a esta funcionalidad sin el permiso de localización"
+                if(showButton){
+                    message = "Esta función le permite visualizar un mapa para ver rutas. Es indispensable que permita el acceso."
+
+                    Spacer(modifier = Modifier.height(25.dp))
+                    Text(message,
+                        textAlign = TextAlign.Center,
+                        fontSize = 15.sp)
+                    Spacer(modifier = Modifier.height(25.dp))
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            permission.launchPermissionRequest()
+                        }) { Text("Solicitar Permiso") }
+                }
+                else{
+
+                    Spacer(modifier = Modifier.height(25.dp))
+                    Text(message,
+                        textAlign = TextAlign.Center,
+                        fontSize = 15.sp)
                 }
             }
-            SensorOverlay(
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(16.dp)
-            )
         }
     }
     if (popupStateDNComposer) {
@@ -288,6 +336,7 @@ fun Mapa(user: User,
     }
 }
 
+/**
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun MapTemplate( user: User,
@@ -343,7 +392,7 @@ fun MapTemplate( user: User,
         }
     }
 }
-
+*/
 
 /**
 @Preview(showBackground = true, name = "PlacePreviewCard - Light")

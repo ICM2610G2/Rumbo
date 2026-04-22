@@ -21,5 +21,5 @@ fun MapScreen(
                 launchSingleTop = true
             }
         },
-        placesViewModel)
+        placesViewModel = placesViewModel)
 }
