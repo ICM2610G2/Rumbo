@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.appnotresponding.rumbo.R
+import com.appnotresponding.rumbo.isDarkTheme
 import com.appnotresponding.rumbo.models.User
 import com.appnotresponding.rumbo.models.samplePlace
 import com.appnotresponding.rumbo.models.sampleReview
@@ -72,6 +74,11 @@ fun MapTemplate(
     var currentMapStyle by remember { mutableIntStateOf(MapColorScheme.FOLLOW_SYSTEM) }
     val mapId =
         stringResource(R.string.map_id)                                                             // Controla el estilo de color del mapa (claro, oscuro o seguir el sistema) y se actualiza dinámicamente según los cambios en el sensor de luz ambiental
+
+    LaunchedEffect(isDarkTheme) {
+        currentMapStyle = if (isDarkTheme) MapColorScheme.DARK else MapColorScheme.LIGHT
+    }
+
 
     Scaffold(
         contentWindowInsets = WindowInsets(0),
