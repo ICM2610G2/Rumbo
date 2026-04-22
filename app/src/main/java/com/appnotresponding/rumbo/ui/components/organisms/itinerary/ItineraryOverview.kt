@@ -12,6 +12,7 @@ import com.appnotresponding.rumbo.models.Place
 import com.appnotresponding.rumbo.models.samplePlace
 import com.appnotresponding.rumbo.ui.components.molecules.itinerary.ItineraryItemCard
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
+import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 
 /**
  *
@@ -23,17 +24,18 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  */
 
 @Composable
-fun ItineraryOverview(itineraryList: List<Place>) {
+fun ItineraryOverview(itineraryList: List<Place>, placesViewModel: PlacesViewModel) {
     LazyColumn(
         modifier = Modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(itineraryList) { place ->
-            ItineraryItemCard(p = place)
+            ItineraryItemCard(p = place, placesViewModel)
         }
     }
 }
 
+/**
 @Preview(showBackground = true, name = "ItineraryOverview - Light")
 @Composable
 private fun ItineraryOverviewLightPreview() {
@@ -53,3 +55,4 @@ private fun ItineraryOverviewDarkPreview() {
         )
     }
 }
+        */

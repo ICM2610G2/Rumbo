@@ -12,6 +12,7 @@ import com.appnotresponding.rumbo.models.Place
 import com.appnotresponding.rumbo.models.samplePlace
 import com.appnotresponding.rumbo.ui.components.molecules.plan.PlanItemCard
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
+import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 
 /**
  *
@@ -23,18 +24,19 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  */
 
 @Composable
-fun PlanPOIList(places: List<Place>) {
+fun PlanPOIList(places: List<Place>, placesViewModel: PlacesViewModel) {
 
     LazyColumn(
         modifier = Modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(places) { place ->
-            PlanItemCard(p = place)
+            PlanItemCard(p = place, placesViewModel)
         }
     }
 }
 
+/**
 @Preview(showBackground = true, name = "PlanPOIList - Light")
 @Composable
 private fun PlanPOIListLightPreview() {
@@ -54,3 +56,4 @@ private fun PlanPOIListDarkPreview() {
         )
     }
 }
+        */

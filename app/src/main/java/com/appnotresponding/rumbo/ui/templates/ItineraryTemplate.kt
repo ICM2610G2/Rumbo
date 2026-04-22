@@ -22,6 +22,7 @@ import com.appnotresponding.rumbo.ui.components.organisms.common.MainTopBar
 import com.appnotresponding.rumbo.ui.components.organisms.common.Nav
 import com.appnotresponding.rumbo.ui.components.organisms.itinerary.ItineraryOverview
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
+import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 
 /**
  *
@@ -39,7 +40,8 @@ fun ItineraryTemplate(
     user: User,
     itineraryList: List<Place>,
     controller: NavHostController,
-    onProfileClick: () -> Unit = {}
+    onProfileClick: () -> Unit = {},
+    placesViewModel: PlacesViewModel
 ) {
     Scaffold(
         contentWindowInsets = WindowInsets(0),
@@ -53,11 +55,12 @@ fun ItineraryTemplate(
             DayHeader(title = "Así Se Ve Tu Día")
             Spacer(modifier = Modifier.height(16.dp))
 
-            ItineraryOverview(itineraryList = itineraryList)
+            ItineraryOverview(itineraryList = itineraryList, placesViewModel)
         }
     }
 }
 
+/**
 @Preview(showBackground = true, name = "ItineraryTemplate - Light")
 @Composable
 private fun ItineraryTemplateLightPreview() {
@@ -81,3 +84,4 @@ private fun ItineraryTemplateDarkPreview() {
         )
     }
 }
+        */
