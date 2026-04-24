@@ -5,10 +5,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.appnotresponding.rumbo.auth
+import androidx.navigation.compose.rememberNavController
 import com.appnotresponding.rumbo.models.samplePlace
 import com.appnotresponding.rumbo.models.sampleUser
-import com.appnotresponding.rumbo.navigation.AppScreens
 import com.appnotresponding.rumbo.ui.templates.PlanTemplate
 import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 

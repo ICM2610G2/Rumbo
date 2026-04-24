@@ -6,6 +6,7 @@ import android.hardware.SensorManager
 import android.os.Looper
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,8 +29,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -120,14 +119,6 @@ fun MapTemplate(user: User,
     val mediaManager = rememberMediaHardwareManager()
     var noteText by remember { mutableStateOf("") }
 
-    var latitude by remember { mutableDoubleStateOf(4.627293) }
-    var longitude by remember { mutableDoubleStateOf(-74.063228) }
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(LatLng(latitude, longitude), 15f)
-    }
-    var currentMapStyle by remember { mutableIntStateOf(MapColorScheme.FOLLOW_SYSTEM) }
-    val mapId =
-        stringResource(R.string.map_id)                                                             // Controla el estilo de color del mapa (claro, oscuro o seguir el sistema) y se actualiza dinámicamente según los cambios en el sensor de luz ambiental
 
     var permission = rememberPermissionState(locationPermission)
     var showButton by remember { mutableStateOf(false) }
@@ -190,7 +181,7 @@ fun MapTemplate(user: User,
 
     Scaffold(
         contentWindowInsets = WindowInsets(0),
-        topBar = { MainTopBar(user, onProfileClick = onProfileClick) },
+        topBar = { MainTopBar(user) },
         floatingActionButton = {
             Column(
                 modifier = Modifier
@@ -415,9 +406,8 @@ fun MapTemplate( user: User,
 @Composable
 private fun MapTemplateLightPreview() {
     RumboTheme(darkTheme = true) {
-        MapTemplate(
-            sampleUser, controller = rememberNavController()
-        )
+        MapTemplate(sampleUser,
+            controller = rememberNavController())
     }
 }
 
@@ -425,9 +415,8 @@ private fun MapTemplateLightPreview() {
 @Composable
 private fun MapTemplateDarkPreview() {
     RumboTheme(darkTheme = false) {
-        MapTemplate(
-            sampleUser, controller = rememberNavController()
-        )
+        MapTemplate(sampleUser,
+            controller = rememberNavController())
     }
 }
 */
