@@ -2,6 +2,7 @@ package com.appnotresponding.rumbo.ui.screens.map
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import com.appnotresponding.rumbo.auth
 import com.appnotresponding.rumbo.models.sampleUser
 import com.appnotresponding.rumbo.navigation.AppScreens
 import com.appnotresponding.rumbo.navigation.placesViewModel
