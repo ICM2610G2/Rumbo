@@ -7,9 +7,9 @@ import com.google.android.gms.location.Priority
 
 fun createLocationRequest() : LocationRequest{
     val locationRequest = LocationRequest.Builder(
-        Priority.PRIORITY_HIGH_ACCURACY, 1000)
+        Priority.PRIORITY_HIGH_ACCURACY, 2000)
         .setWaitForAccurateLocation(true)
-        .setMinUpdateIntervalMillis(500)  //.setMinUpdateDistanceMeters(10f)
+        .setMinUpdateIntervalMillis(1000)   //.setMinUpdateDistanceMeters(10f)
         .build()
     return locationRequest
 }

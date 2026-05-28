@@ -147,42 +147,34 @@ fun MapTemplate(user: User,
     if (permission.status.isGranted) {
         if (!locationViewModel.permissionGranted) locationViewModel.updateVel()
     }
-    val locationCallback = createLocationCallback { result ->
-        result.lastLocation?.let {
-            viewModel.updateUserMarker(it.latitude, it.longitude)
-            viewModel.updateLastSafeLatLng(it.latitude, it.longitude)
-            if (state.centerInUserFirstTime && (placesState.selectedPlace==null)) {
-                cameraPositionState.position =
-                    CameraPosition.fromLatLngZoom(LatLng(it.latitude, it.longitude), 18f)
-                viewModel.updateCenterInUserFirstTime()
-            }
-            else if (state.centerInUserFirstTime && (placesState.selectedPlace!=null)) {
-                cameraPositionState.position =
-                    CameraPosition.fromLatLngZoom(LatLng(placesState.selectedPlace!!.latitude, placesState.selectedPlace!!.longitude), 14f)
-                viewModel.updateCenterInUserFirstTime()
-                viewModel.updateLastSafeLatLng(it.latitude, it.longitude)
-            }
-            if(placesState.selectedPlace!=null) {
-                val startPoint = GeoPoint(it.latitude, it.longitude)
-                val destination = GeoPoint(placesState.selectedPlace!!.latitude, placesState.selectedPlace!!.longitude)
-                val points = arrayListOf(startPoint, destination)
-                val road = roadManager.getRoad(points)
-                val routePoints = road.mRouteHigh.map { geoPoint ->
-                    LatLng(geoPoint.latitude, geoPoint.longitude)
-                }
-                viewModel.updateRoutePoints(routePoints)
-            }
+
+    viewModel.updateUserMarker(userLocationState.latitude, userLocationState.longitude)
+    viewModel.updateLastSafeLatLng(userLocationState.latitude, userLocationState.longitude)
+    if (state.centerInUserFirstTime && (placesState.selectedPlace==null)) {
+        cameraPositionState.position =
+            CameraPosition.fromLatLngZoom(LatLng(userLocationState.latitude, userLocationState.longitude), 18f)
+        viewModel.updateCenterInUserFirstTime()
+    }
+    else if (state.centerInUserFirstTime && (placesState.selectedPlace!=null)) {
+        cameraPositionState.position =
+            CameraPosition.fromLatLngZoom(LatLng(placesState.selectedPlace!!.latitude, placesState.selectedPlace!!.longitude), 14f)
+        viewModel.updateCenterInUserFirstTime()
+        viewModel.updateLastSafeLatLng(userLocationState.latitude, userLocationState.longitude)
+    }
+    if(placesState.selectedPlace!=null) {
+        val startPoint = GeoPoint(userLocationState.latitude, userLocationState.longitude)
+        val destination = GeoPoint(
+            placesState.selectedPlace!!.latitude,
+            placesState.selectedPlace!!.longitude
+        )
+        val points = arrayListOf(startPoint, destination)
+        val road = roadManager.getRoad(points)
+        val routePoints = road.mRouteHigh.map { geoPoint ->
+            LatLng(geoPoint.latitude, geoPoint.longitude)
         }
+        viewModel.updateRoutePoints(routePoints)
     }
 
-    DisposableEffect(Unit) {
-        if(ContextCompat.checkSelfPermission(context, locationPermission)== PackageManager.PERMISSION_GRANTED) {
-            locationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
-        }
-        onDispose {
-            locationClient.removeLocationUpdates(locationCallback)
-        }
-    }
 
     if(placesState.selectedPlace!=null){
         viewModel.updateAdditionalMarker(LatLng(placesState.selectedPlace!!.latitude, placesState.selectedPlace!!.longitude), placesState.selectedPlace!!.name)
