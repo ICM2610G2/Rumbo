@@ -53,7 +53,7 @@ fun searchNearbyPlaces(
                             }
                         )
 
-                        put("radius", 2000.0)
+                        put("radius", 5000.0)
                     }
                 )
             }

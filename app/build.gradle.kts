@@ -89,6 +89,7 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(libs.maps.compose)
     implementation(libs.play.services.maps)
+    implementation("androidx.compose.material:material-icons-extended")
     implementation("org.osmdroid:osmdroid-android:6.1.16")
     implementation("com.github.MKergall:osmbonuspack:6.8.0")
     implementation("com.google.android.gms:play-services-location:21.3.0")
