@@ -269,7 +269,7 @@ fun ChatBubble(
                                         color = contentColor
                                     )
                                     Text(
-                                        text = place.price,
+                                        text = place.price ?: "No hay",
                                         style = MaterialTheme.typography.labelMedium,
                                         color = contentColor.copy(alpha = 0.7f)
                                     )

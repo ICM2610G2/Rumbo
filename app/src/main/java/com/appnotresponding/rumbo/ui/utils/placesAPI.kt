@@ -1,58 +1,26 @@
 package com.appnotresponding.rumbo.ui.utils
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.add
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
+import com.appnotresponding.rumbo.models.Place
 import org.json.JSONArray
 import org.json.JSONObject
-/**
-private fun getLocationAndSearch(
-    fusedLocationClient: com.google.android.gms.location.FusedLocationProviderClient,
-    onStatusChange: (String) -> Unit,
-    onPlacesReceived: (List<Place>) -> Unit
-) {
+import com.appnotresponding.rumbo.BuildConfig
 
-    onStatusChange("Obteniendo ubicación...")
-
-    try {
-
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location ->
-
-                if (location != null) {
-
-                    val lat = location.latitude
-                    val lng = location.longitude
-
-                    onStatusChange(
-                        "Ubicación obtenida: $lat, $lng"
-                    )
-
-                    searchNearbyPlaces(
-                        latitude = lat,
-                        longitude = lng,
-                        onPlacesReceived = onPlacesReceived,
-                        onError = {
-                            onStatusChange(it)
-                        }
-                    )
-
-                } else {
-                    onStatusChange("No se pudo obtener ubicación")
-                }
-            }
-
-    } catch (e: SecurityException) {
-
-        onStatusChange(e.message ?: "Error de permisos")
-    }
-}
-
-private fun searchNearbyPlaces(
+fun searchNearbyPlaces(
     latitude: Double,
     longitude: Double,
     onPlacesReceived: (List<Place>) -> Unit,
-    onError: (String) -> Unit
+    onError: (String) -> Unit,
+    context: Context
 ) {
+    val apiKey = BuildConfig.MAPS_API_KEY
+    val requestQueue = Volley.newRequestQueue(context)
 
     val url =
         "https://places.googleapis.com/v1/places:searchNearby"
@@ -85,7 +53,7 @@ private fun searchNearbyPlaces(
                             }
                         )
 
-                        put("radius", 5000.0)
+                        put("radius", 2000.0)
                     }
                 )
             }
@@ -100,7 +68,10 @@ private fun searchNearbyPlaces(
         Response.Listener { response ->
 
             try {
-
+                if (!response.has("places")) {
+                    onError("La respuesta no contiene lugares")
+                    return@Listener
+                }
                 val placesJson = response.getJSONArray("places")
 
                 val placesList = mutableListOf<Place>()
@@ -208,6 +179,7 @@ private fun searchNearbyPlaces(
                             latitude = latitude,
                             longitude = longitude,
                             rating = rating,
+                            reviews = emptyList(),
                             imageUrl = imageUrl
                         )
                     )
@@ -271,4 +243,3 @@ private fun searchNearbyPlaces(
 
     requestQueue.add(request)
 }
-        */

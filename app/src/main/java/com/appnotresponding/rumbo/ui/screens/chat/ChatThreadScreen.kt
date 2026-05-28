@@ -27,7 +27,7 @@ fun ChatThreadScreen(
 
     val museoNacional = samplePlace.copy(
         name = "Museo Nacional",
-        openHours = "9:00AM - 11:00AM",
+        openHours = emptyList(),
         price = "$ 40.000 COP"
     )
 
@@ -58,7 +58,7 @@ fun ChatThreadOneOnOnePreview() {
     val brandonUser = sampleUser.copy(name = "Brandon")
 
     val museoNacional = samplePlace.copy(
-        name = "Museo Nacional", openHours = "9:00AM - 11:00AM", price = "$ 40.000 COP"
+        name = "Museo Nacional", openHours = emptyList(), price = "$ 40.000 COP"
     )
 
     val mockMessages = listOf(

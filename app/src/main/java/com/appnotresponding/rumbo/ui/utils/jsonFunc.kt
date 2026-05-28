@@ -6,6 +6,7 @@ import com.appnotresponding.rumbo.models.Review
 import org.json.JSONArray
 import org.json.JSONObject
 
+/**
 fun loadPlaces(context: Context): MutableList<Place> {
     val places = mutableListOf<Place>()
 
@@ -31,3 +32,5 @@ fun loadPlaces(context: Context): MutableList<Place> {
 
     return places
 }
+
+ */

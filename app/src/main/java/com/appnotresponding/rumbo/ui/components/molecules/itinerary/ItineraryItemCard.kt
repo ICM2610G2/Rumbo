@@ -73,12 +73,12 @@ fun ItineraryItemCard(p: Place, placesViewModel: PlacesViewModel, controller: Na
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(
-                text = p.openHours,
+                text = p.openHours.toString(),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(
-                text = p.price,
+                text = p.price ?: "No hay información",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onBackground
             )
