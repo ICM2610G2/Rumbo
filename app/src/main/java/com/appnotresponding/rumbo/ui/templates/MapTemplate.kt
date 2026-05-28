@@ -71,6 +71,7 @@ import com.appnotresponding.rumbo.ui.utils.rememberLocationManager
 import com.appnotresponding.rumbo.ui.utils.rememberMediaHardwareManager
 import com.appnotresponding.rumbo.ui.viewModel.MapViewModel
 import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
+import com.appnotresponding.rumbo.ui.viewModel.UserLocationViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -107,10 +108,11 @@ var locationRequest : LocationRequest = createLocationRequest()
 fun MapTemplate(user: User,
          controller: NavHostController,
          onProfileClick: () -> Unit = {},
-    viewModel: MapViewModel = viewModel(), placesViewModel: PlacesViewModel
+    viewModel: MapViewModel = viewModel(), placesViewModel: PlacesViewModel, locationViewModel: UserLocationViewModel
 ) {
     var context = LocalContext.current
     val state by viewModel.uiState.collectAsState()
+    val userLocationState by locationViewModel.uiState.collectAsState()
     val placesState by placesViewModel.uiState.collectAsState()
     val locationClient = LocationServices.getFusedLocationProviderClient(context)
 
@@ -140,6 +142,10 @@ fun MapTemplate(user: User,
                 permission.launchPermissionRequest()
             }
         }
+    }
+
+    if (permission.status.isGranted) {
+        if (!locationViewModel.permissionGranted) locationViewModel.updateVel()
     }
     val locationCallback = createLocationCallback { result ->
         result.lastLocation?.let {

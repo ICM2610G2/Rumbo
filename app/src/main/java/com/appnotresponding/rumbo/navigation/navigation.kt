@@ -18,6 +18,7 @@ import com.appnotresponding.rumbo.ui.screens.splash.SplashScreen
 import com.appnotresponding.rumbo.ui.utils.loadPlaces
 import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 import androidx.lifecycle.ViewModel
+import com.appnotresponding.rumbo.ui.viewModel.UserLocationViewModel
 
 val placesViewModel: PlacesViewModel = PlacesViewModel()
 
@@ -34,7 +35,7 @@ enum class AppScreens{
 }
 
 @Composable
-fun Navigation(){
+fun Navigation(locationViewModel: UserLocationViewModel = viewModel()){
     val context = LocalContext.current
     var lista = loadPlaces(context)
     placesViewModel.updatePlaces(lista)
@@ -50,7 +51,7 @@ fun Navigation(){
             SignUpScreen(navController)
         }
         composable (route = AppScreens.Map.name) {
-            MapScreen(navController, placesViewModel)
+            MapScreen(navController, placesViewModel, locationViewModel)
         }
         composable (route = AppScreens.Chat.name) {
             ChatListScreen(navController)
