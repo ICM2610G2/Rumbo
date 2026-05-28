@@ -110,11 +110,11 @@ fun MapTemplate(user: User,
          onProfileClick: () -> Unit = {},
     viewModel: MapViewModel = viewModel(), placesViewModel: PlacesViewModel, locationViewModel: UserLocationViewModel
 ) {
+    Log.d("RECOMPOSE", "MapTemplate recomposed")
     var context = LocalContext.current
     val state by viewModel.uiState.collectAsState()
     val userLocationState by locationViewModel.uiState.collectAsState()
     val placesState by placesViewModel.uiState.collectAsState()
-    val locationClient = LocationServices.getFusedLocationProviderClient(context)
 
     var popupStateDNComposer by remember { mutableStateOf(false) }
     var popupStateReview by remember { mutableStateOf(false) }
@@ -147,9 +147,21 @@ fun MapTemplate(user: User,
     if (permission.status.isGranted) {
         if (!locationViewModel.permissionGranted) locationViewModel.updateVel()
     }
+    LaunchedEffect(
+        userLocationState.latitude,
+        userLocationState.longitude
+    ) {
+        Log.d("RECOMPOSE", "Enntrando en launch")
+        viewModel.updateUserMarker(
+            userLocationState.latitude,
+            userLocationState.longitude
+        )
 
-    viewModel.updateUserMarker(userLocationState.latitude, userLocationState.longitude)
-    viewModel.updateLastSafeLatLng(userLocationState.latitude, userLocationState.longitude)
+        viewModel.updateLastSafeLatLng(
+            userLocationState.latitude,
+            userLocationState.longitude
+        )
+    }
     if (state.centerInUserFirstTime && (placesState.selectedPlace==null)) {
         cameraPositionState.position =
             CameraPosition.fromLatLngZoom(LatLng(userLocationState.latitude, userLocationState.longitude), 18f)
