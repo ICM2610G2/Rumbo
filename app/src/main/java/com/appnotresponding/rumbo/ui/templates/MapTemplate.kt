@@ -157,40 +157,52 @@ fun MapTemplate(user: User,
             userLocationState.longitude
         )
 
-        viewModel.updateLastSafeLatLng(
-            userLocationState.latitude,
-            userLocationState.longitude
-        )
-    }
-    if (state.centerInUserFirstTime && (placesState.selectedPlace==null)) {
-        cameraPositionState.position =
-            CameraPosition.fromLatLngZoom(LatLng(userLocationState.latitude, userLocationState.longitude), 18f)
-        viewModel.updateCenterInUserFirstTime()
-    }
-    else if (state.centerInUserFirstTime && (placesState.selectedPlace!=null)) {
-        cameraPositionState.position =
-            CameraPosition.fromLatLngZoom(LatLng(placesState.selectedPlace!!.latitude, placesState.selectedPlace!!.longitude), 14f)
-        viewModel.updateCenterInUserFirstTime()
-        viewModel.updateLastSafeLatLng(userLocationState.latitude, userLocationState.longitude)
-    }
-    if(placesState.selectedPlace!=null) {
-        val startPoint = GeoPoint(userLocationState.latitude, userLocationState.longitude)
-        val destination = GeoPoint(
-            placesState.selectedPlace!!.latitude,
-            placesState.selectedPlace!!.longitude
-        )
-        val points = arrayListOf(startPoint, destination)
-        val road = roadManager.getRoad(points)
-        val routePoints = road.mRouteHigh.map { geoPoint ->
-            LatLng(geoPoint.latitude, geoPoint.longitude)
+        if (state.centerInUserFirstTime && (placesState.selectedPlace == null)) {
+            cameraPositionState.position =
+                CameraPosition.fromLatLngZoom(
+                    LatLng(
+                        userLocationState.latitude,
+                        userLocationState.longitude
+                    ), 18f
+                )
+            viewModel.updateCenterInUserFirstTime()
+        } else if (state.centerInUserFirstTime && (placesState.selectedPlace != null)) {
+            cameraPositionState.position =
+                CameraPosition.fromLatLngZoom(
+                    LatLng(
+                        placesState.selectedPlace!!.latitude,
+                        placesState.selectedPlace!!.longitude
+                    ), 14f
+                )
+            viewModel.updateCenterInUserFirstTime()
         }
-        viewModel.updateRoutePoints(routePoints)
-    }
+        if (placesState.selectedPlace != null) {
+            val startPoint = GeoPoint(userLocationState.latitude, userLocationState.longitude)
+            val destination = GeoPoint(
+                placesState.selectedPlace!!.latitude,
+                placesState.selectedPlace!!.longitude
+            )
+            val points = arrayListOf(startPoint, destination)
+            val road = roadManager.getRoad(points)
+            val routePoints = road.mRouteHigh.map { geoPoint ->
+                LatLng(geoPoint.latitude, geoPoint.longitude)
+            }
+            viewModel.updateRoutePoints(routePoints)
+        }
 
 
-    if(placesState.selectedPlace!=null){
-        viewModel.updateAdditionalMarker(LatLng(placesState.selectedPlace!!.latitude, placesState.selectedPlace!!.longitude), placesState.selectedPlace!!.name)
-        val startPoint = GeoPoint(placesState.selectedPlace!!.latitude, placesState.selectedPlace!!.longitude)
+        if (placesState.selectedPlace != null) {
+            viewModel.updateAdditionalMarker(
+                LatLng(
+                    placesState.selectedPlace!!.latitude,
+                    placesState.selectedPlace!!.longitude
+                ), placesState.selectedPlace!!.name
+            )
+            val startPoint = GeoPoint(
+                placesState.selectedPlace!!.latitude,
+                placesState.selectedPlace!!.longitude
+            )
+        }
     }
 
     LaunchedEffect(isDarkTheme) {
@@ -265,7 +277,7 @@ fun MapTemplate(user: User,
                         googleMap.mapColorScheme = currentMapStyle
                     }
                     Marker(
-                        state = rememberUpdatedMarkerState(state.userMarker.position),
+                        state = rememberUpdatedMarkerState(LatLng(userLocationState.latitude, userLocationState.longitude)),
                         title = "User"
                     )
                     Marker(
