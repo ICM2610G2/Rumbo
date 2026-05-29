@@ -116,7 +116,6 @@ fun CompassWidget(
                 .rotate(-animatedRotation)
         )
 
-        // Punto central
         Box(
             modifier = Modifier
                 .size(6.dp)

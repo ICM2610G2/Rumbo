@@ -43,6 +43,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -339,26 +341,46 @@ fun MapTemplate(user: User,
         }
     }
     if (popupStateDNComposer) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(0.75f))
-                .padding(16.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            DropNoteComposer(
-                value = noteText,
-                onValueChange = { noteText = it },
-                onImageClick = { mediaManager.launchCamera() },
-                onGalleryClick = { mediaManager.launchGallery() },
-                onSendClick = {
-                    // TODO: enviar la nota
-                    noteText = ""
-                    mediaManager.clearImage()
-                    popupStateDNComposer = false
-                },
-                imageUri = mediaManager.imageUri
+        Dialog(
+            onDismissRequest = {
+                popupStateDNComposer = false
+            },
+            properties = DialogProperties(
+                usePlatformDefaultWidth = false
             )
+        ) {
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.55f))
+                    .padding(20.dp),
+                contentAlignment = Alignment.Center
+            ) {
+
+                DropNoteComposer(
+                    value = noteText,
+                    onValueChange = { noteText = it },
+
+                    onImageClick = {
+                        mediaManager.launchCamera()
+                    },
+
+                    onGalleryClick = {
+                        mediaManager.launchGallery()
+                    },
+
+                    onSendClick = {
+                        // TODO enviar nota
+
+                        noteText = ""
+                        mediaManager.clearImage()
+                        popupStateDNComposer = false
+                    },
+
+                    imageUri = mediaManager.imageUri
+                )
+            }
         }
     }
     if (popupStateReview) {
