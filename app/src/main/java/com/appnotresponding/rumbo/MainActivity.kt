@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentActivity
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.network.okhttp.OkHttpNetworkFetcherFactory
+import com.android.volley.RequestQueue
 import com.appnotresponding.rumbo.navigation.Navigation
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 import com.google.firebase.auth.FirebaseAuth
@@ -31,7 +32,6 @@ var isDarkTheme by mutableStateOf(false)
 
 // https://developer.android.com/reference/androidx/fragment/app/FragmentActivity
 class MainActivity : FragmentActivity(), SensorEventListener {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = FirebaseAuth.getInstance()

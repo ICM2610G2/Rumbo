@@ -77,12 +77,12 @@ fun PlanItemCard(p: Place, placesViewModel: PlacesViewModel) {
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(
-                text = p.description,
+                text = p.description ?: "No hay información",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(
-                text = p.price,
+                text = p.price ?: "No hay información",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onBackground
             )

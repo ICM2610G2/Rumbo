@@ -41,17 +41,41 @@ class LoginViewModel : ViewModel() {
     //MasterKey: https://developer.android.com/reference/androidx/security/crypto/MasterKey
     fun initPrefs(context: Context) {
         if (encryptedPrefs != null) return
-        val masterKey =
-            MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
-        encryptedPrefs = EncryptedSharedPreferences.create(
-            context,
-            "rumbo_secure_prefs",
-            masterKey,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
-        // Al inicializar, revisamos si ya hay credenciales guardadas
-        _loginState.update { it.copy(hasBiometricCredentials = hasCredentials()) }
+        try {
+            val masterKey = MasterKey.Builder(context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+
+            encryptedPrefs = EncryptedSharedPreferences.create(
+                context,
+                "rumbo_secure_prefs",
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+
+        } catch (e: Exception) {
+
+            // Borra archivo corrupto
+            context.deleteSharedPreferences("rumbo_secure_prefs")
+
+            // Reintenta crear prefs limpias
+            val masterKey = MasterKey.Builder(context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+
+            encryptedPrefs = EncryptedSharedPreferences.create(
+                context,
+                "rumbo_secure_prefs",
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        }
+
+        _loginState.update {
+            it.copy(hasBiometricCredentials = hasCredentials())
+        }
     }
 
     fun updateEmail(newValue: String) {

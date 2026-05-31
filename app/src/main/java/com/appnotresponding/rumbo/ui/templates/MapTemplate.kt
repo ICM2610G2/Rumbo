@@ -43,6 +43,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -71,6 +73,7 @@ import com.appnotresponding.rumbo.ui.utils.rememberLocationManager
 import com.appnotresponding.rumbo.ui.utils.rememberMediaHardwareManager
 import com.appnotresponding.rumbo.ui.viewModel.MapViewModel
 import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
+import com.appnotresponding.rumbo.ui.viewModel.UserLocationViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -107,12 +110,13 @@ var locationRequest : LocationRequest = createLocationRequest()
 fun MapTemplate(user: User,
          controller: NavHostController,
          onProfileClick: () -> Unit = {},
-    viewModel: MapViewModel = viewModel(), placesViewModel: PlacesViewModel
+    viewModel: MapViewModel = viewModel(), placesViewModel: PlacesViewModel, locationViewModel: UserLocationViewModel
 ) {
+    Log.d("RECOMPOSE", "MapTemplate recomposed")
     var context = LocalContext.current
     val state by viewModel.uiState.collectAsState()
+    val userLocationState by locationViewModel.uiState.collectAsState()
     val placesState by placesViewModel.uiState.collectAsState()
-    val locationClient = LocationServices.getFusedLocationProviderClient(context)
 
     var popupStateDNComposer by remember { mutableStateOf(false) }
     var popupStateReview by remember { mutableStateOf(false) }
@@ -141,46 +145,66 @@ fun MapTemplate(user: User,
             }
         }
     }
-    val locationCallback = createLocationCallback { result ->
-        result.lastLocation?.let {
-            viewModel.updateUserMarker(it.latitude, it.longitude)
-            viewModel.updateLastSafeLatLng(it.latitude, it.longitude)
-            if (state.centerInUserFirstTime && (placesState.selectedPlace==null)) {
-                cameraPositionState.position =
-                    CameraPosition.fromLatLngZoom(LatLng(it.latitude, it.longitude), 18f)
-                viewModel.updateCenterInUserFirstTime()
-            }
-            else if (state.centerInUserFirstTime && (placesState.selectedPlace!=null)) {
-                cameraPositionState.position =
-                    CameraPosition.fromLatLngZoom(LatLng(placesState.selectedPlace!!.latitude, placesState.selectedPlace!!.longitude), 14f)
-                viewModel.updateCenterInUserFirstTime()
-                viewModel.updateLastSafeLatLng(it.latitude, it.longitude)
-            }
-            if(placesState.selectedPlace!=null) {
-                val startPoint = GeoPoint(it.latitude, it.longitude)
-                val destination = GeoPoint(placesState.selectedPlace!!.latitude, placesState.selectedPlace!!.longitude)
-                val points = arrayListOf(startPoint, destination)
-                val road = roadManager.getRoad(points)
-                val routePoints = road.mRouteHigh.map { geoPoint ->
-                    LatLng(geoPoint.latitude, geoPoint.longitude)
-                }
-                viewModel.updateRoutePoints(routePoints)
-            }
-        }
-    }
 
-    DisposableEffect(Unit) {
-        if(ContextCompat.checkSelfPermission(context, locationPermission)== PackageManager.PERMISSION_GRANTED) {
-            locationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
-        }
-        onDispose {
-            locationClient.removeLocationUpdates(locationCallback)
-        }
+    if (permission.status.isGranted) {
+        if (!locationViewModel.permissionGranted) locationViewModel.updateVel()
     }
+    LaunchedEffect(
+        userLocationState.latitude,
+        userLocationState.longitude
+    ) {
+        Log.d("RECOMPOSE", "Enntrando en launch")
+        viewModel.updateUserMarker(
+            userLocationState.latitude,
+            userLocationState.longitude
+        )
 
-    if(placesState.selectedPlace!=null){
-        viewModel.updateAdditionalMarker(LatLng(placesState.selectedPlace!!.latitude, placesState.selectedPlace!!.longitude), placesState.selectedPlace!!.name)
-        val startPoint = GeoPoint(placesState.selectedPlace!!.latitude, placesState.selectedPlace!!.longitude)
+        if (state.centerInUserFirstTime && (placesState.selectedPlace == null)) {
+            cameraPositionState.position =
+                CameraPosition.fromLatLngZoom(
+                    LatLng(
+                        userLocationState.latitude,
+                        userLocationState.longitude
+                    ), 18f
+                )
+            viewModel.updateCenterInUserFirstTime()
+        } else if (state.centerInUserFirstTime && (placesState.selectedPlace != null)) {
+            cameraPositionState.position =
+                CameraPosition.fromLatLngZoom(
+                    LatLng(
+                        placesState.selectedPlace!!.latitude,
+                        placesState.selectedPlace!!.longitude
+                    ), 14f
+                )
+            viewModel.updateCenterInUserFirstTime()
+        }
+        if (placesState.selectedPlace != null) {
+            val startPoint = GeoPoint(userLocationState.latitude, userLocationState.longitude)
+            val destination = GeoPoint(
+                placesState.selectedPlace!!.latitude,
+                placesState.selectedPlace!!.longitude
+            )
+            val points = arrayListOf(startPoint, destination)
+            val road = roadManager.getRoad(points)
+            val routePoints = road.mRouteHigh.map { geoPoint ->
+                LatLng(geoPoint.latitude, geoPoint.longitude)
+            }
+            viewModel.updateRoutePoints(routePoints)
+        }
+
+
+        if (placesState.selectedPlace != null) {
+            viewModel.updateAdditionalMarker(
+                LatLng(
+                    placesState.selectedPlace!!.latitude,
+                    placesState.selectedPlace!!.longitude
+                ), placesState.selectedPlace!!.name
+            )
+            val startPoint = GeoPoint(
+                placesState.selectedPlace!!.latitude,
+                placesState.selectedPlace!!.longitude
+            )
+        }
     }
 
     LaunchedEffect(isDarkTheme) {
@@ -255,7 +279,7 @@ fun MapTemplate(user: User,
                         googleMap.mapColorScheme = currentMapStyle
                     }
                     Marker(
-                        state = rememberUpdatedMarkerState(state.userMarker.position),
+                        state = rememberUpdatedMarkerState(LatLng(userLocationState.latitude, userLocationState.longitude)),
                         title = "User"
                     )
                     Marker(
@@ -317,26 +341,46 @@ fun MapTemplate(user: User,
         }
     }
     if (popupStateDNComposer) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(0.75f))
-                .padding(16.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            DropNoteComposer(
-                value = noteText,
-                onValueChange = { noteText = it },
-                onImageClick = { mediaManager.launchCamera() },
-                onGalleryClick = { mediaManager.launchGallery() },
-                onSendClick = {
-                    // TODO: enviar la nota
-                    noteText = ""
-                    mediaManager.clearImage()
-                    popupStateDNComposer = false
-                },
-                imageUri = mediaManager.imageUri
+        Dialog(
+            onDismissRequest = {
+                popupStateDNComposer = false
+            },
+            properties = DialogProperties(
+                usePlatformDefaultWidth = false
             )
+        ) {
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.55f))
+                    .padding(20.dp),
+                contentAlignment = Alignment.Center
+            ) {
+
+                DropNoteComposer(
+                    value = noteText,
+                    onValueChange = { noteText = it },
+
+                    onImageClick = {
+                        mediaManager.launchCamera()
+                    },
+
+                    onGalleryClick = {
+                        mediaManager.launchGallery()
+                    },
+
+                    onSendClick = {
+                        // TODO enviar nota
+
+                        noteText = ""
+                        mediaManager.clearImage()
+                        popupStateDNComposer = false
+                    },
+
+                    imageUri = mediaManager.imageUri
+                )
+            }
         }
     }
     if (popupStateReview) {

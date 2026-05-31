@@ -76,7 +76,7 @@ fun PlaceInfo(p: Place) {
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(
-                text = p.description,
+                text = p.description ?: "No hay información",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onBackground
             )
