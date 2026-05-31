@@ -1,21 +1,23 @@
 package com.appnotresponding.rumbo.ui.screens.chat
 
+
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.appnotresponding.rumbo.auth
 import com.appnotresponding.rumbo.models.sampleUser
 import com.appnotresponding.rumbo.navigation.AppScreens
 import com.appnotresponding.rumbo.ui.components.organisms.chat.ChatList
 import com.appnotresponding.rumbo.ui.components.organisms.chat.ChatPreviewData
 import com.appnotresponding.rumbo.ui.templates.ChatTemplate
-import com.appnotresponding.rumbo.ui.theme.RumboTheme
+import com.appnotresponding.rumbo.ui.viewModel.UserViewModel
 
 
 @Composable
-fun ChatListScreen(controller: NavHostController) {
-    val currentUser = sampleUser.copy(name = "Ana")
+fun ChatListScreen(controller: NavHostController, userViewModel: UserViewModel) {
+    val userState by userViewModel.currentUserState.collectAsState()
+    val currentUser = userState ?: sampleUser.copy(name = "Cargando...")
 
     val mockChats = listOf(
         ChatPreviewData(
@@ -69,15 +71,15 @@ fun ChatListScreen(controller: NavHostController) {
     }
 }
 
-
-@Preview(
-    showBackground = true,
-    name = "3. Pantalla Lista de Chats demostracion",
-    backgroundColor = 0xFF121212
-)
-@Composable
-private fun ChatListScreenPreview() {
-    RumboTheme(darkTheme = true) {
-        ChatListScreen(controller = rememberNavController())
-    }
-}
+//
+//@Preview(
+//    showBackground = true,
+//    name = "3. Pantalla Lista de Chats demostracion",
+//    backgroundColor = 0xFF121212
+//)
+//@Composable
+//private fun ChatListScreenPreview() {
+//    RumboTheme(darkTheme = true) {
+//        ChatListScreen(controller = rememberNavController())
+//    }
+//}

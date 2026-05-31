@@ -1,3 +1,4 @@
+
 package com.appnotresponding.rumbo.ui.components.organisms.auth
 
 import androidx.compose.foundation.background
@@ -48,7 +49,7 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 fun SignUpForm(
     modifier: Modifier = Modifier,
     //https://kotlinlang.org/docs/lambdas.html#higher-order-functions
-    onClick: (email: String, password: String) -> Unit = { _, _ -> },
+    onClick: (name: String, phone: String, email: String, password: String) -> Unit = { _, _, _, _ -> },
 ) {
     var fullName by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
@@ -190,7 +191,7 @@ fun SignUpForm(
         // Botón: Registrarse
         RumboButton(
             text = "Registrarse",
-            onClick = { onClick(email, password) },
+            onClick = { onClick(fullName, phone, email, password) },
             style = RumboButtonStyle.Primary,
             enabled = isSignUpEnabled,
             modifier = Modifier.fillMaxWidth(),

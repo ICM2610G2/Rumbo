@@ -74,6 +74,8 @@ dependencies {
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.androidx.security.crypto)
+    implementation(libs.firebase.database)
+    implementation(libs.firebase.storage)
     implementation(libs.googleid)
     implementation(libs.androidx.compose.runtime)
     testImplementation(libs.junit)
