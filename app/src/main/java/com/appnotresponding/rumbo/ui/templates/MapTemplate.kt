@@ -64,6 +64,9 @@ import com.appnotresponding.rumbo.ui.components.organisms.common.MainTopBar
 import com.appnotresponding.rumbo.ui.components.organisms.common.Nav
 import com.appnotresponding.rumbo.ui.components.organisms.map.DropNoteComposer
 import com.appnotresponding.rumbo.ui.components.organisms.map.PlacePreviewCard
+import com.appnotresponding.rumbo.models.DropNote
+import com.appnotresponding.rumbo.ui.components.molecules.map.DropNoteBubble
+import com.appnotresponding.rumbo.ui.components.organisms.map.ViewDropNote
 import com.appnotresponding.rumbo.ui.utils.SensorOverlay
 import com.appnotresponding.rumbo.ui.utils.createLocationRequest
 import com.appnotresponding.rumbo.ui.utils.rememberLocationManager
@@ -115,6 +118,8 @@ fun MapTemplate(
 
     var popupStateDNComposer by remember { mutableStateOf(false) }
     var popupStateReview by remember { mutableStateOf(false) }
+    var popupStateViewDN by remember { mutableStateOf(false) }
+    var selectedDropNote by remember { mutableStateOf<DropNote?>(null) }
     val locationState = rememberLocationManager()
     val mediaManager = rememberMediaHardwareManager()
     var noteText by remember { mutableStateOf("") }
@@ -309,6 +314,21 @@ fun MapTemplate(
                             points = state.userRoutePoints, color = MaterialTheme.colorScheme.tertiary, width = 10f
                         )
                     }
+
+                    state.dropNotes.forEach { note ->
+                        val position = LatLng(note.latitude, note.longitude)
+                        MarkerComposable(
+                            state = rememberUpdatedMarkerState(position),
+                            title = "DropNote de ${note.creatorName}",
+                            onClick = {
+                                selectedDropNote = note
+                                popupStateViewDN = true
+                                true
+                            }
+                        ) {
+                            DropNoteBubble(d = note)
+                        }
+                    }
                 }
                 SensorOverlay(
                     modifier = Modifier
@@ -353,7 +373,9 @@ fun MapTemplate(
     if (popupStateDNComposer) {
         Dialog(
             onDismissRequest = {
-                popupStateDNComposer = false
+                if (!state.isUploadingNote) {
+                    popupStateDNComposer = false
+                }
             }, properties = DialogProperties(
                 usePlatformDefaultWidth = false
             )
@@ -365,28 +387,48 @@ fun MapTemplate(
                     .background(Color.Black.copy(alpha = 0.55f))
                     .padding(20.dp), contentAlignment = Alignment.Center
             ) {
+                if (state.isUploadingNote) {
+                    androidx.compose.material3.CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                } else {
+                    DropNoteComposer(
+                        value = noteText, onValueChange = { noteText = it },
 
-                DropNoteComposer(
-                    value = noteText, onValueChange = { noteText = it },
+                        onImageClick = {
+                            mediaManager.launchCamera()
+                        },
 
-                    onImageClick = {
-                        mediaManager.launchCamera()
-                    },
+                        onGalleryClick = {
+                            mediaManager.launchGallery()
+                        },
 
-                    onGalleryClick = {
-                        mediaManager.launchGallery()
-                    },
+                        onSendClick = {
+                            if (noteText.isNotBlank() || mediaManager.imageUri != null) {
+                                val tieneUbicacion = userLocationState.latitude != 0.0 || userLocationState.longitude != 0.0
+                                val lat = if (tieneUbicacion) userLocationState.latitude else 4.627293
+                                val lng = if (tieneUbicacion) userLocationState.longitude else -74.063228
+                                
+                                viewModel.uploadAndSaveDropNote(
+                                    content = noteText,
+                                    imageUri = mediaManager.imageUri,
+                                    latitude = lat,
+                                    longitude = lng,
+                                    creatorId = user.id,
+                                    creatorName = "${user.name} ${user.lastname}",
+                                    creatorAvatarUrl = user.profilePictureUrl,
+                                    onSuccess = {
+                                        noteText = ""
+                                        mediaManager.clearImage()
+                                        popupStateDNComposer = false
+                                    }
+                                )
+                            }
+                        },
 
-                    onSendClick = {
-                        // TODO enviar nota
-
-                        noteText = ""
-                        mediaManager.clearImage()
-                        popupStateDNComposer = false
-                    },
-
-                    imageUri = mediaManager.imageUri
-                )
+                        imageUri = mediaManager.imageUri
+                    )
+                }
             }
         }
     }
@@ -399,6 +441,28 @@ fun MapTemplate(
             contentAlignment = Alignment.BottomCenter
         ) {
             PlacePreviewCard(place = samplePlace, reviews = listOf(sampleReview))
+        }
+    }
+    if (popupStateViewDN && selectedDropNote != null) {
+        Dialog(
+            onDismissRequest = {
+                popupStateViewDN = false
+                selectedDropNote = null
+            }
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.Transparent)
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                ViewDropNote(
+                    user = selectedDropNote!!.user,
+                    content = selectedDropNote!!.content,
+                    imageUrl = selectedDropNote!!.imageUrl
+                )
+            }
         }
     }
 }

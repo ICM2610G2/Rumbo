@@ -3,7 +3,9 @@ package com.appnotresponding.rumbo.ui.components.organisms.map
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -11,9 +13,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.appnotresponding.rumbo.models.User
 import com.appnotresponding.rumbo.models.sampleUser
 import com.appnotresponding.rumbo.ui.components.atoms.Avatar
@@ -25,6 +30,7 @@ fun ViewDropNote(
     modifier: Modifier = Modifier,
     user: User,
     content: String = "",
+    imageUrl: String? = null,
     isPrivate: Boolean = false,
 ) {
     Surface(
@@ -44,6 +50,7 @@ fun ViewDropNote(
                 user = user, size = AvatarSize.Medium
             )
             Column(
+                modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Row(
@@ -63,6 +70,19 @@ fun ViewDropNote(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+
+                if (!imageUrl.isNullOrEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    AsyncImage(
+                        model = imageUrl,
+                        contentDescription = "Imagen de la DropNote",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp)
+                            .clip(MaterialTheme.shapes.medium),
+                        contentScale = ContentScale.Crop
+                    )
+                }
             }
         }
     }
