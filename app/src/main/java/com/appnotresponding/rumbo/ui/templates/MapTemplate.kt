@@ -25,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -72,6 +73,7 @@ import com.appnotresponding.rumbo.ui.utils.SensorOverlay
 import com.appnotresponding.rumbo.ui.utils.createLocationRequest
 import com.appnotresponding.rumbo.ui.utils.rememberLocationManager
 import com.appnotresponding.rumbo.ui.utils.rememberMediaHardwareManager
+import com.appnotresponding.rumbo.ui.viewModel.DropNoteViewModel
 import com.appnotresponding.rumbo.ui.viewModel.MapViewModel
 import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 import com.appnotresponding.rumbo.ui.viewModel.UserLocationViewModel
@@ -106,6 +108,7 @@ fun MapTemplate(
     controller: NavHostController,
     onProfileClick: () -> Unit = {},
     viewModel: MapViewModel = viewModel(),
+    dropNoteViewModel: DropNoteViewModel = viewModel(),
     placesViewModel: PlacesViewModel,
     locationViewModel: UserLocationViewModel
 ) {
@@ -114,6 +117,7 @@ fun MapTemplate(
     val context = LocalContext.current
 
     val state by viewModel.uiState.collectAsState()
+    val dropNoteState by dropNoteViewModel.uiState.collectAsState()
     val userLocationState by locationViewModel.uiState.collectAsState()
     val placesState by placesViewModel.uiState.collectAsState()
 
@@ -316,18 +320,27 @@ fun MapTemplate(
                         )
                     }
 
-                    state.dropNotes.forEach { note ->
+                    dropNoteState.dropNotes.forEach { note ->
                         val position = LatLng(note.latitude, note.longitude)
-                        MarkerComposable(
-                            state = rememberUpdatedMarkerState(position),
-                            title = "DropNote de ${note.creatorName}",
-                            onClick = {
-                                selectedDropNote = note
-                                popupStateViewDN = true
-                                true
+                        val author = dropNoteState.dropNoteAuthors[note.creatorId]
+                        //developer.android.com/reference/kotlin/androidx/compose/runtime/key.composable#key(kotlin.Array,kotlin.Function0)
+                        // key fuerza rerenderizado cuando el autor llega
+                        key(note.id, author?.profilePictureUrl) {
+                            MarkerComposable(
+                                state = rememberUpdatedMarkerState(position),
+                                title = "DropNote de ${author?.name ?: ""}",
+                                onClick = {
+                                    selectedDropNote = note
+                                    popupStateViewDN = true
+                                    true
+                                }
+                            ) {
+                                DropNoteBubble(
+                                    modifier = Modifier.size(48.dp),
+                                    d = note,
+                                    author = author
+                                )
                             }
-                        ) {
-                            DropNoteBubble(modifier = Modifier.size(64.dp),d = note)
                         }
                     }
                 }
@@ -374,7 +387,7 @@ fun MapTemplate(
     if (popupStateDNComposer) {
         Dialog(
             onDismissRequest = {
-                if (!state.isUploadingNote) {
+                if (!dropNoteState.isUploadingNote) {
                     popupStateDNComposer = false
                 }
             }, properties = DialogProperties(
@@ -388,7 +401,7 @@ fun MapTemplate(
                     .background(Color.Black.copy(alpha = 0.55f))
                     .padding(20.dp), contentAlignment = Alignment.Center
             ) {
-                if (state.isUploadingNote) {
+                if (dropNoteState.isUploadingNote) {
                     androidx.compose.material3.CircularProgressIndicator(
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -409,15 +422,13 @@ fun MapTemplate(
                                 val tieneUbicacion = userLocationState.latitude != 0.0 || userLocationState.longitude != 0.0
                                 val lat = if (tieneUbicacion) userLocationState.latitude else 4.627293
                                 val lng = if (tieneUbicacion) userLocationState.longitude else -74.063228
-                                
-                                viewModel.uploadAndSaveDropNote(
+
+                                dropNoteViewModel.uploadAndSaveDropNote(
                                     content = noteText,
                                     imageUri = mediaManager.imageUri,
                                     latitude = lat,
                                     longitude = lng,
                                     creatorId = user.id,
-                                    creatorName = "${user.name} ${user.lastname}",
-                                    creatorAvatarUrl = user.profilePictureUrl,
                                     onSuccess = {
                                         noteText = ""
                                         mediaManager.clearImage()
@@ -458,10 +469,27 @@ fun MapTemplate(
                     .padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
+                val author = dropNoteState.dropNoteAuthors[selectedDropNote!!.creatorId]
+                    ?: User(id = selectedDropNote!!.creatorId, name = "Usuario")
                 ViewDropNote(
-                    user = selectedDropNote!!.user,
+                    user = author,
                     content = selectedDropNote!!.content,
-                    imageUrl = selectedDropNote!!.imageUrl
+                    imageUrl = selectedDropNote!!.imageUrl,
+                    timestamp = selectedDropNote!!.timestamp,
+                    showDeleteOption = selectedDropNote!!.creatorId == user.id,
+                    onDeleteClick = {
+                        dropNoteViewModel.deleteDropNote(
+                            noteId = selectedDropNote!!.id,
+                            imageUrl = selectedDropNote!!.imageUrl,
+                            onSuccess = {
+                                popupStateViewDN = false
+                                selectedDropNote = null
+                            },
+                            onFailure = { error ->
+                                Log.e("MapTemplate", "Error al eliminar DropNote: $error")
+                            }
+                        )
+                    }
                 )
             }
         }

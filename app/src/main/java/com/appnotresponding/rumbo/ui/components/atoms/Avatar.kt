@@ -176,7 +176,6 @@ fun Avatar(
                     }
                 }
             }
-        }
 
         // Indicador de online
         if (isOnline) {
@@ -187,6 +186,7 @@ fun Avatar(
                     .background(Color(0xFF4CAF50), CircleShape)
                     .border(indicatorBorderWidth, MaterialTheme.colorScheme.surface, CircleShape)
             )
+        }
         }
     }
 }
