@@ -1,3 +1,4 @@
+
 package com.appnotresponding.rumbo.models
 
 
@@ -11,6 +12,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 import com.google.firebase.storage.FirebaseStorage
+
+import android.content.Context
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 
 data class RegisterState(
     val name: String = "",
@@ -29,6 +34,50 @@ class RegisterViewModel : ViewModel() {
 
     private val _registerState = MutableStateFlow(RegisterState())
     val registerState: StateFlow<RegisterState> = _registerState.asStateFlow()
+
+    private var encryptedPrefs: android.content.SharedPreferences? = null
+
+    private fun initPrefs(context: Context) {
+        if (encryptedPrefs != null) return
+        val appContext = context.applicationContext
+        try {
+            val masterKey = MasterKey.Builder(appContext)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+
+            encryptedPrefs = EncryptedSharedPreferences.create(
+                appContext,
+                "rumbo_secure_prefs",
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        } catch (e: Exception) {
+            try {
+                appContext.deleteSharedPreferences("rumbo_secure_prefs")
+                val masterKey = MasterKey.Builder(appContext)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build()
+
+                encryptedPrefs = EncryptedSharedPreferences.create(
+                    appContext,
+                    "rumbo_secure_prefs",
+                    masterKey,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                )
+            } catch (ex: Exception) {
+                encryptedPrefs = appContext.getSharedPreferences("rumbo_fallback_prefs", Context.MODE_PRIVATE)
+            }
+        }
+    }
+
+    private fun saveCredentials(email: String, password: String) {
+        encryptedPrefs?.edit()
+            ?.putString("email", email)
+            ?.putString("password", password)
+            ?.commit()
+    }
 
     fun updateName(name: String) {
         _registerState.update { it.copy(name = name) }
@@ -67,10 +116,11 @@ class RegisterViewModel : ViewModel() {
                 passwordRegex.matches(state.password)
     }
 
-    fun register(onSuccess: () -> Unit) {
+    fun register(context: Context, onSuccess: () -> Unit) {
         val state = _registerState.value
         if (!isFormValid()) return
 
+        initPrefs(context)
         _registerState.update { it.copy(isLoading = true, firebaseError = "") }
 
         auth.createUserWithEmailAndPassword(state.email, state.password)
@@ -84,7 +134,7 @@ class RegisterViewModel : ViewModel() {
                             storageRef.putFile(state.photoUri)
                                 .addOnSuccessListener {
                                     storageRef.downloadUrl.addOnSuccessListener { downloadUrl ->
-                                        saveUserToDatabase(userId, downloadUrl.toString(), onSuccess)
+                                        saveUserToDatabase(userId, downloadUrl.toString(), context, onSuccess)
                                     }.addOnFailureListener { e ->
                                         _registerState.update {
                                             it.copy(isLoading = false, firebaseError = e.message ?: "Error al obtener URL de descarga")
@@ -97,7 +147,7 @@ class RegisterViewModel : ViewModel() {
                                     }
                                 }
                         } else {
-                            saveUserToDatabase(userId, null, onSuccess)
+                            saveUserToDatabase(userId, null, context, onSuccess)
                         }
                     } else {
                         _registerState.update { it.copy(isLoading = false, firebaseError = "Error al obtener ID de usuario") }
@@ -110,7 +160,7 @@ class RegisterViewModel : ViewModel() {
             }
     }
 
-    private fun saveUserToDatabase(userId: String, photoUrl: String?, onSuccess: () -> Unit) {
+    private fun saveUserToDatabase(userId: String, photoUrl: String?, context: Context, onSuccess: () -> Unit) {
         val state = _registerState.value
         val newUser = User(
             id = userId,
@@ -127,6 +177,7 @@ class RegisterViewModel : ViewModel() {
                         .addOnCompleteListener { signInTask ->
                             _registerState.update { it.copy(isLoading = false) }
                             if (signInTask.isSuccessful) {
+                                saveCredentials(state.email, state.password)
                                 onSuccess()
                             } else {
                                 _registerState.update {

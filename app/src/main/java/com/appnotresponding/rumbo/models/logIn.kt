@@ -1,3 +1,4 @@
+
 package com.appnotresponding.rumbo.models
 
 import android.content.Context
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.update
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
+import android.util.Log
 
 // https://kotlinlang.org/docs/sealed-classes.html
 sealed class AuthResult {
@@ -41,36 +43,54 @@ class LoginViewModel : ViewModel() {
     //MasterKey: https://developer.android.com/reference/androidx/security/crypto/MasterKey
     fun initPrefs(context: Context) {
         if (encryptedPrefs != null) return
+        val appContext = context.applicationContext
         try {
-            val masterKey = MasterKey.Builder(context)
+            val masterKey = MasterKey.Builder(appContext)
                 .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                 .build()
 
             encryptedPrefs = EncryptedSharedPreferences.create(
-                context,
+                appContext,
                 "rumbo_secure_prefs",
                 masterKey,
                 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             )
+            Log.i("LoginViewModel", "EncryptedSharedPreferences inicializado correctamente")
 
         } catch (e: Exception) {
-
-            // Borra archivo corrupto
-            context.deleteSharedPreferences("rumbo_secure_prefs")
-
-            // Reintenta crear prefs limpias
-            val masterKey = MasterKey.Builder(context)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build()
-
-            encryptedPrefs = EncryptedSharedPreferences.create(
-                context,
-                "rumbo_secure_prefs",
-                masterKey,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            Log.e(
+                "LoginViewModel",
+                "Error al inicializar EncryptedSharedPreferences, intentando limpiar",
+                e
             )
+            try {
+                // Borra archivo corrupto
+                appContext.deleteSharedPreferences("rumbo_secure_prefs")
+
+                // Reintenta crear prefs limpias
+                val masterKey = MasterKey.Builder(appContext)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build()
+
+                encryptedPrefs = EncryptedSharedPreferences.create(
+                    appContext,
+                    "rumbo_secure_prefs",
+                    masterKey,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                )
+                Log.i("LoginViewModel", "EncryptedSharedPreferences reinicializado tras limpieza")
+            } catch (ex: Exception) {
+                Log.e(
+                    "LoginViewModel",
+                    "Fallo total de EncryptedSharedPreferences, usando fallback no encriptado",
+                    ex
+                )
+                // Fallback a SharedPreferences comunes
+                encryptedPrefs =
+                    appContext.getSharedPreferences("rumbo_fallback_prefs", Context.MODE_PRIVATE)
+            }
         }
 
         _loginState.update {
@@ -94,11 +114,11 @@ class LoginViewModel : ViewModel() {
         _loginState.update { it.copy(authResult = AuthResult.Loading) }
 
         auth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
-                saveCredentials(email, password)
-                _loginState.update { it.copy(authResult = AuthResult.Success) }
-            }.addOnFailureListener { e ->
-                _loginState.update { it.copy(authResult = AuthResult.Error(e.message ?: "Error")) }
-            }
+            saveCredentials(email, password)
+            _loginState.update { it.copy(authResult = AuthResult.Success) }
+        }.addOnFailureListener { e ->
+            _loginState.update { it.copy(authResult = AuthResult.Error(e.message ?: "Error")) }
+        }
     }
 
     // BiometricPrompt: https://developer.android.com/training/sign-in/biometric-auth
@@ -150,33 +170,55 @@ class LoginViewModel : ViewModel() {
     private fun firebaseSignIn(email: String, password: String) {
         _loginState.update { it.copy(authResult = AuthResult.Loading) }
         auth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
-                _loginState.update { it.copy(authResult = AuthResult.Success) }
-            }.addOnFailureListener { e ->
-                clearCredentials()
-                _loginState.update {
-                    it.copy(
-                        hasBiometricCredentials = false,
-                        authResult = AuthResult.Error("Sesión expirada, ingresa tu contraseña")
-                    )
-                }
+            _loginState.update { it.copy(authResult = AuthResult.Success) }
+        }.addOnFailureListener { e ->
+            clearCredentials()
+            _loginState.update {
+                it.copy(
+                    hasBiometricCredentials = false,
+                    authResult = AuthResult.Error("Sesión expirada, ingresa tu contraseña")
+                )
             }
+        }
     }
 
     //https://developer.android.com/reference/android/content/SharedPreferences.Editor
     private fun saveCredentials(email: String, password: String) {
-        encryptedPrefs?.edit()?.putString("email", email)?.putString("password", password)?.apply()
-        _loginState.update { it.copy(hasBiometricCredentials = true) }
+        val prefs = encryptedPrefs
+        if (prefs != null) {
+            val success =
+                prefs.edit().putString("email", email).putString("password", password).commit()
+            if (success) {
+                Log.i("LoginViewModel", "Credenciales guardadas con éxito")
+                _loginState.update { it.copy(hasBiometricCredentials = true) }
+            } else {
+                Log.e("LoginViewModel", "Error al escribir credenciales con commit")
+                _loginState.update { it.copy(hasBiometricCredentials = false) }
+            }
+        } else {
+            Log.e("LoginViewModel", "Imposible guardar credenciales: encryptedPrefs es null")
+            _loginState.update { it.copy(hasBiometricCredentials = false) }
+        }
     }
 
     private fun getCredentials(): Pair<String, String>? {
-        val email = encryptedPrefs?.getString("email", null)
-        val password = encryptedPrefs?.getString("password", null)
-        return if (email != null && password != null) Pair(email, password) else null
+        val prefs = encryptedPrefs ?: return null
+        val email = prefs.getString("email", null)
+        val password = prefs.getString("password", null)
+        return if (!email.isNullOrBlank() && !password.isNullOrBlank()) Pair(
+            email, password
+        ) else null
     }
 
-    private fun hasCredentials() = encryptedPrefs?.contains("email") == true
+    private fun hasCredentials(): Boolean {
+        val prefs = encryptedPrefs ?: return false
+        val email = prefs.getString("email", null)
+        val password = prefs.getString("password", null)
+        return !email.isNullOrBlank() && !password.isNullOrBlank()
+    }
 
     private fun clearCredentials() {
-        encryptedPrefs?.edit()?.clear()?.apply()
+        encryptedPrefs?.edit()?.clear()?.commit()
+        _loginState.update { it.copy(hasBiometricCredentials = false) }
     }
 }

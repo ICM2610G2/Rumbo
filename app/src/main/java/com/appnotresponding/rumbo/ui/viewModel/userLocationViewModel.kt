@@ -13,6 +13,9 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -47,14 +50,26 @@ class UserLocationViewModel(application: Application) : AndroidViewModel(applica
             val userId = FirebaseAuth.getInstance().currentUser?.uid
             if (userId != null) {
                 val dbRef = FirebaseDatabase.getInstance().getReference("users").child(userId)
-                val updates = mapOf<String, Any>(
-                    "latitude" to location.latitude,
-                    "longitude" to location.longitude,
-                    "altitude" to location.altitude
-                )
-                dbRef.updateChildren(updates).addOnFailureListener { e ->
-                    Log.e("ULViewModel", "Error actualizando ubicación en DB", e)
-                }
+                dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (snapshot.exists()) {
+                            val updates = mapOf<String, Any>(
+                                "latitude" to location.latitude,
+                                "longitude" to location.longitude,
+                                "altitude" to location.altitude
+                            )
+                            dbRef.updateChildren(updates).addOnFailureListener { e ->
+                                Log.e("ULViewModel", "Error actualizando ubicación en DB", e)
+                            }
+                        } else {
+                            Log.d("ULViewModel", "El nodo de usuario no existe aún en la base de datos. No se actualiza ubicación para evitar nodos huérfanos.")
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Log.e("ULViewModel", "Error al leer existencia del usuario en DB: ${error.message}")
+                    }
+                })
             }
         }
     }
