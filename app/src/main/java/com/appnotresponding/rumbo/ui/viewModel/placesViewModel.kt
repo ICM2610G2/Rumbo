@@ -23,6 +23,13 @@ class PlacesViewModel : ViewModel() {
         }
     }
 
+     fun removeFromItinerary(place: Place) {
+        val current = _uiState.value.itinerary
+        if (current.any { it.id == place.id }) {
+            _uiState.update { it.copy(itinerary = current.filterNot { it.id == place.id }) }
+        }
+    }
+
     fun selectForNavigation(place: Place) {
         _uiState.update { it.copy(selectedPlace = place) }
     }
