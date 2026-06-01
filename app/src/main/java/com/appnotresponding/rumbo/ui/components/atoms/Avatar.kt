@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,10 +28,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.SubcomposeAsyncImageContent
+import coil3.request.ImageRequest
 import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.models.User
 import com.appnotresponding.rumbo.models.sampleUser
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
+import androidx.compose.ui.platform.LocalContext
+import coil3.request.allowHardware
 
 //Tamaños predefinidos para el Avatar, con tamaños de texto asociados para las iniciales
 enum class AvatarSize(val size: Dp) {
@@ -59,10 +63,20 @@ fun Avatar(
     borderColor: Color = MaterialTheme.colorScheme.outline,
     isOnline: Boolean = false
 ) {
+    val context = LocalContext.current
     val pfp = user?.profilePictureUrl
     val initials = user?.name
     // Extraer las iniciales para mostrar, limitando a 2 caracteres y convirtiendo a mayúsculas
     val displayInitials = initials?.trim()?.take(2)?.uppercase()?.ifBlank { null }
+
+    val imageRequest = remember(pfp) {
+        pfp?.let {
+            ImageRequest.Builder(context)
+                .data(it)
+                .allowHardware(false)
+                .build()
+        }
+    }
 
     // Tamaño del indicador online proporcional al tamaño del avatar
     val indicatorSize = when (size) {
@@ -101,9 +115,9 @@ fun Avatar(
         ) {
             //Verificar si hay foto de perfil
             when {
-                pfp != null -> {
+                imageRequest != null -> {
                     SubcomposeAsyncImage(
-                        model = pfp,
+                        model = imageRequest,
                         contentDescription = contentDescription,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier

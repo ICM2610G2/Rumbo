@@ -14,29 +14,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 
 data class CompassState(
-    val degrees: Float, val direction: String
+    val degrees: Float
 )
-
-// grados a cardinalidad
-private fun getCardinalDirection(degrees: Float): String {
-    return when {
-        degrees < 22.5f || degrees >= 337.5f -> "Norte ↑"
-        degrees < 67.5f -> "Noreste ↗"
-        degrees < 112.5f -> "Este →"
-        degrees < 157.5f -> "Sureste ↘"
-        degrees < 202.5f -> "Sur ↓"
-        degrees < 247.5f -> "Suroeste ↙"
-        degrees < 292.5f -> "Oeste ←"
-        else -> "Noroeste ↖"
-    }
-}
-
 @Composable
 fun rememberCompassManager(context: Context = LocalContext.current): CompassState {
     var degrees by remember { mutableFloatStateOf(0f) }
+    val smoothingAlpha = 0.15f
 
     val sensorManager = remember {
         context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    }
+
+    val rotationVectorSensor = remember {
+        sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
     }
 
     val magnetometerSensor = remember {
@@ -48,13 +38,29 @@ fun rememberCompassManager(context: Context = LocalContext.current): CompassStat
     }
 
     DisposableEffect(Unit) {
-        // El magnetometro necesita el acelerometro para calcular la orientacion correctamente
         val gravity = FloatArray(3)
         val geomagnetic = FloatArray(3)
+        val rotationMatrix = FloatArray(9)
+        val remappedMatrix = FloatArray(9)
+        val orientation = FloatArray(3)
 
         val listener = object : SensorEventListener {
             override fun onSensorChanged(event: SensorEvent) {
                 when (event.sensor.type) {
+                    Sensor.TYPE_ROTATION_VECTOR -> {
+                        SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values)
+                        SensorManager.remapCoordinateSystem(
+                            rotationMatrix,
+                            SensorManager.AXIS_X,
+                            SensorManager.AXIS_Z,
+                            remappedMatrix
+                        )
+                        SensorManager.getOrientation(remappedMatrix, orientation)
+
+                        val azimuth = Math.toDegrees(orientation[0].toDouble()).toFloat()
+                        degrees = smoothAngle(degrees, (azimuth + 360f) % 360f, smoothingAlpha)
+                    }
+
                     Sensor.TYPE_ACCELEROMETER -> {
                         gravity[0] = event.values[0]
                         gravity[1] = event.values[1]
@@ -68,22 +74,29 @@ fun rememberCompassManager(context: Context = LocalContext.current): CompassStat
                     }
                 }
 
-                val rotationMatrix = FloatArray(9)
-                val inclinationMatrix = FloatArray(9)
-                val success = SensorManager.getRotationMatrix(
-                    rotationMatrix, inclinationMatrix, gravity, geomagnetic
-                )
+                if (event.sensor.type != Sensor.TYPE_ROTATION_VECTOR) {
+                    val success = SensorManager.getRotationMatrix(
+                        rotationMatrix,
+                        remappedMatrix,
+                        gravity,
+                        geomagnetic
+                    )
 
-                if (success) {
-                    val orientation = FloatArray(3)
-                    SensorManager.getOrientation(rotationMatrix, orientation)
-                    // radianes a grados y se da el valor entre 0 y 360
-                    val azimuth = Math.toDegrees(orientation[0].toDouble()).toFloat()
-                    degrees = (azimuth + 360f) % 360f
+                    if (success) {
+                        SensorManager.getOrientation(rotationMatrix, orientation)
+                        val azimuth = Math.toDegrees(orientation[0].toDouble()).toFloat()
+                        degrees = smoothAngle(degrees, (azimuth + 360f) % 360f, smoothingAlpha)
+                    }
                 }
             }
 
             override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
+        }
+
+        rotationVectorSensor?.let {
+            sensorManager.registerListener(
+                listener, it, SensorManager.SENSOR_DELAY_NORMAL
+            )
         }
 
         sensorManager.registerListener(
@@ -99,6 +112,11 @@ fun rememberCompassManager(context: Context = LocalContext.current): CompassStat
     }
 
     return CompassState(
-        degrees = degrees, direction = getCardinalDirection(degrees)
+        degrees = degrees
     )
+}
+
+private fun smoothAngle(current: Float, target: Float, alpha: Float): Float {
+    val delta = ((target - current + 540f) % 360f) - 180f
+    return (current + alpha * delta + 360f) % 360f
 }

@@ -2,6 +2,7 @@ package com.appnotresponding.rumbo.ui.templates
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,6 +54,8 @@ import com.appnotresponding.rumbo.models.User
 import com.appnotresponding.rumbo.models.samplePlace
 import com.appnotresponding.rumbo.models.sampleReview
 import com.appnotresponding.rumbo.roadManager
+import com.appnotresponding.rumbo.ui.components.atoms.Avatar
+import com.appnotresponding.rumbo.ui.components.atoms.AvatarSize
 import com.appnotresponding.rumbo.ui.components.atoms.UserProfileBubble
 import com.appnotresponding.rumbo.ui.components.molecules.map.CancelRoute
 import com.appnotresponding.rumbo.ui.components.molecules.map.LocateMe
@@ -88,17 +93,22 @@ import org.osmdroid.util.GeoPoint
 
 
 val locationPermission = android.Manifest.permission.ACCESS_FINE_LOCATION
-var locationRequest : LocationRequest = createLocationRequest()
+var locationRequest: LocationRequest = createLocationRequest()
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun MapTemplate(user: User,
-         controller: NavHostController,
-         onProfileClick: () -> Unit = {},
-    viewModel: MapViewModel = viewModel(), placesViewModel: PlacesViewModel, locationViewModel: UserLocationViewModel
+fun MapTemplate(
+    user: User,
+    controller: NavHostController,
+    onProfileClick: () -> Unit = {},
+    viewModel: MapViewModel = viewModel(),
+    placesViewModel: PlacesViewModel,
+    locationViewModel: UserLocationViewModel
 ) {
     Log.d("RECOMPOSE", "MapTemplate recomposed")
-    var context = LocalContext.current
+
+    val context = LocalContext.current
+
     val state by viewModel.uiState.collectAsState()
     val userLocationState by locationViewModel.uiState.collectAsState()
     val placesState by placesViewModel.uiState.collectAsState()
@@ -134,10 +144,10 @@ fun MapTemplate(user: User,
     var permission = rememberPermissionState(locationPermission)
     var showButton by remember { mutableStateOf(false) }
     SideEffect {
-        if(!permission.status.isGranted){
-            if(permission.status.shouldShowRationale){
+        if (!permission.status.isGranted) {
+            if (permission.status.shouldShowRationale) {
                 showButton = true
-            }else {
+            } else {
                 showButton = false
                 permission.launchPermissionRequest()
             }
@@ -181,8 +191,7 @@ fun MapTemplate(user: User,
         if (tieneUbicacionReal && placesState.selectedPlace != null) {
             val startPoint = GeoPoint(userLocationState.latitude, userLocationState.longitude)
             val destination = GeoPoint(
-                placesState.selectedPlace!!.latitude,
-                placesState.selectedPlace!!.longitude
+                placesState.selectedPlace!!.latitude, placesState.selectedPlace!!.longitude
             )
             val points = arrayListOf(startPoint, destination)
             val road = roadManager.getRoad(points)
@@ -196,13 +205,11 @@ fun MapTemplate(user: User,
         if (placesState.selectedPlace != null) {
             viewModel.updateAdditionalMarker(
                 LatLng(
-                    placesState.selectedPlace!!.latitude,
-                    placesState.selectedPlace!!.longitude
+                    placesState.selectedPlace!!.latitude, placesState.selectedPlace!!.longitude
                 ), placesState.selectedPlace!!.name
             )
-            val startPoint = GeoPoint(
-                placesState.selectedPlace!!.latitude,
-                placesState.selectedPlace!!.longitude
+            GeoPoint(
+                placesState.selectedPlace!!.latitude, placesState.selectedPlace!!.longitude
             )
         }
     }
@@ -218,13 +225,12 @@ fun MapTemplate(user: User,
         floatingActionButton = {
             Column(
                 modifier = Modifier
-                    .height(150.dp)
                     .width(45.dp),
-                verticalArrangement = Arrangement.spacedBy(30.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Bottom)
             ) {
-                if(permission.status.isGranted) {
-                    if(placesState.selectedPlace!=null){
-                        CancelRoute{
+                if (permission.status.isGranted) {
+                    if (placesState.selectedPlace != null) {
+                        CancelRoute {
                             placesViewModel.clearForNavigation()
                             viewModel.updateRoutePoints(emptyList())
                             viewModel.cancelAdditionalMarkerVisibility()
@@ -250,7 +256,7 @@ fun MapTemplate(user: User,
             }
         },
         bottomBar = { Nav(controller) }) { paddingValues ->
-        if(permission.status.isGranted) {
+        if (permission.status.isGranted) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -278,21 +284,14 @@ fun MapTemplate(user: User,
                         googleMap.mapColorScheme = currentMapStyle
                     }
                     MarkerComposable(
-                        keys = arrayOf<Any>(
-                            userLocationState.latitude,
-                            userLocationState.longitude,
-                            markerKey,
-                            profileBitmap != null
-                        ),
                         state = rememberUpdatedMarkerState(
-                            LatLng(userLocationState.latitude, userLocationState.longitude)
-                        ),
-                        title = user.name
-                    ) {
-                        UserProfileBubble(
-                            user = user,
-                            preloadedBitmap = profileBitmap
-                        )
+                            LatLng(
+                                userLocationState.latitude,
+                                userLocationState.longitude
+                            )
+                        ), title = "${user.name} (Tú)"
+                    ){
+                        Avatar(user = user, modifier = Modifier.border(1.dp, Color.White, CircleShape))
                     }
                     Marker(
                         state = rememberUpdatedMarkerState(state.additionalMarker.position),
@@ -301,53 +300,52 @@ fun MapTemplate(user: User,
                     )
                     if (state.routePoints.isNotEmpty()) {
                         Polyline(
-                            points = state.routePoints,
-                            color = Color.Blue,
-                            width = 10f
+                            points = state.routePoints, color = MaterialTheme.colorScheme.primary, width = 10f
                         )
                     }
 
                     if (state.userRouteVisible) {
                         Polyline(
-                            points = state.userRoutePoints,
-                            color = Color.Blue,
-                            width = 10f
+                            points = state.userRoutePoints, color = MaterialTheme.colorScheme.tertiary, width = 10f
                         )
                     }
                 }
                 SensorOverlay(
                     modifier = Modifier
-                        .align(Alignment.TopStart)
+                        .align(Alignment.TopEnd)
+                        .padding(top = 64.dp)
                         .padding(16.dp)
                 )
             }
-        } else{
+        } else {
             Column(
-                modifier = Modifier.fillMaxSize().padding(15.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(15.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                var message = "No se puede acceder a esta funcionalidad sin el permiso de localización"
-                if(showButton){
-                    message = "Esta función le permite visualizar un mapa para ver rutas. Es indispensable que permita el acceso."
+                var message =
+                    "No se puede acceder a esta funcionalidad sin el permiso de localización"
+                if (showButton) {
+                    message =
+                        "Esta función le permite visualizar un mapa para ver rutas. Es indispensable que permita el acceso."
 
                     Spacer(modifier = Modifier.height(25.dp))
-                    Text(message,
-                        textAlign = TextAlign.Center,
-                        fontSize = 15.sp)
+                    Text(
+                        message, textAlign = TextAlign.Center, fontSize = 15.sp
+                    )
                     Spacer(modifier = Modifier.height(25.dp))
                     Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
+                        modifier = Modifier.fillMaxWidth(), onClick = {
                             permission.launchPermissionRequest()
                         }) { Text("Solicitar Permiso") }
-                }
-                else{
+                } else {
 
                     Spacer(modifier = Modifier.height(25.dp))
-                    Text(message,
-                        textAlign = TextAlign.Center,
-                        fontSize = 15.sp)
+                    Text(
+                        message, textAlign = TextAlign.Center, fontSize = 15.sp
+                    )
                 }
             }
         }
@@ -356,8 +354,7 @@ fun MapTemplate(user: User,
         Dialog(
             onDismissRequest = {
                 popupStateDNComposer = false
-            },
-            properties = DialogProperties(
+            }, properties = DialogProperties(
                 usePlatformDefaultWidth = false
             )
         ) {
@@ -366,13 +363,11 @@ fun MapTemplate(user: User,
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.55f))
-                    .padding(20.dp),
-                contentAlignment = Alignment.Center
+                    .padding(20.dp), contentAlignment = Alignment.Center
             ) {
 
                 DropNoteComposer(
-                    value = noteText,
-                    onValueChange = { noteText = it },
+                    value = noteText, onValueChange = { noteText = it },
 
                     onImageClick = {
                         mediaManager.launchCamera()

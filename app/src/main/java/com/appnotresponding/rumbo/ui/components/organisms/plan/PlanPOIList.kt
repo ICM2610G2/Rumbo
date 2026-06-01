@@ -1,6 +1,9 @@
 package com.appnotresponding.rumbo.ui.components.organisms.plan
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -32,6 +35,9 @@ fun PlanPOIList(places: List<Place>, placesViewModel: PlacesViewModel) {
     ) {
         items(places) { place ->
             PlanItemCard(p = place, placesViewModel)
+        }
+        item {
+            Spacer(modifier = Modifier.height(96.dp))
         }
     }
 }

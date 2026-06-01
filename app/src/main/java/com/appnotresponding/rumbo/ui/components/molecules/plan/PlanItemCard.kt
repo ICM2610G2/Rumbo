@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -56,12 +57,14 @@ fun PlanItemCard(p: Place, placesViewModel: PlacesViewModel) {
             SubcomposeAsyncImage(
                 model = p.imageUrl,
                 contentDescription = "Imagen de ${p.name}",
+                modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
                 error = {
                     Image(
                         painter = painterResource(R.drawable.ic_picture),
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer)
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer),
+                        contentScale = ContentScale.Crop
                     )
                 })
         }
@@ -77,15 +80,16 @@ fun PlanItemCard(p: Place, placesViewModel: PlacesViewModel) {
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(
-                text = p.description ?: "No hay información",
+                text = p.description ?: "No hay descripción",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onBackground
             )
-            Text(
+            /*Text(
                 text = p.price ?: "No hay información",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onBackground
-            )
+            )*/
+
             RumboButton(
                 text = msg, onClick = {
                     icon = R.drawable.ic_check
