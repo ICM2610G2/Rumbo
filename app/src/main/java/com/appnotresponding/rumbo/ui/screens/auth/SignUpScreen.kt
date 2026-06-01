@@ -109,7 +109,9 @@ fun SignUpForm(
     onPickPhoto: () -> Unit,
     onRegister: () -> Unit,
 ) {
-    Box(modifier = modifier.fillMaxWidth()) {
+    Box(modifier = modifier.fillMaxWidth().padding(vertical = 32.dp),
+        contentAlignment = Alignment.Center
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
