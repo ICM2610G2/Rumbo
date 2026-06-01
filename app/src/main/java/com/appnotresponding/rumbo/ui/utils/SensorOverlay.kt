@@ -113,7 +113,7 @@ fun CompassWidget(
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .size(16.dp)
-                    .rotate(-animatedRotation)
+                    .rotate(animatedRotation)
             )
 
             Box(

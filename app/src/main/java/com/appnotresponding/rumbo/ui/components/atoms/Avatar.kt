@@ -64,13 +64,13 @@ fun Avatar(
     isOnline: Boolean = false
 ) {
     val context = LocalContext.current
-    val pfp = user?.profilePictureUrl
+    val avatarUrl = user?.profilePictureUrl?.takeIf { it.isNotBlank() }
     val initials = user?.name
     // Extraer las iniciales para mostrar, limitando a 2 caracteres y convirtiendo a mayúsculas
     val displayInitials = initials?.trim()?.take(2)?.uppercase()?.ifBlank { null }
 
-    val imageRequest = remember(pfp) {
-        pfp?.let {
+    val imageRequest: ImageRequest? = remember(avatarUrl) {
+        avatarUrl?.let {
             ImageRequest.Builder(context)
                 .data(it)
                 .allowHardware(false)
@@ -123,7 +123,7 @@ fun Avatar(
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(CircleShape),
-                        error = {
+                        loading = {
                             Image(
                                 painter = painterResource(R.drawable.ic_user),
                                 contentDescription = contentDescription,
@@ -133,18 +133,47 @@ fun Avatar(
                                     .padding(size.size * 0.2f)
                             )
                         },
+                        error = {
+                            if (displayInitials != null) {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = displayInitials,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        style = initialsSize,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            } else {
+                                Image(
+                                    painter = painterResource(R.drawable.ic_user),
+                                    contentDescription = contentDescription,
+                                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimaryContainer),
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(size.size * 0.2f)
+                                )
+                            }
+                        },
                         success = {
                             SubcomposeAsyncImageContent()
                         })
                 }
 
                 displayInitials != null -> {
-                    Text(
-                        text = displayInitials,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        style = initialsSize,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = displayInitials,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            style = initialsSize,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }
