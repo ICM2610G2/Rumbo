@@ -34,6 +34,7 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 @Composable
 fun MainTopBar(u: User, onProfileClick: () -> Unit = {}) {
     val bottomRoundedShape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
+    val displayName = u.name.replace(Regex(" +$"), "")
     Surface(
         shape = bottomRoundedShape, color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
@@ -56,7 +57,7 @@ fun MainTopBar(u: User, onProfileClick: () -> Unit = {}) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "¡Hola, ${u.name}!",
+                    text = "¡Hola, ${displayName}!",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -79,6 +80,7 @@ fun MainTopBar(u: User, onProfileClick: () -> Unit = {}) {
 @Composable
 fun ChatTopBar(u: User, activity: String? = null) {
     val bottomRoundedShape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
+    val displayName = u.name.replace(Regex(" +$"), "")
     Surface(
         shape = bottomRoundedShape, color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
@@ -93,7 +95,7 @@ fun ChatTopBar(u: User, activity: String? = null) {
             Column {
 
                 Text(
-                    text = u.name,
+                    text = displayName,
                     style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier.padding(start = 8.dp),
                     color = MaterialTheme.colorScheme.onSurface
@@ -142,4 +144,3 @@ private fun ChatTopBarDarkPreview() {
         ChatTopBar(u = sampleUser, activity = "Rumbo al Museo Nacional")
     }
 }
-

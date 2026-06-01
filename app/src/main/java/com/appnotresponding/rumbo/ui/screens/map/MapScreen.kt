@@ -1,27 +1,34 @@
 package com.appnotresponding.rumbo.ui.screens.map
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
 import com.appnotresponding.rumbo.auth
 import com.appnotresponding.rumbo.models.sampleUser
 import com.appnotresponding.rumbo.navigation.AppScreens
-import com.appnotresponding.rumbo.navigation.placesViewModel
 import com.appnotresponding.rumbo.ui.templates.MapTemplate
 import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 import com.appnotresponding.rumbo.ui.viewModel.UserLocationViewModel
+import com.appnotresponding.rumbo.ui.viewModel.UserViewModel
 
 @Composable
 fun MapScreen(
-    controller: NavHostController, placesViewModel: PlacesViewModel, locationViewModel: UserLocationViewModel
+    controller: NavHostController,
+    placesViewModel: PlacesViewModel,
+    locationViewModel: UserLocationViewModel,
+    userViewModel: UserViewModel
 ) {
+    val userState by userViewModel.currentUserState.collectAsState()
+    val user = userState ?: sampleUser.copy(name = "Cargando...")
+
     MapTemplate(
-        user = sampleUser.copy(name = "Ana"), controller = controller, onProfileClick = {
+        user = user, controller = controller, onProfileClick = {
             auth.signOut()
             controller.navigate(AppScreens.Splash.name) {
                 popUpTo(controller.graph.startDestinationId) { inclusive = true }
                 launchSingleTop = true
             }
-        },
-        placesViewModel = placesViewModel,
-        locationViewModel = locationViewModel)
+        }, placesViewModel = placesViewModel, locationViewModel = locationViewModel
+    )
 }

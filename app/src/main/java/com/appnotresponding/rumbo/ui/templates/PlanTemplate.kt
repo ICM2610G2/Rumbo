@@ -9,19 +9,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.appnotresponding.rumbo.models.Place
 import com.appnotresponding.rumbo.models.User
-import com.appnotresponding.rumbo.models.samplePlace
-import com.appnotresponding.rumbo.models.sampleUser
 import com.appnotresponding.rumbo.ui.components.molecules.common.LocationHeader
 import com.appnotresponding.rumbo.ui.components.organisms.common.MainTopBar
 import com.appnotresponding.rumbo.ui.components.organisms.common.Nav
 import com.appnotresponding.rumbo.ui.components.organisms.plan.PlanPOIList
-import com.appnotresponding.rumbo.ui.theme.RumboTheme
 import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 
 /**
@@ -65,24 +60,24 @@ fun PlanTemplate(
 @Preview(showBackground = true, name = "PlanTemplate - Light")
 @Composable
 private fun PlanTemplateLightPreview() {
-    RumboTheme(darkTheme = false) {
-        PlanTemplate(
-            user = sampleUser,
-            placesList = listOf(samplePlace, samplePlace, samplePlace),
-            controller = rememberNavController()
-        )
-    }
+RumboTheme(darkTheme = false) {
+PlanTemplate(
+user = sampleUser,
+placesList = listOf(samplePlace, samplePlace, samplePlace),
+controller = rememberNavController()
+)
+}
 }
 
 @Preview(showBackground = true, name = "PlanTemplate - Dark", backgroundColor = 0xFF1E1E1E)
 @Composable
 private fun PlanTemplateDarkPreview() {
-    RumboTheme(darkTheme = true) {
-        PlanTemplate(
-            user = sampleUser,
-            placesList = listOf(samplePlace, samplePlace, samplePlace),
-            controller = rememberNavController()
-        )
-    }
+RumboTheme(darkTheme = true) {
+PlanTemplate(
+user = sampleUser,
+placesList = listOf(samplePlace, samplePlace, samplePlace),
+controller = rememberNavController()
+)
 }
-        */
+}
+ */

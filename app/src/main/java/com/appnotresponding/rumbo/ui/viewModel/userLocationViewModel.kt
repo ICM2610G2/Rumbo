@@ -6,13 +6,16 @@ import android.os.Looper
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationServices
 import com.appnotresponding.rumbo.ui.utils.createLocationCallback
 import com.appnotresponding.rumbo.ui.utils.createLocationRequest
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,6 +47,30 @@ class UserLocationViewModel(application: Application) : AndroidViewModel(applica
             }
             Log.i("ULViewModel", "Ubicación recibida: ${location.latitude}, ${location.longitude}")
 
+            val userId = FirebaseAuth.getInstance().currentUser?.uid
+            if (userId != null) {
+                val dbRef = FirebaseDatabase.getInstance().getReference("users").child(userId)
+                dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (snapshot.exists()) {
+                            val updates = mapOf<String, Any>(
+                                "latitude" to location.latitude,
+                                "longitude" to location.longitude,
+                                "altitude" to location.altitude
+                            )
+                            dbRef.updateChildren(updates).addOnFailureListener { e ->
+                                Log.e("ULViewModel", "Error actualizando ubicación en DB", e)
+                            }
+                        } else {
+                            Log.d("ULViewModel", "El nodo de usuario no existe aún en la base de datos. No se actualiza ubicación para evitar nodos huérfanos.")
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Log.e("ULViewModel", "Error al leer existencia del usuario en DB: ${error.message}")
+                    }
+                })
+            }
         }
     }
 
@@ -57,15 +84,12 @@ class UserLocationViewModel(application: Application) : AndroidViewModel(applica
         if (!permissionGranted) {
             permissionGranted = true
             if (ContextCompat.checkSelfPermission(
-                    context,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION
+                    context, android.Manifest.permission.ACCESS_FINE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
                 Log.i("Informativo", "Logrado2")
                 vel = locationClient.requestLocationUpdates(
-                    locationRequest,
-                    locationCallback,
-                    Looper.getMainLooper()
+                    locationRequest, locationCallback, Looper.getMainLooper()
                 )
             }
         }

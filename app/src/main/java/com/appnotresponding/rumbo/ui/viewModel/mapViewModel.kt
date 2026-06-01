@@ -21,7 +21,7 @@ data class MapState(
     val lastSafeLatLng: LatLng = LatLng(0.0, 0.0)
 )
 
-class MapViewModel: ViewModel() {
+class MapViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(MapState())
     val uiState: StateFlow<MapState> = _uiState.asStateFlow()
@@ -35,12 +35,12 @@ class MapViewModel: ViewModel() {
     }
 
     fun updateUserMarker(lat: Double, lng: Double) {
-        val newLatLng = LatLng(lat, lng)
-        _uiState.update { it.copy(userMarker = MyMarker(newLatLng)) }
+        _uiState.update { it.copy(userMarker = MyMarker(LatLng(lat, lng))) }
     }
 
-    fun updateAdditionalMarker(position: LatLng, title: String) {
-        _uiState.update { it.copy(additionalMarker = MyMarker(position), additionalMarkerVisible = true) }
+    fun updateAdditionalMarker(position: LatLng, title: String) { _uiState.update { it.copy(additionalMarker = MyMarker(position), additionalMarkerVisible = true
+            )
+        }
     }
 
     fun cancelAdditionalMarkerVisibility() {
@@ -62,5 +62,4 @@ class MapViewModel: ViewModel() {
     fun updateUserRoutePoints(points: List<LatLng>) {
         _uiState.update { it.copy(userRoutePoints = points) }
     }
-
 }

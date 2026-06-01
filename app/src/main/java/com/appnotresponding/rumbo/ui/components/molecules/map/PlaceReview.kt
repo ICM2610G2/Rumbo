@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -56,11 +57,13 @@ fun PlaceInfo(p: Place) {
                 model = p.imageUrl,
                 contentDescription = "Imagen de ${p.name}",
                 contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
                 error = {
                     Image(
                         painter = painterResource(R.drawable.ic_picture),
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer)
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer),
+                        contentScale = ContentScale.Crop
                     )
                 })
         }

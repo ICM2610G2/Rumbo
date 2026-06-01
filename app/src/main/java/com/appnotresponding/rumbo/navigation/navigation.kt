@@ -19,6 +19,8 @@ import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 import androidx.lifecycle.ViewModel
 import com.appnotresponding.rumbo.ui.viewModel.UserLocationViewModel
 
+import com.appnotresponding.rumbo.ui.viewModel.UserViewModel
+
 val placesViewModel: PlacesViewModel = PlacesViewModel()
 
 enum class AppScreens{
@@ -34,7 +36,10 @@ enum class AppScreens{
 }
 
 @Composable
-fun Navigation(locationViewModel: UserLocationViewModel = viewModel()){
+fun Navigation(
+    locationViewModel: UserLocationViewModel = viewModel(),
+    userViewModel: UserViewModel = viewModel()
+){
     val context = LocalContext.current
     val navController = rememberNavController()
     NavHost(navController=navController, startDestination = AppScreens.Splash.name){
@@ -48,19 +53,19 @@ fun Navigation(locationViewModel: UserLocationViewModel = viewModel()){
             SignUpScreen(navController)
         }
         composable (route = AppScreens.Map.name) {
-            MapScreen(navController, placesViewModel, locationViewModel)
+            MapScreen(navController, placesViewModel, locationViewModel, userViewModel)
         }
         composable (route = AppScreens.Chat.name) {
-            ChatListScreen(navController)
+            ChatListScreen(navController, userViewModel)
         }
         composable(route = AppScreens.ChatThread.name){
             ChatThreadScreen(navController)
         }
         composable(route = AppScreens.Plan.name){
-            PlanScreen(navController, placesViewModel, locationViewModel)
+            PlanScreen(navController, placesViewModel, locationViewModel, userViewModel)
         }
         composable(route = AppScreens.Itinerary.name){
-            ItineraryScreen(navController, placesViewModel)
+            ItineraryScreen(navController, placesViewModel, userViewModel)
         }
         composable(route = AppScreens.OnBoarding.name){
             OnBoardingScreen(navController)
