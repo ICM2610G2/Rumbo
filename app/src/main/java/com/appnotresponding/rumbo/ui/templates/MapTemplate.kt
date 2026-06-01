@@ -1,9 +1,5 @@
 package com.appnotresponding.rumbo.ui.templates
 
-import android.content.pm.PackageManager
-import android.hardware.Sensor
-import android.hardware.SensorManager
-import android.os.Looper
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,15 +12,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -36,28 +29,29 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
+import coil3.ImageLoader
+import coil3.request.ImageRequest
+import coil3.request.SuccessResult
+import coil3.request.allowHardware
+import coil3.toBitmap
 import com.appnotresponding.rumbo.R
-import com.appnotresponding.rumbo.geocoder
 import com.appnotresponding.rumbo.isDarkTheme
 import com.appnotresponding.rumbo.models.User
 import com.appnotresponding.rumbo.models.samplePlace
 import com.appnotresponding.rumbo.models.sampleReview
-import com.appnotresponding.rumbo.models.sampleUser
 import com.appnotresponding.rumbo.roadManager
+import com.appnotresponding.rumbo.ui.components.atoms.UserProfileBubble
 import com.appnotresponding.rumbo.ui.components.molecules.map.CancelRoute
 import com.appnotresponding.rumbo.ui.components.molecules.map.LocateMe
 import com.appnotresponding.rumbo.ui.components.molecules.map.WriteDropNote
@@ -65,9 +59,7 @@ import com.appnotresponding.rumbo.ui.components.organisms.common.MainTopBar
 import com.appnotresponding.rumbo.ui.components.organisms.common.Nav
 import com.appnotresponding.rumbo.ui.components.organisms.map.DropNoteComposer
 import com.appnotresponding.rumbo.ui.components.organisms.map.PlacePreviewCard
-import com.appnotresponding.rumbo.ui.theme.RumboTheme
 import com.appnotresponding.rumbo.ui.utils.SensorOverlay
-import com.appnotresponding.rumbo.ui.utils.createLocationCallback
 import com.appnotresponding.rumbo.ui.utils.createLocationRequest
 import com.appnotresponding.rumbo.ui.utils.rememberLocationManager
 import com.appnotresponding.rumbo.ui.utils.rememberMediaHardwareManager
@@ -78,11 +70,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
-import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
@@ -92,13 +80,10 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapEffect
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import org.osmdroid.util.GeoPoint
 
 
@@ -123,6 +108,19 @@ fun MapTemplate(user: User,
     val locationState = rememberLocationManager()
     val mediaManager = rememberMediaHardwareManager()
     var noteText by remember { mutableStateOf("") }
+    val markerKey = remember(user.profilePictureUrl) { user.profilePictureUrl ?: "" }
+    var profileBitmap by remember(user.profilePictureUrl) { mutableStateOf<ImageBitmap?>(null) }
+    LaunchedEffect(user.profilePictureUrl) {
+        if (user.profilePictureUrl.isNullOrEmpty()) return@LaunchedEffect
+        val request = ImageRequest.Builder(context)
+            .data(user.profilePictureUrl)
+            .allowHardware(false)
+            .build()
+        val result = ImageLoader(context).execute(request)
+        if (result is SuccessResult) {
+            profileBitmap = result.image.toBitmap().asImageBitmap()
+        }
+    }
 
     var latitude by remember { mutableDoubleStateOf(4.627293) }
     var longitude by remember { mutableDoubleStateOf(-74.063228) }
@@ -131,7 +129,7 @@ fun MapTemplate(user: User,
     }
     var currentMapStyle by remember { mutableIntStateOf(MapColorScheme.FOLLOW_SYSTEM) }
     val mapId =
-        stringResource(R.string.map_id)                                                             // Controla el estilo de color del mapa (claro, oscuro o seguir el sistema) y se actualiza dinámicamente según los cambios en el sensor de luz ambiental
+        stringResource(R.string.map_id)
 
     var permission = rememberPermissionState(locationPermission)
     var showButton by remember { mutableStateOf(false) }
@@ -149,36 +147,38 @@ fun MapTemplate(user: User,
     if (permission.status.isGranted) {
         if (!locationViewModel.permissionGranted) locationViewModel.updateVel()
     }
+
     LaunchedEffect(
         userLocationState.latitude,
-        userLocationState.longitude
+        userLocationState.longitude,
+        state.centerInUserFirstTime
     ) {
         Log.d("RECOMPOSE", "Enntrando en launch")
-        viewModel.updateUserMarker(
-            userLocationState.latitude,
-            userLocationState.longitude
-        )
+        val tieneUbicacionReal = userLocationState.latitude != 0.0 || userLocationState.longitude != 0.0
 
-        if (state.centerInUserFirstTime && (placesState.selectedPlace == null)) {
-            cameraPositionState.position =
-                CameraPosition.fromLatLngZoom(
-                    LatLng(
-                        userLocationState.latitude,
-                        userLocationState.longitude
-                    ), 18f
+        if (tieneUbicacionReal) {
+            viewModel.updateUserMarker(userLocationState.latitude, userLocationState.longitude)
+        }
+
+        if (state.centerInUserFirstTime) {
+            if (tieneUbicacionReal && placesState.selectedPlace == null) {
+                cameraPositionState.position = CameraPosition.fromLatLngZoom(
+                    LatLng(userLocationState.latitude, userLocationState.longitude), 18f
                 )
-            viewModel.updateCenterInUserFirstTime()
-        } else if (state.centerInUserFirstTime && (placesState.selectedPlace != null)) {
-            cameraPositionState.position =
-                CameraPosition.fromLatLngZoom(
+                viewModel.updateCenterInUserFirstTime()
+            } else if (tieneUbicacionReal && placesState.selectedPlace != null) {
+                cameraPositionState.position = CameraPosition.fromLatLngZoom(
                     LatLng(
                         placesState.selectedPlace!!.latitude,
                         placesState.selectedPlace!!.longitude
                     ), 14f
                 )
-            viewModel.updateCenterInUserFirstTime()
+                viewModel.updateCenterInUserFirstTime()
+            }
+            // Si aún no hay ubicación real, la cámara se queda en Bogotá (valor inicial)
         }
-        if (placesState.selectedPlace != null) {
+
+        if (tieneUbicacionReal && placesState.selectedPlace != null) {
             val startPoint = GeoPoint(userLocationState.latitude, userLocationState.longitude)
             val destination = GeoPoint(
                 placesState.selectedPlace!!.latitude,
@@ -269,7 +269,6 @@ fun MapTemplate(user: User,
                         GoogleMapOptions().apply {
                             mapId(mapId)
                             mapType(GoogleMap.MAP_TYPE_NORMAL)
-
                         }
                     }) {
                     // https://medium.com/@ferobregon03/compose-multiplatform-displaying-and-updating-geojson-on-a-mapbox-96f025d8024a
@@ -278,10 +277,23 @@ fun MapTemplate(user: User,
                     MapEffect(currentMapStyle) { googleMap ->
                         googleMap.mapColorScheme = currentMapStyle
                     }
-                    Marker(
-                        state = rememberUpdatedMarkerState(LatLng(userLocationState.latitude, userLocationState.longitude)),
-                        title = "User"
-                    )
+                    MarkerComposable(
+                        keys = arrayOf<Any>(
+                            userLocationState.latitude,
+                            userLocationState.longitude,
+                            markerKey,
+                            profileBitmap != null
+                        ),
+                        state = rememberUpdatedMarkerState(
+                            LatLng(userLocationState.latitude, userLocationState.longitude)
+                        ),
+                        title = user.name
+                    ) {
+                        UserProfileBubble(
+                            user = user,
+                            preloadedBitmap = profileBitmap
+                        )
+                    }
                     Marker(
                         state = rememberUpdatedMarkerState(state.additionalMarker.position),
                         title = state.additionalMarker.title,
@@ -395,83 +407,3 @@ fun MapTemplate(user: User,
         }
     }
 }
-
-/**
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-fun MapTemplate( user: User,
-                 controller: NavHostController,
-                 onProfileClick: () -> Unit = {}, placesViewModel: PlacesViewModel){
-    var permission = rememberPermissionState(locationPermission)
-    var showButton by remember { mutableStateOf(false) }
-    SideEffect {
-        if(!permission.status.isGranted){
-            if(permission.status.shouldShowRationale){
-                showButton = true
-            }else {
-                showButton = false
-                permission.launchPermissionRequest()
-            }
-        }
-    }
-    if(permission.status.isGranted){
-        Mapa(
-            user,
-            controller,
-            onProfileClick, placesViewModel = placesViewModel)
-    }else{
-        Column(
-            modifier = Modifier.fillMaxSize().padding(15.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            var message = "No se puede acceder a esta funcionalidad sin el permiso de localización"
-            if(showButton){
-                message = "Esta función le permite visualizar un mapa para ver rutas. Es indispensable que permita el acceso."
-
-                Spacer(modifier = Modifier.height(25.dp))
-                Text(message,
-                    color = Color.Red,
-                    textAlign = TextAlign.Center,
-                    fontSize = 20.sp)
-                Spacer(modifier = Modifier.height(25.dp))
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        permission.launchPermissionRequest()
-                    }) { Text("Solicitar Permiso") }
-            }
-            else{
-
-                Spacer(modifier = Modifier.height(25.dp))
-                Text(message,
-                    color = Color.Red,
-                    textAlign = TextAlign.Center,
-                    fontSize = 20.sp)
-            }
-        }
-    }
-}
-*/
-
-/**
-@Preview(showBackground = true, name = "PlacePreviewCard - Light")
-@Composable
-private fun MapTemplateLightPreview() {
-    RumboTheme(darkTheme = true) {
-        MapTemplate(
-            sampleUser, controller = rememberNavController()
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF1E1E1E, name = "PlacePreviewCard - Dark")
-@Composable
-private fun MapTemplateDarkPreview() {
-    RumboTheme(darkTheme = false) {
-        MapTemplate(
-            sampleUser, controller = rememberNavController()
-        )
-    }
-}
-*/
