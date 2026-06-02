@@ -24,12 +24,11 @@ fun ChatTemplate(
     subtitle: String,
     modifier: Modifier = Modifier,
     controller: NavHostController,
-    onProfileClick: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
     Scaffold(
         contentWindowInsets = WindowInsets(0),
-        topBar = { MainTopBar(u = currentUser, onProfileClick = onProfileClick) },
+        topBar = { MainTopBar(u = currentUser, controller = controller) },
         bottomBar = { Nav(controller) }) { paddingValues ->
         Column(
             modifier = modifier

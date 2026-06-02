@@ -10,10 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,9 +22,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.models.User
 import com.appnotresponding.rumbo.models.sampleUser
+import com.appnotresponding.rumbo.navigation.AppScreens
 import com.appnotresponding.rumbo.ui.components.atoms.Avatar
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
@@ -39,7 +38,7 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  * y la foto de perfil para el avatar.
  */
 @Composable
-fun MainTopBar(u: User, onProfileClick: () -> Unit = {}) {
+fun MainTopBar(u: User, controller: NavHostController) {
     val bottomRoundedShape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
     val displayName = u.name.replace(Regex(" +$"), "")
     Surface(
@@ -67,7 +66,9 @@ fun MainTopBar(u: User, onProfileClick: () -> Unit = {}) {
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Avatar(modifier = Modifier.clickable(onClick = onProfileClick), user = u)
+                Avatar(modifier = Modifier.clickable(onClick = {
+                    controller.navigate(AppScreens.Profile.name)
+                }), user = u)
             }
         }
     }
@@ -85,7 +86,7 @@ fun MainTopBar(u: User, onProfileClick: () -> Unit = {}) {
  */
 @Composable
 fun ChatTopBar(
-    u: User, 
+    u: User,
     activity: String? = null,
     isGroup: Boolean = false,
     isMuted: Boolean = false,
@@ -136,15 +137,6 @@ fun ChatTopBar(
             }
             if (isGroup) {
                 Row {
-                    if (onMuteClick != null) {
-                        IconButton(onClick = onMuteClick) {
-                            Icon(
-                                imageVector = if (isMuted) Icons.Filled.NotificationsOff else Icons.Filled.Notifications,
-                                contentDescription = if (isMuted) "Desilenciar" else "Silenciar",
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
                     if (onLeaveClick != null) {
                         IconButton(onClick = onLeaveClick) {
                             Icon(
@@ -160,11 +152,12 @@ fun ChatTopBar(
     }
 }
 
+/*
 @Preview(showBackground = true, name = "MainTopBar - Light")
 @Composable
 private fun MainTopBarLightPreview() {
     RumboTheme(darkTheme = false) {
-        MainTopBar(u = sampleUser)
+        MainTopBar(u = sampleUser,)
     }
 }
 
@@ -172,7 +165,7 @@ private fun MainTopBarLightPreview() {
 @Composable
 private fun MainTopBarDarkPreview() {
     RumboTheme(darkTheme = true) {
-        MainTopBar(u = sampleUser)
+        MainTopBar(u = sampleUser,)
     }
 }
 
@@ -190,4 +183,4 @@ private fun ChatTopBarDarkPreview() {
     RumboTheme(darkTheme = true) {
         ChatTopBar(u = sampleUser, activity = "Rumbo al Museo Nacional")
     }
-}
+}*/

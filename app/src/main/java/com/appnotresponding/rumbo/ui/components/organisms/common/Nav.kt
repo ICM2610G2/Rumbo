@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -183,7 +184,8 @@ fun Nav(
                                 if (unreadCount > 0) {
                                     Box(
                                         modifier = Modifier
-                                            .align(Alignment.TopStart)
+                                            .align(Alignment.TopEnd)
+                                            .offset(x = (8).dp, y = (-4).dp)
                                             .size(18.dp)
                                             .background(MaterialTheme.colorScheme.primary, CircleShape),
                                         contentAlignment = Alignment.Center

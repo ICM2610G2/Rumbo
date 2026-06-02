@@ -38,7 +38,8 @@ enum class AppScreens {
     Plan,
     Itinerary,
     OnBoarding,
-    Friends
+    Friends,
+    Profile
 }
 
 @Composable
@@ -77,6 +78,9 @@ fun Navigation(
         }
         composable(route = AppScreens.Friends.name) {
             FriendsScreen(navController, userViewModel, friendsViewModel, chatViewModel)
+        }
+        composable(route = AppScreens.Profile.name) {
+            ProfileScreen(navController, userViewModel)
         }
     }
 }

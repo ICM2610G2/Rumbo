@@ -1,11 +1,9 @@
 package com.appnotresponding.rumbo.ui.templates
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -21,13 +19,12 @@ import com.appnotresponding.rumbo.ui.components.organisms.common.Nav
 @Composable
 fun FriendsTemplate(
     currentUser: User,
-    onProfileClick: () -> Unit = {},
     controller: NavHostController,
     content: @Composable () -> Unit
 ) {
     Scaffold(
         contentWindowInsets = WindowInsets(0),
-        topBar = { MainTopBar(u = currentUser, onProfileClick = onProfileClick) },
+        topBar = { MainTopBar(u = currentUser, controller = controller) },
         bottomBar = { Nav(controller) }
     ) { paddingValues ->
         Column(

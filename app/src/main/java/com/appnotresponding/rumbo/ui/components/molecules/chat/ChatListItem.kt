@@ -68,7 +68,7 @@ fun ChatListItem(
                 Avatar(user = user, isOnline = isOnline)
             }
 
-            Column(modifier = Modifier.weight(1f)) {
+            Column(modifier = Modifier.weight(8.5f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = user.name,
@@ -88,7 +88,6 @@ fun ChatListItem(
                         )
                     }
                 }
-                Box(modifier = Modifier.padding(top = 4.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -103,43 +102,43 @@ fun ChatListItem(
                         modifier = Modifier.weight(1f)
                     )
 
-                    Column(horizontalAlignment = Alignment.End) {
-                        if (timestamp.isNotEmpty()) {
-                            Text(
-                                text = timestamp,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = if (unreadCount > 0 || hasUnread) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                        if (unreadCount > 0) {
-                            Box(
-                                modifier = Modifier
-                                    .padding(top = 4.dp)
-                                    .size(22.dp)
-                                    .background(
-                                        color = MaterialTheme.colorScheme.primary, shape = CircleShape
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = if (unreadCount > 99) "99+" else unreadCount.toString(),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onPrimary
-                                )
-                            }
-                        } else if (hasUnread) {
-                            Box(
-                                modifier = Modifier
-                                    .padding(top = 4.dp)
-                                    .size(8.dp)
-                                    .background(
-                                        color = MaterialTheme.colorScheme.primary, shape = CircleShape
-                                    )
-                            )
-                        }
-                    }
                 }
             }
+            Column(modifier = Modifier.weight(1.5f), horizontalAlignment = Alignment.End) {
+                if (timestamp.isNotEmpty()) {
+                    Text(
+                        text = timestamp,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (unreadCount > 0 || hasUnread) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                if (unreadCount > 0) {
+                    Box(
+                        modifier = Modifier
+                            .padding(top = 4.dp)
+                            .size(22.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.primary, shape = CircleShape
+                            ), contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = if (unreadCount > 99) "99+" else unreadCount.toString(),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                } else if (hasUnread) {
+                    Box(
+                        modifier = Modifier
+                            .padding(top = 4.dp)
+                            .size(8.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.primary, shape = CircleShape
+                            )
+                    )
+                }
+            }
+
         }
     }
 }

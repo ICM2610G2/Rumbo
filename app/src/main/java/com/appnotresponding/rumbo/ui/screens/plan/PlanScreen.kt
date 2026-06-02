@@ -62,9 +62,6 @@ fun PlanScreen(
         user = user,
         placesList = placesState.availablePlaces,
         controller = controller,
-        onProfileClick = {
-            controller.navigate(AppScreens.Profile.name)
-        },
-        placesViewModel
+        placesViewModel = placesViewModel
     )
 }

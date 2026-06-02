@@ -5,7 +5,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
 import com.appnotresponding.rumbo.models.sampleUser
-import com.appnotresponding.rumbo.navigation.AppScreens
 import com.appnotresponding.rumbo.ui.templates.ItineraryTemplate
 import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 import com.appnotresponding.rumbo.ui.viewModel.UserViewModel
@@ -19,8 +18,6 @@ fun ItineraryScreen(
     val user = userState ?: sampleUser.copy(name = "Cargando...")
 
     ItineraryTemplate(
-        user = user, itineraryList = state.itinerary, controller = controller, onProfileClick = {
-            controller.navigate(AppScreens.Profile.name)
-        }, placesViewModel
+        user = user, itineraryList = state.itinerary, controller = controller, placesViewModel = placesViewModel
     )
 }

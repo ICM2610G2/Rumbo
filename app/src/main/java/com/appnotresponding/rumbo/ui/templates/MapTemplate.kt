@@ -112,7 +112,6 @@ var locationRequest: LocationRequest = createLocationRequest()
 fun MapTemplate(
     user: User,
     controller: NavHostController,
-    onProfileClick: () -> Unit = {},
     viewModel: MapViewModel = viewModel(),
     dropNoteViewModel: DropNoteViewModel = viewModel(),
     itineraryHistoryViewModel: ItineraryHistoryViewModel = viewModel(),
@@ -265,7 +264,7 @@ fun MapTemplate(
     }
     Scaffold(
         contentWindowInsets = WindowInsets(0),
-        topBar = { MainTopBar(user, onProfileClick = onProfileClick) },
+        topBar = { MainTopBar(user, controller = controller) },
         floatingActionButton = {
             Column(
                 modifier = Modifier

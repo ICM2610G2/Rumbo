@@ -5,13 +5,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
 import com.appnotresponding.rumbo.models.sampleUser
-import com.appnotresponding.rumbo.navigation.AppScreens
 import com.appnotresponding.rumbo.ui.templates.MapTemplate
+import com.appnotresponding.rumbo.ui.viewModel.FriendsViewModel
 import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 import com.appnotresponding.rumbo.ui.viewModel.UserLocationViewModel
 import com.appnotresponding.rumbo.ui.viewModel.UserViewModel
-
-import com.appnotresponding.rumbo.ui.viewModel.FriendsViewModel
 
 @Composable
 fun MapScreen(
@@ -25,9 +23,11 @@ fun MapScreen(
     val user = userState ?: sampleUser.copy(name = "Cargando...")
 
     MapTemplate(
-        user = user, controller = controller, onProfileClick = {
-            controller.navigate(AppScreens.Profile.name)
-        }, placesViewModel = placesViewModel, locationViewModel = locationViewModel,
-        userViewModel = userViewModel, friendsViewModel = friendsViewModel
+        user = user,
+        controller = controller,
+        placesViewModel = placesViewModel,
+        locationViewModel = locationViewModel,
+        userViewModel = userViewModel,
+        friendsViewModel = friendsViewModel
     )
 }

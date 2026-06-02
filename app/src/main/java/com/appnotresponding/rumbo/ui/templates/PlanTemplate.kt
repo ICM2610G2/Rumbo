@@ -35,12 +35,11 @@ fun PlanTemplate(
     user: User,
     placesList: List<Place>,
     controller: NavHostController,
-    onProfileClick: () -> Unit = {},
     placesViewModel: PlacesViewModel
 ) {
     Scaffold(
         contentWindowInsets = WindowInsets(0),
-        topBar = { MainTopBar(u = user, onProfileClick = onProfileClick) },
+        topBar = { MainTopBar(u = user, controller = controller) },
         bottomBar = { Nav(controller) }) { paddingValues ->
         Column(
             modifier = Modifier

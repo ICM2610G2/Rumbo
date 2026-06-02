@@ -28,7 +28,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.appnotresponding.rumbo.R
-import com.appnotresponding.rumbo.auth
 import com.appnotresponding.rumbo.models.User
 import com.appnotresponding.rumbo.models.sampleUser
 import com.appnotresponding.rumbo.navigation.AppScreens
@@ -61,13 +60,7 @@ fun ChatListScreen(
     Scaffold(
         contentWindowInsets = WindowInsets(0),
         topBar = {
-            MainTopBar(u = currentUser, onProfileClick = {
-                auth.signOut()
-                controller.navigate(AppScreens.Splash.name) {
-                    popUpTo(controller.graph.startDestinationId) { inclusive = true }
-                    launchSingleTop = true
-                }
-            })
+            MainTopBar(u = currentUser, controller = controller)
         },
         bottomBar = { Nav(controller) },
         floatingActionButton = {
