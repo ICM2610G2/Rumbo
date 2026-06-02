@@ -47,7 +47,7 @@ fun Nav(
     val currentRoute = navBackStackEntry?.destination?.route
     val activeItem = when (currentRoute) {
         AppScreens.Map.name -> NavItem.Map
-        AppScreens.Chat.name, AppScreens.ChatThread.name, AppScreens.Friends.name -> NavItem.Chat
+        AppScreens.Chat.name, AppScreens.ChatThread.name -> NavItem.Chat
         AppScreens.Plan.name -> NavItem.Plan
         AppScreens.Itinerary.name -> NavItem.Itinerary
         else -> NavItem.Map

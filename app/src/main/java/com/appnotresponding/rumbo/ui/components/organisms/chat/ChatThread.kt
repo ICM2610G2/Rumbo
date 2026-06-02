@@ -18,7 +18,6 @@ data class ChatMessageData(
     val message: String,
     val isUserMessage: Boolean,
     val senderName: String? = null,
-    val senderActivity: String? = null,
     val type: ChatBubbleType = ChatBubbleType.Regular,
     val place: Place? = null,
     val isSeparator: Boolean = false
@@ -45,7 +44,6 @@ fun ChatThread(
                     message = msg.message,
                     isUserMessage = msg.isUserMessage,
                     senderName = msg.senderName,
-                    senderActivity = msg.senderActivity,
                     type = msg.type,
                     place = msg.place
                 )

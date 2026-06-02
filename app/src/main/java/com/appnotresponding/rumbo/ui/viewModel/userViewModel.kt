@@ -31,54 +31,14 @@ class UserViewModel : ViewModel() {
     }
 
     private fun fetchUserData(uid: String) {
-        android.util.Log.d("UserViewModel", "Starting ValueEventListener for uid: $uid")
         dbRef.child(uid).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                try {
-                    val user = snapshot.getValue(User::class.java)
-                    android.util.Log.d("UserViewModel", "fetchUserData success: user=${user?.name}, sharingLocation=${user?.sharingLocation}")
-                    _currentUserState.value = user
-                } catch (e: Exception) {
-                    android.util.Log.e("UserViewModel", "Error deserializing User object: ${e.message}", e)
-                }
+                val user = snapshot.getValue(User::class.java)
+                _currentUserState.value = user
             }
 
             override fun onCancelled(error: DatabaseError) {
-                android.util.Log.e("UserViewModel", "fetchUserData cancelled: ${error.message}")
             }
         })
     }
-
-    fun toggleLocationSharing(isSharing: Boolean) {
-        val uid = auth.currentUser?.uid
-        if (uid == null) {
-            android.util.Log.e("UserViewModel", "Cannot toggle location sharing: user not authenticated (uid is null)")
-            return
-        }
-        android.util.Log.d("UserViewModel", "Toggling location sharing to $isSharing for uid: $uid")
-        dbRef.child(uid).child("sharingLocation").setValue(isSharing)
-            .addOnSuccessListener {
-                android.util.Log.d("UserViewModel", "Location sharing successfully set to $isSharing in DB")
-            }
-            .addOnFailureListener { e ->
-                android.util.Log.e("UserViewModel", "Failed to set location sharing to $isSharing: ${e.message}", e)
-            }
-    }
-
-    fun updateActivity(activity: String?) {
-        val uid = auth.currentUser?.uid
-        if (uid == null) {
-            android.util.Log.e("UserViewModel", "Cannot update activity: user not authenticated (uid is null)")
-            return
-        }
-        android.util.Log.d("UserViewModel", "Updating activity to $activity for uid: $uid")
-        dbRef.child(uid).child("activity").setValue(activity)
-            .addOnSuccessListener {
-                android.util.Log.d("UserViewModel", "Activity successfully set to $activity in DB")
-            }
-            .addOnFailureListener { e ->
-                android.util.Log.e("UserViewModel", "Failed to set activity to $activity: ${e.message}", e)
-            }
-    }
 }
-
