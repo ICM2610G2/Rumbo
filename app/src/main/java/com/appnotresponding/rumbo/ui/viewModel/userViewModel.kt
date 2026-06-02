@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +14,10 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class UserViewModel : ViewModel() {
     private val auth = FirebaseAuth.getInstance()
-    private val dbRef = FirebaseDatabase.getInstance().getReference("users")
+    private val database = FirebaseDatabase.getInstance()
+    private val dbRef = database.getReference("users")
+    private val connectedRef = database.getReference(".info/connected")
+    private var presenceListener: ValueEventListener? = null
 
     private val _currentUserState = MutableStateFlow<User?>(null)
     val currentUserState: StateFlow<User?> = _currentUserState.asStateFlow()
@@ -24,10 +28,28 @@ class UserViewModel : ViewModel() {
             val uid = firebaseAuth.currentUser?.uid
             if (uid != null) {
                 fetchUserData(uid)
+                setupPresence(uid)
             } else {
                 _currentUserState.value = null
             }
         }
+    }
+
+    private fun setupPresence(uid: String) {
+        presenceListener?.let { connectedRef.removeEventListener(it) }
+        val userStatusRef = dbRef.child(uid)
+        val listener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.getValue(Boolean::class.java) != true) return
+                userStatusRef.child("isOnline").onDisconnect().setValue(false)
+                userStatusRef.child("lastSeenAt").onDisconnect().setValue(ServerValue.TIMESTAMP)
+                userStatusRef.child("isOnline").setValue(true)
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        presenceListener = listener
+        connectedRef.addValueEventListener(listener)
     }
 
     private fun fetchUserData(uid: String) {
@@ -79,6 +101,15 @@ class UserViewModel : ViewModel() {
             .addOnFailureListener { e ->
                 android.util.Log.e("UserViewModel", "Failed to set activity to $activity: ${e.message}", e)
             }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        presenceListener?.let { connectedRef.removeEventListener(it) }
+        auth.currentUser?.uid?.let { uid ->
+            dbRef.child(uid).child("isOnline").setValue(false)
+            dbRef.child(uid).child("lastSeenAt").setValue(ServerValue.TIMESTAMP)
+        }
     }
 }
 

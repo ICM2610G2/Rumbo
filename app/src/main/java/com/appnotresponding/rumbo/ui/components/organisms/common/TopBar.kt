@@ -48,8 +48,7 @@ fun MainTopBar(u: User, onProfileClick: () -> Unit = {}) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-                .padding(top = 32.dp),
+                .padding(start = 16.dp, top = 32.dp, end = 16.dp, bottom = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -90,6 +89,7 @@ fun ChatTopBar(
     activity: String? = null,
     isGroup: Boolean = false,
     isMuted: Boolean = false,
+    isOnline: Boolean = false,
     onMuteClick: (() -> Unit)? = null,
     onLeaveClick: (() -> Unit)? = null,
     onBackClick: (() -> Unit)? = null
@@ -102,8 +102,7 @@ fun ChatTopBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-                .padding(top = 32.dp),
+                .padding(start = 16.dp, top = 32.dp, end = 16.dp, bottom = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -111,13 +110,13 @@ fun ChatTopBar(
                 if (onBackClick != null) {
                     IconButton(onClick = onBackClick) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            painter = painterResource(R.drawable.ic_arrow_left),
                             contentDescription = "Atrás",
                             tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
-                Avatar(user = u)
+                Avatar(user = u, isOnline = isOnline)
                 Column {
                     Text(
                         text = displayName,

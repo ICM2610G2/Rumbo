@@ -12,7 +12,9 @@ data class User(
     val altitude: Double = 0.0,
     val profilePictureUrl: String? = null,
     val sharingLocation: Boolean = false,
-    val activity: String? = null
+    val activity: String? = null,
+    val isOnline: Boolean = false,
+    val lastSeenAt: Long = 0
 )
 
 val sampleUser = User(

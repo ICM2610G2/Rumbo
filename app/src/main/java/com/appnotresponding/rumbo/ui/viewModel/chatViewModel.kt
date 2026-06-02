@@ -21,6 +21,7 @@ data class ChatListState(
     val selectedChatId: String = "",
     val selectedChatTitle: String = "",
     val selectedChatPhoto: String? = null,
+    val selectedChatIsOnline: Boolean = false,
     val isGroupChat: Boolean = false
 )
 
@@ -115,6 +116,9 @@ class ChatViewModel : ViewModel() {
             }
             val lastMessage = child.child("lastMessage").value as? String ?: ""
             val lastTimestamp = child.child("lastMessageTimestamp").value as? Long ?: 0L
+            val unreadCount = (child.child("unreadCounts").child(myUid).getValue(Int::class.java)
+                ?: child.child("unreadCounts").child(myUid).getValue(Long::class.java)?.toInt()
+                ?: 0).coerceAtLeast(0)
 
             db.getReference("friendships").child(myUid).child(otherUid).get().addOnSuccessListener { friendshipSnap ->
                 val areFriends = friendshipSnap.exists() && friendshipSnap.value == true
@@ -135,8 +139,10 @@ class ChatViewModel : ViewModel() {
                             otherUserName = user.name,
                             otherUserPhotoUrl = user.profilePictureUrl,
                             otherUserActivity = user.activity,
+                            isOtherUserOnline = user.isOnline,
                             lastMessage = lastMessage,
-                            lastMessageTimestamp = lastTimestamp
+                            lastMessageTimestamp = lastTimestamp,
+                            unreadCount = unreadCount
                         )
                     )
                 } else {
@@ -199,6 +205,9 @@ class ChatViewModel : ViewModel() {
                     val placeName = snapshot.child("placeName").value as? String ?: ""
                     val lastMessage = snapshot.child("lastMessage").value as? String ?: ""
                     val lastTimestamp = snapshot.child("lastMessageTimestamp").value as? Long ?: 0L
+                    val unreadCount = (snapshot.child("unreadCounts").child(myUid).getValue(Int::class.java)
+                        ?: snapshot.child("unreadCounts").child(myUid).getValue(Long::class.java)?.toInt()
+                        ?: 0).coerceAtLeast(0)
                     val mutedByMap = mutableMapOf<String, Boolean>()
                     for (muteChild in snapshot.child("mutedBy").children) {
                         val muteKey = muteChild.key ?: continue
@@ -210,6 +219,7 @@ class ChatViewModel : ViewModel() {
                         placeName = placeName,
                         lastMessage = lastMessage,
                         lastMessageTimestamp = lastTimestamp,
+                        unreadCount = unreadCount,
                         mutedBy = mutedByMap
                     )
 
@@ -226,12 +236,13 @@ class ChatViewModel : ViewModel() {
         }
     }
 
-    fun selectDirectChat(chatId: String, chatTitle: String, photoUrl: String?) {
+    fun selectDirectChat(chatId: String, chatTitle: String, photoUrl: String?, isOnline: Boolean = false) {
         _uiState.update {
             it.copy(
                 selectedChatId = chatId,
                 selectedChatTitle = chatTitle,
                 selectedChatPhoto = photoUrl,
+                selectedChatIsOnline = isOnline,
                 isGroupChat = false
             )
         }
@@ -243,6 +254,7 @@ class ChatViewModel : ViewModel() {
                 selectedChatId = placeId,
                 selectedChatTitle = placeName,
                 selectedChatPhoto = null,
+                selectedChatIsOnline = false,
                 isGroupChat = true
             )
         }

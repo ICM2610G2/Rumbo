@@ -41,7 +41,9 @@ fun ChatListItem(
     lastMessage: String,
     status: String? = null,
     timestamp: String,
-    hasUnread: Boolean = false
+    hasUnread: Boolean = false,
+    unreadCount: Int = 0,
+    isOnline: Boolean = false
 ) {
     Box(
         modifier = modifier
@@ -63,7 +65,7 @@ fun ChatListItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box {
-                Avatar(user = user)
+                Avatar(user = user, isOnline = isOnline)
             }
 
             Column(modifier = Modifier.weight(1f)) {
@@ -101,20 +103,40 @@ fun ChatListItem(
                         modifier = Modifier.weight(1f)
                     )
 
-                    if (timestamp.isNotEmpty()) {
-                        Text(
-                            text = timestamp,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    } else if (hasUnread) {
-                        Box(
-                            modifier = Modifier
-                                .size(8.dp)
-                                .background(
-                                    color = MaterialTheme.colorScheme.onSurface, shape = CircleShape
+                    Column(horizontalAlignment = Alignment.End) {
+                        if (timestamp.isNotEmpty()) {
+                            Text(
+                                text = timestamp,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = if (unreadCount > 0 || hasUnread) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        if (unreadCount > 0) {
+                            Box(
+                                modifier = Modifier
+                                    .padding(top = 4.dp)
+                                    .size(22.dp)
+                                    .background(
+                                        color = MaterialTheme.colorScheme.primary, shape = CircleShape
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = if (unreadCount > 99) "99+" else unreadCount.toString(),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onPrimary
                                 )
-                        )
+                            }
+                        } else if (hasUnread) {
+                            Box(
+                                modifier = Modifier
+                                    .padding(top = 4.dp)
+                                    .size(8.dp)
+                                    .background(
+                                        color = MaterialTheme.colorScheme.primary, shape = CircleShape
+                                    )
+                            )
+                        }
                     }
                 }
             }

@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.FiberManualRecord
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,8 +48,10 @@ fun MessageComposer(
     onValueChange: (String) -> Unit = {},
     onSendClick: () -> Unit = {},
     onImageClick: () -> Unit = {},
+    onCameraClick: () -> Unit = {},
     onLocationClick: () -> Unit = {},
-    onMicClick: () -> Unit = {}
+    onMicClick: () -> Unit = {},
+    isRecordingAudio: Boolean = false
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -57,28 +62,54 @@ fun MessageComposer(
         Column(
             modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Text input area
-            BasicTextField(
-                value = value,
-                onValueChange = onValueChange,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 4.dp),
-                textStyle = MaterialTheme.typography.bodyLarge.copy(
-                    color = MaterialTheme.colorScheme.onSurface
-                ),
-                decorationBox = { innerTextField ->
-                    Box {
-                        if (value.isEmpty()) {
-                            Text(
-                                text = "Mensaje",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-                            )
+            if (isRecordingAudio) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_recording),
+                        contentDescription = null,
+                        modifier = Modifier.size(14.dp),
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                    Text(
+                        text = "Grabando audio",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "Toca el micrófono para enviar",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            } else {
+                BasicTextField(
+                    value = value,
+                    onValueChange = onValueChange,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp),
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(
+                        color = MaterialTheme.colorScheme.onSurface
+                    ),
+                    decorationBox = { innerTextField ->
+                        Box {
+                            if (value.isEmpty()) {
+                                Text(
+                                    text = "Mensaje",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                )
+                            }
+                            innerTextField()
                         }
-                        innerTextField()
-                    }
-                })
+                    })
+            }
 
             // Bottom row: action icons on the left, send button on the right
             Row(
@@ -99,6 +130,14 @@ fun MessageComposer(
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
+                    IconButton(onClick = onCameraClick, modifier = Modifier.size(40.dp)) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_camera),
+                            contentDescription = "Tomar foto",
+                            modifier = Modifier.size(22.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                     IconButton(onClick = onLocationClick, modifier = Modifier.size(40.dp)) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_marker),
@@ -108,29 +147,41 @@ fun MessageComposer(
                         )
                     }
                     IconButton(onClick = onMicClick, modifier = Modifier.size(40.dp)) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_microphone),
-                            contentDescription = "Grabar audio",
-                            modifier = Modifier.size(22.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        Box(contentAlignment = Alignment.Center) {
+                            if (isRecordingAudio) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(34.dp)
+                                        .clip(CircleShape)
+                                        .background(MaterialTheme.colorScheme.error.copy(alpha = 0.16f))
+                                )
+                            }
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_microphone),
+                                contentDescription = if (isRecordingAudio) "Detener grabación" else "Grabar audio",
+                                modifier = Modifier.size(22.dp),
+                                tint = if (isRecordingAudio) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 }
 
                 // Send button
-                IconButton(
-                    onClick = onSendClick,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.secondary)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_send),
-                        contentDescription = "Enviar mensaje",
-                        modifier = Modifier.size(20.dp),
-                        tint = MaterialTheme.colorScheme.onSecondary
-                    )
+                if (!isRecordingAudio) {
+                    IconButton(
+                        onClick = onSendClick,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.secondary)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_send),
+                            contentDescription = "Enviar mensaje",
+                            modifier = Modifier.size(20.dp),
+                            tint = MaterialTheme.colorScheme.onSecondary
+                        )
+                    }
                 }
             }
         }

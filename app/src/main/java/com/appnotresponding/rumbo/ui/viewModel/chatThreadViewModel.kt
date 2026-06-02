@@ -9,6 +9,8 @@ import com.google.firebase.storage.FirebaseStorage
 import android.net.Uri
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.MutableData
+import com.google.firebase.database.Transaction
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +20,8 @@ import kotlinx.coroutines.flow.update
 data class ChatThreadState(
     val messages: List<ChatMessage> = emptyList(),
     val isSending: Boolean = false,
-    val messageAuthors: Map<String, User> = emptyMap()
+    val messageAuthors: Map<String, User> = emptyMap(),
+    val lastReadTimestamp: Long = 0
 )
 
 class ChatThreadViewModel : ViewModel() {
@@ -32,6 +35,8 @@ class ChatThreadViewModel : ViewModel() {
 
     private var currentListener: ValueEventListener? = null
     private var currentRef: com.google.firebase.database.DatabaseReference? = null
+    private var currentMetaListener: ValueEventListener? = null
+    private var currentMetaRef: com.google.firebase.database.DatabaseReference? = null
 
     private val dbUsers = db.getReference("users")
     private val userCache = mutableMapOf<String, User>()
@@ -81,6 +86,22 @@ class ChatThreadViewModel : ViewModel() {
         currentRef?.let { ref ->
             currentListener?.let { ref.removeEventListener(it) }
         }
+        currentMetaRef?.let { ref ->
+            currentMetaListener?.let { ref.removeEventListener(it) }
+        }
+
+        val myUid = auth.currentUser?.uid ?: ""
+        val metaRef = db.getReference("chats").child(chatId)
+        currentMetaRef = metaRef
+        currentMetaListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val lastRead = snapshot.child("lastReadBy").child(myUid).getValue(Long::class.java) ?: 0L
+                _uiState.update { it.copy(lastReadTimestamp = lastRead) }
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        metaRef.addValueEventListener(currentMetaListener!!)
 
         val ref = db.getReference("messages").child(chatId)
         currentRef = ref
@@ -93,7 +114,6 @@ class ChatThreadViewModel : ViewModel() {
                     messages.add(msg)
                 }
                 val parts = chatId.split("_")
-                val myUid = auth.currentUser?.uid ?: ""
                 val otherUid = parts.firstOrNull { it != myUid }
                 resolveUsersAndEmit(messages.sortedBy { m -> m.timestamp }, otherUid)
             }
@@ -109,6 +129,22 @@ class ChatThreadViewModel : ViewModel() {
         currentRef?.let { ref ->
             currentListener?.let { ref.removeEventListener(it) }
         }
+        currentMetaRef?.let { ref ->
+            currentMetaListener?.let { ref.removeEventListener(it) }
+        }
+
+        val myUid = auth.currentUser?.uid ?: ""
+        val metaRef = db.getReference("groupChats").child(placeId)
+        currentMetaRef = metaRef
+        currentMetaListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val lastRead = snapshot.child("lastReadBy").child(myUid).getValue(Long::class.java) ?: 0L
+                _uiState.update { it.copy(lastReadTimestamp = lastRead) }
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        metaRef.addValueEventListener(currentMetaListener!!)
 
         val ref = db.getReference("groupMessages").child(placeId)
         currentRef = ref
@@ -139,6 +175,7 @@ class ChatThreadViewModel : ViewModel() {
         if (participants.size == 2) {
             db.getReference("chats").child(chatId).child("participants").setValue(participants)
         }
+        val recipientUid = participants.firstOrNull { it != myUid }
 
         val ref = db.getReference("messages").child(chatId)
         val msgId = ref.push().key ?: return
@@ -151,6 +188,8 @@ class ChatThreadViewModel : ViewModel() {
         ref.child(msgId).setValue(msg).addOnSuccessListener {
             db.getReference("chats").child(chatId).child("lastMessage").setValue(text)
             db.getReference("chats").child(chatId).child("lastMessageTimestamp").setValue(msg.timestamp)
+            db.getReference("chats").child(chatId).child("lastSenderId").setValue(myUid)
+            recipientUid?.let { incrementUnreadCount("chats", chatId, it) }
             _uiState.update { it.copy(isSending = false) }
         }.addOnFailureListener {
             _uiState.update { it.copy(isSending = false) }
@@ -174,6 +213,8 @@ class ChatThreadViewModel : ViewModel() {
         ref.child(msgId).setValue(msg).addOnSuccessListener {
             db.getReference("groupChats").child(placeId).child("lastMessage").setValue("${senderName}: $text")
             db.getReference("groupChats").child(placeId).child("lastMessageTimestamp").setValue(msg.timestamp)
+            db.getReference("groupChats").child(placeId).child("lastSenderId").setValue(myUid)
+            incrementGroupUnreadCounts(placeId, myUid)
             _uiState.update { it.copy(isSending = false) }
         }.addOnFailureListener {
             _uiState.update { it.copy(isSending = false) }
@@ -205,6 +246,8 @@ class ChatThreadViewModel : ViewModel() {
             if (isGroup) {
                 db.getReference("groupChats").child(chatId).child("lastMessage").setValue("${senderName ?: ""}: 📍 Ubicación")
                 db.getReference("groupChats").child(chatId).child("lastMessageTimestamp").setValue(msg.timestamp)
+                db.getReference("groupChats").child(chatId).child("lastSenderId").setValue(myUid)
+                incrementGroupUnreadCounts(chatId, myUid)
             } else {
                 val parts = chatId.split("_")
                 if (parts.size == 2) {
@@ -213,6 +256,8 @@ class ChatThreadViewModel : ViewModel() {
                 }
                 db.getReference("chats").child(chatId).child("lastMessage").setValue("📍 Ubicación")
                 db.getReference("chats").child(chatId).child("lastMessageTimestamp").setValue(msg.timestamp)
+                db.getReference("chats").child(chatId).child("lastSenderId").setValue(myUid)
+                chatId.split("_").firstOrNull { it != myUid }?.let { incrementUnreadCount("chats", chatId, it) }
             }
             _uiState.update { it.copy(isSending = false) }
         }.addOnFailureListener {
@@ -243,6 +288,8 @@ class ChatThreadViewModel : ViewModel() {
                     if (isGroup) {
                         db.getReference("groupChats").child(chatId).child("lastMessage").setValue("${senderName ?: ""}: ${msg.text}")
                         db.getReference("groupChats").child(chatId).child("lastMessageTimestamp").setValue(msg.timestamp)
+                        db.getReference("groupChats").child(chatId).child("lastSenderId").setValue(myUid)
+                        incrementGroupUnreadCounts(chatId, myUid)
                     } else {
                         val parts = chatId.split("_")
                         if (parts.size == 2) {
@@ -251,6 +298,8 @@ class ChatThreadViewModel : ViewModel() {
                         }
                         db.getReference("chats").child(chatId).child("lastMessage").setValue(msg.text)
                         db.getReference("chats").child(chatId).child("lastMessageTimestamp").setValue(msg.timestamp)
+                        db.getReference("chats").child(chatId).child("lastSenderId").setValue(myUid)
+                        chatId.split("_").firstOrNull { it != myUid }?.let { incrementUnreadCount("chats", chatId, it) }
                     }
                     _uiState.update { state -> state.copy(isSending = false) }
                 }.addOnFailureListener {
@@ -262,11 +311,57 @@ class ChatThreadViewModel : ViewModel() {
         }
     }
 
+    fun markChatAsRead(chatId: String, isGroup: Boolean) {
+        val myUid = auth.currentUser?.uid ?: return
+        val now = System.currentTimeMillis()
+        val metaRef = db.getReference(if (isGroup) "groupChats" else "chats").child(chatId)
+        metaRef.child("lastReadBy").child(myUid).setValue(now)
+        metaRef.child("unreadCounts").child(myUid).setValue(0)
+
+        val messagesRef = db.getReference(if (isGroup) "groupMessages" else "messages").child(chatId)
+        messagesRef.get().addOnSuccessListener { snapshot ->
+            snapshot.children.forEach { child ->
+                val senderId = child.child("senderId").value as? String ?: return@forEach
+                if (senderId != myUid) {
+                    child.ref.child("seenBy").child(myUid).setValue(true)
+                }
+            }
+        }
+    }
+
+    private fun incrementGroupUnreadCounts(placeId: String, myUid: String) {
+        db.getReference("groupChats").child(placeId).child("participants").get().addOnSuccessListener { snapshot ->
+            snapshot.children.mapNotNull { it.key }.filter { it != myUid }.forEach { participantUid ->
+                incrementUnreadCount("groupChats", placeId, participantUid)
+            }
+        }
+    }
+
+    private fun incrementUnreadCount(root: String, chatId: String, recipientUid: String) {
+        db.getReference(root).child(chatId).child("unreadCounts").child(recipientUid)
+            .runTransaction(object : Transaction.Handler {
+                override fun doTransaction(currentData: MutableData): Transaction.Result {
+                    val current = when (val value = currentData.value) {
+                        is Long -> value.toInt()
+                        is Int -> value
+                        else -> 0
+                    }
+                    currentData.value = current + 1
+                    return Transaction.success(currentData)
+                }
+
+                override fun onComplete(error: DatabaseError?, committed: Boolean, currentData: DataSnapshot?) {}
+            })
+    }
+
     override fun onCleared() {
         super.onCleared()
         clearUserListeners()
         currentRef?.let { ref ->
             currentListener?.let { ref.removeEventListener(it) }
+        }
+        currentMetaRef?.let { ref ->
+            currentMetaListener?.let { ref.removeEventListener(it) }
         }
     }
 }

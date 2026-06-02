@@ -21,6 +21,7 @@ fun ChatThreadTemplate(
     chatAvatarUser: User,
     isGroup: Boolean = false,
     isMuted: Boolean = false,
+    isOnline: Boolean = false,
     onMuteClick: (() -> Unit)? = null,
     onLeaveClick: (() -> Unit)? = null,
     onBackClick: (() -> Unit)? = null,
@@ -28,8 +29,10 @@ fun ChatThreadTemplate(
     onMessageInputValueChange: (String) -> Unit = {},
     onSendClick: () -> Unit = {},
     onImageClick: () -> Unit = {},
+    onCameraClick: () -> Unit = {},
     onLocationClick: () -> Unit = {},
     onMicClick: () -> Unit = {},
+    isRecordingAudio: Boolean = false,
     content: @Composable () -> Unit
 ) {
     Scaffold(contentWindowInsets = WindowInsets(0), topBar = {
@@ -38,6 +41,7 @@ fun ChatThreadTemplate(
             activity = chatSubtitle,
             isGroup = isGroup,
             isMuted = isMuted,
+            isOnline = isOnline,
             onMuteClick = onMuteClick,
             onLeaveClick = onLeaveClick,
             onBackClick = onBackClick
@@ -53,8 +57,10 @@ fun ChatThreadTemplate(
                 onValueChange = onMessageInputValueChange,
                 onSendClick = onSendClick,
                 onImageClick = onImageClick,
+                onCameraClick = onCameraClick,
                 onLocationClick = onLocationClick,
-                onMicClick = onMicClick
+                onMicClick = onMicClick,
+                isRecordingAudio = isRecordingAudio
             )
         }
     }) { paddingValues ->

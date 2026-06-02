@@ -1,5 +1,11 @@
 package com.appnotresponding.rumbo.ui.screens.friends
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.provider.ContactsContract
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,10 +25,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
+import com.appnotresponding.rumbo.R
 import androidx.navigation.NavHostController
 import com.appnotresponding.rumbo.models.sampleUser
 import com.appnotresponding.rumbo.navigation.AppScreens
+import com.appnotresponding.rumbo.ui.components.atoms.RumboButton
+import com.appnotresponding.rumbo.ui.components.atoms.RumboButtonSize
+import com.appnotresponding.rumbo.ui.components.atoms.RumboButtonStyle
 import com.appnotresponding.rumbo.ui.components.atoms.RumboTextField
 import com.appnotresponding.rumbo.ui.components.molecules.friends.UserSearchResultItem
 import com.appnotresponding.rumbo.ui.components.molecules.friends.FriendRequestItem
@@ -44,8 +57,21 @@ fun FriendsScreen(
     val currentUser = userState ?: sampleUser.copy(name = "Cargando...")
     val friendsState by friendsViewModel.uiState.collectAsState()
     val myUid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+    val context = LocalContext.current
 
     var searchQuery by remember { mutableStateOf("") }
+    var contactDiscoveryActive by remember { mutableStateOf(false) }
+
+    val contactsPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            val contacts = readContactKeys(context)
+            contactDiscoveryActive = true
+            searchQuery = ""
+            friendsViewModel.searchUsersByContacts(contacts.emails, contacts.phones)
+        }
+    }
 
     FriendsTemplate(
         currentUser = currentUser,
@@ -57,6 +83,7 @@ fun FriendsScreen(
                 value = searchQuery,
                 onValueChange = {
                     searchQuery = it
+                    contactDiscoveryActive = false
                     if (it.isBlank()) {
                         friendsViewModel.clearSearch()
                     } else {
@@ -69,7 +96,27 @@ fun FriendsScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            if (searchQuery.isNotBlank()) {
+            RumboButton(
+                modifier = Modifier.fillMaxWidth(),
+                text = "Buscar amigos en contactos",
+                onClick = {
+                    if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+                        val contacts = readContactKeys(context)
+                        contactDiscoveryActive = true
+                        searchQuery = ""
+                        friendsViewModel.searchUsersByContacts(contacts.emails, contacts.phones)
+                    } else {
+                        contactsPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
+                    }
+                },
+                style = RumboButtonStyle.Secondary,
+                size = RumboButtonSize.Medium,
+                icon = painterResource(R.drawable.ic_user_add)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (searchQuery.isNotBlank() || contactDiscoveryActive) {
                 if (friendsState.isSearching) {
                     Text(
                         text = "Buscando...",
@@ -149,4 +196,46 @@ fun FriendsScreen(
             }
         }
     }
+}
+
+private data class ContactKeys(
+    val emails: Set<String>,
+    val phones: Set<String>
+)
+
+private fun readContactKeys(context: Context): ContactKeys {
+    val emails = mutableSetOf<String>()
+    val phones = mutableSetOf<String>()
+
+    context.contentResolver.query(
+        ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+        arrayOf(ContactsContract.CommonDataKinds.Email.ADDRESS),
+        null,
+        null,
+        null
+    )?.use { cursor ->
+        val emailIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS)
+        if (emailIndex >= 0) {
+            while (cursor.moveToNext()) {
+                cursor.getString(emailIndex)?.takeIf { it.isNotBlank() }?.let { emails.add(it) }
+            }
+        }
+    }
+
+    context.contentResolver.query(
+        ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+        arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER),
+        null,
+        null,
+        null
+    )?.use { cursor ->
+        val phoneIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+        if (phoneIndex >= 0) {
+            while (cursor.moveToNext()) {
+                cursor.getString(phoneIndex)?.takeIf { it.isNotBlank() }?.let { phones.add(it) }
+            }
+        }
+    }
+
+    return ContactKeys(emails = emails, phones = phones)
 }

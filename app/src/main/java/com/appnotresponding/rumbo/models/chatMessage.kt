@@ -8,5 +8,6 @@ data class ChatMessage(
     val timestamp: Long = 0,
     val type: String = "text",
     val placeId: String? = null,
-    val mediaUrl: String? = null
+    val mediaUrl: String? = null,
+    val seenBy: Map<String, Boolean> = emptyMap()
 )

@@ -181,6 +181,46 @@ class FriendsViewModel : ViewModel() {
         }
     }
 
+    fun searchUsersByContacts(emails: Set<String>, phones: Set<String>) {
+        val myUid = auth.currentUser?.uid ?: return
+        if (emails.isEmpty() && phones.isEmpty()) {
+            _uiState.update {
+                it.copy(
+                    searchResults = emptyList(),
+                    searchError = "No encontramos emails o teléfonos en tus contactos"
+                )
+            }
+            return
+        }
+
+        _uiState.update { it.copy(isSearching = true, searchError = null) }
+        val normalizedEmails = emails.map { it.lowercase().trim() }.toSet()
+        val normalizedPhones = phones.map { normalizePhone(it) }.filter { it.isNotBlank() }.toSet()
+
+        dbUsers.get().addOnSuccessListener { snapshot ->
+            val results = mutableListOf<User>()
+            for (child in snapshot.children) {
+                val user = child.getValue(User::class.java) ?: continue
+                val userEmail = user.email.lowercase().trim()
+                val userPhone = normalizePhone(user.phone)
+                val matchesEmail = userEmail.isNotBlank() && normalizedEmails.contains(userEmail)
+                val matchesPhone = userPhone.isNotBlank() && normalizedPhones.contains(userPhone)
+                if (user.id != myUid && (matchesEmail || matchesPhone)) {
+                    results.add(user)
+                }
+            }
+            _uiState.update {
+                it.copy(
+                    searchResults = results.distinctBy { user -> user.id },
+                    isSearching = false,
+                    searchError = if (results.isEmpty()) "No encontramos amigos de Rumbo en tus contactos" else null
+                )
+            }
+        }.addOnFailureListener {
+            _uiState.update { state -> state.copy(isSearching = false, searchError = "Error al revisar contactos") }
+        }
+    }
+
     fun addFriend(targetUid: String) {
         val myUid = auth.currentUser?.uid ?: return
         if (targetUid == myUid) return
@@ -217,6 +257,10 @@ class FriendsViewModel : ViewModel() {
 
     fun clearSearch() {
         _uiState.update { it.copy(searchResults = emptyList(), searchError = null) }
+    }
+
+    private fun normalizePhone(phone: String): String {
+        return phone.filter { it.isDigit() }.takeLast(10)
     }
 
     private fun clearAllListeners() {

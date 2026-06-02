@@ -32,6 +32,8 @@ fun ChatList(
                 lastMessage = chat.lastMessage,
                 status = chat.status,
                 timestamp = chat.timestamp,
+                unreadCount = chat.unreadCount,
+                hasUnread = chat.hasUnread,
                 modifier = Modifier.clickable { onChatClick(chat) })
         }
     }
@@ -42,7 +44,8 @@ data class ChatPreviewData(
     val lastMessage: String,
     val status: String? = null,
     val timestamp: String,
-    val hasUnread: Boolean = false
+    val hasUnread: Boolean = false,
+    val unreadCount: Int = 0
 )
 
 private val mockChats = listOf(

@@ -1,11 +1,10 @@
 package com.appnotresponding.rumbo.ui.screens.chat
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,12 +17,23 @@ import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import coil3.compose.AsyncImage
 import java.io.File
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -61,10 +71,13 @@ fun ChatThreadScreen(
 
     val chatId = chatState.selectedChatId
     val isGroup = chatState.isGroupChat
+    var unreadDividerTimestamp by remember(chatId) { mutableStateOf<Long?>(null) }
 
     var mediaRecorder by remember { mutableStateOf<MediaRecorder?>(null) }
     var audioFile by remember { mutableStateOf<File?>(null) }
     var isRecording by remember { mutableStateOf(false) }
+    var pendingCameraUri by remember { mutableStateOf<Uri?>(null) }
+    var imagePreviewUrl by remember { mutableStateOf<String?>(null) }
 
     val context = LocalContext.current
 
@@ -76,10 +89,29 @@ fun ChatThreadScreen(
         }
     }
 
-    val permissionLauncher = rememberLauncherForActivityResult(
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        val uri = pendingCameraUri
+        if (success && uri != null) {
+            chatThreadViewModel.sendMediaMessage(chatId, currentUser.name, uri, isGroup, "image")
+        }
+        pendingCameraUri = null
+    }
+
+    val audioPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         // Handle permission result if needed
+    }
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            pendingCameraUri = createCameraImageUri(context)
+            pendingCameraUri?.let { cameraLauncher.launch(it) }
+        }
     }
 
     LaunchedEffect(chatId) {
@@ -94,7 +126,11 @@ fun ChatThreadScreen(
 
     LaunchedEffect(threadState.messages.size) {
         if (threadState.messages.isNotEmpty()) {
+            if (unreadDividerTimestamp == null) {
+                unreadDividerTimestamp = threadState.lastReadTimestamp
+            }
             listState.animateScrollToItem(threadState.messages.size - 1)
+            chatThreadViewModel.markChatAsRead(chatId, isGroup)
         }
     }
 
@@ -114,6 +150,7 @@ fun ChatThreadScreen(
         chatAvatarUser = avatarUser,
         isGroup = isGroup,
         isMuted = isMuted,
+        isOnline = !isGroup && (otherUser?.isOnline ?: chatState.selectedChatIsOnline),
         onMuteClick = {
             if (isMuted) {
                 chatViewModel.unmuteGroup(chatId)
@@ -132,7 +169,7 @@ fun ChatThreadScreen(
         onMessageInputValueChange = { messageInput = it },
         onSendClick = {
             val text = messageInput.trim()
-            if (text.isNotBlank()) {
+            if (!isRecording && text.isNotBlank()) {
                 if (isGroup) {
                     chatThreadViewModel.sendGroupMessage(chatId, currentUser.name, text)
                 } else {
@@ -143,6 +180,14 @@ fun ChatThreadScreen(
         },
         onImageClick = {
             imagePickerLauncher.launch("image/*")
+        },
+        onCameraClick = {
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                pendingCameraUri = createCameraImageUri(context)
+                pendingCameraUri?.let { cameraLauncher.launch(it) }
+            } else {
+                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+            }
         },
         onLocationClick = {
             val lat = locationState.latitude
@@ -162,6 +207,7 @@ fun ChatThreadScreen(
                         chatThreadViewModel.sendMediaMessage(chatId, currentUser.name, Uri.fromFile(file), isGroup, "audio")
                     }
                 } else {
+                    messageInput = ""
                     audioFile = File.createTempFile("audio", ".mp4", context.cacheDir)
                     val recorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         MediaRecorder(context)
@@ -183,9 +229,10 @@ fun ChatThreadScreen(
                     }
                 }
             } else {
-                permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                audioPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
             }
-        }
+        },
+        isRecordingAudio = isRecording
     ) {
         if (threadState.messages.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -198,11 +245,23 @@ fun ChatThreadScreen(
         } else {
             LazyColumn(
                 state = listState,
-                contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp)
             ) {
-                items(threadState.messages) { msg ->
+                itemsIndexed(threadState.messages) { index, msg ->
                     val isMine = msg.senderId == currentUser.id
+                    val previousMessage = threadState.messages.getOrNull(index - 1)
+                    val nextMessage = threadState.messages.getOrNull(index + 1)
+                    val isSameAsPrevious = previousMessage?.senderId == msg.senderId
+                    val isLastInSequence = nextMessage?.senderId != msg.senderId
+                    val dividerTimestamp = unreadDividerTimestamp ?: threadState.lastReadTimestamp
+                    val shouldShowNewMessages = !isMine &&
+                        msg.timestamp > dividerTimestamp &&
+                        threadState.messages.take(index).none { previous ->
+                            previous.senderId != currentUser.id && previous.timestamp > dividerTimestamp
+                        }
+                    if (shouldShowNewMessages) {
+                        com.appnotresponding.rumbo.ui.components.molecules.chat.ChatSeparator("Nuevos mensajes")
+                    }
                     val author = threadState.messageAuthors[msg.senderId]
                     val activity = author?.activity
                     val bubbleType = if (msg.type == "location") ChatBubbleType.Location else ChatBubbleType.Regular
@@ -221,7 +280,19 @@ fun ChatThreadScreen(
                     } else null
 
                     val displayName = author?.name?.takeIf { it.isNotBlank() } ?: msg.senderName
+                    val seenText = if (isMine) {
+                        if (isGroup) {
+                            val seenCount = msg.seenBy.keys.count { it != currentUser.id }
+                            if (seenCount > 0) "Visto por $seenCount" else "Enviado"
+                        } else {
+                            val otherHasSeen = otherUid != null && msg.seenBy[otherUid] == true
+                            if (otherHasSeen) "Visto" else "Enviado"
+                        }
+                    } else {
+                        null
+                    }
                     ChatBubble(
+                        modifier = Modifier.padding(top = if (isSameAsPrevious) 2.dp else 8.dp),
                         message = msg.text,
                         mediaUrl = msg.mediaUrl,
                         mediaType = msg.type,
@@ -229,12 +300,49 @@ fun ChatThreadScreen(
                         senderName = if (!isMine && isGroup && displayName.isNotBlank()) displayName else null,
                         senderActivity = if (!isMine && isGroup) activity else null,
                         type = bubbleType,
+                        timestamp = msg.timestamp,
+                        seenText = seenText,
+                        isLastInSequence = isLastInSequence,
+                        onMediaClick = { imagePreviewUrl = it },
                         onLocationClick = onLocClick
                     )
                 }
             }
         }
+
+        imagePreviewUrl?.let { previewUrl ->
+            Dialog(
+                onDismissRequest = { imagePreviewUrl = null },
+                properties = DialogProperties(usePlatformDefaultWidth = false)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.88f))
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    AsyncImage(
+                        model = previewUrl,
+                        contentDescription = "Preview de imagen",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(16.dp)),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+            }
+        }
     }
+}
+
+private fun createCameraImageUri(context: android.content.Context): Uri {
+    val imageFile = File.createTempFile("chat_camera_", ".jpg", context.filesDir)
+    return FileProvider.getUriForFile(
+        context,
+        "${context.packageName}.fileprovider",
+        imageFile
+    )
 }
 
 

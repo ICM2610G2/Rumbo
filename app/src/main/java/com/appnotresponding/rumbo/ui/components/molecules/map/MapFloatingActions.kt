@@ -79,7 +79,7 @@ fun CancelRoute(onClick: () -> Unit = {}) {
     ) {
         IconButton(onClick = onClick) {
             Icon(
-                painter = painterResource(R.drawable.outline_cancel_24),
+                painter = painterResource(R.drawable.ic_cancel),
                 contentDescription = "Cancel Route",
                 tint = MaterialTheme.colorScheme.onPrimary,
             )

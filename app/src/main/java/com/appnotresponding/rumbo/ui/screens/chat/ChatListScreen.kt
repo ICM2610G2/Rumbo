@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -72,7 +73,8 @@ fun ChatListScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { controller.navigate(AppScreens.Friends.name) },
-                containerColor = MaterialTheme.colorScheme.primary
+                containerColor = MaterialTheme.colorScheme.primary,
+                shape = CircleShape
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_user_add),
@@ -130,7 +132,8 @@ fun ChatListScreen(
                                     chatViewModel.selectDirectChat(
                                         chatId = convo.chatId,
                                         chatTitle = convo.otherUserName,
-                                        photoUrl = convo.otherUserPhotoUrl
+                                        photoUrl = convo.otherUserPhotoUrl,
+                                        isOnline = convo.isOtherUserOnline
                                     )
                                     controller.navigate(AppScreens.ChatThread.name)
                                 },
@@ -138,7 +141,9 @@ fun ChatListScreen(
                             lastMessage = convo.lastMessage,
                             status = convo.otherUserActivity,
                             timestamp = formatTimestamp(convo.lastMessageTimestamp),
-                            hasUnread = false
+                            hasUnread = convo.unreadCount > 0,
+                            unreadCount = convo.unreadCount,
+                            isOnline = convo.isOtherUserOnline
                         )
                     }
                 }
@@ -170,7 +175,8 @@ fun ChatListScreen(
                             lastMessage = if (isMuted) "🔇 Silenciado" else group.lastMessage,
                             status = "Grupo",
                             timestamp = formatTimestamp(group.lastMessageTimestamp),
-                            hasUnread = false
+                            hasUnread = group.unreadCount > 0,
+                            unreadCount = group.unreadCount
                         )
                     }
                 }

@@ -77,7 +77,7 @@ fun FriendRequestItem(
                     onClick = onDeclineClick,
                     style = RumboButtonStyle.Secondary,
                     size = RumboButtonSize.Small,
-                    icon = painterResource(R.drawable.outline_cancel_24)
+                    icon = painterResource(R.drawable.ic_cancel)
                 )
             }
         }
