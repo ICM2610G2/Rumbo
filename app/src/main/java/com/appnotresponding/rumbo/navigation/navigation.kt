@@ -14,6 +14,7 @@ import com.appnotresponding.rumbo.ui.screens.itinerary.ItineraryScreen
 import com.appnotresponding.rumbo.ui.screens.map.MapScreen
 import com.appnotresponding.rumbo.ui.screens.onboarding.OnBoardingScreen
 import com.appnotresponding.rumbo.ui.screens.plan.PlanScreen
+import com.appnotresponding.rumbo.ui.screens.profile.ProfileScreen
 import com.appnotresponding.rumbo.ui.screens.splash.SplashScreen
 import com.appnotresponding.rumbo.ui.viewModel.ChatThreadViewModel
 import com.appnotresponding.rumbo.ui.viewModel.ChatViewModel

@@ -59,28 +59,27 @@ import coil3.request.allowHardware
 import coil3.toBitmap
 import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.isDarkTheme
+import com.appnotresponding.rumbo.models.DropNote
 import com.appnotresponding.rumbo.models.User
 import com.appnotresponding.rumbo.models.samplePlace
 import com.appnotresponding.rumbo.models.sampleReview
 import com.appnotresponding.rumbo.roadManager
 import com.appnotresponding.rumbo.ui.components.atoms.Avatar
-import com.appnotresponding.rumbo.ui.components.atoms.AvatarSize
-import com.appnotresponding.rumbo.ui.components.atoms.UserProfileBubble
 import com.appnotresponding.rumbo.ui.components.molecules.map.CancelRoute
+import com.appnotresponding.rumbo.ui.components.molecules.map.DropNoteBubble
 import com.appnotresponding.rumbo.ui.components.molecules.map.LocateMe
 import com.appnotresponding.rumbo.ui.components.molecules.map.WriteDropNote
 import com.appnotresponding.rumbo.ui.components.organisms.common.MainTopBar
 import com.appnotresponding.rumbo.ui.components.organisms.common.Nav
 import com.appnotresponding.rumbo.ui.components.organisms.map.DropNoteComposer
 import com.appnotresponding.rumbo.ui.components.organisms.map.PlacePreviewCard
-import com.appnotresponding.rumbo.models.DropNote
-import com.appnotresponding.rumbo.ui.components.molecules.map.DropNoteBubble
 import com.appnotresponding.rumbo.ui.components.organisms.map.ViewDropNote
 import com.appnotresponding.rumbo.ui.utils.SensorOverlay
 import com.appnotresponding.rumbo.ui.utils.createLocationRequest
 import com.appnotresponding.rumbo.ui.utils.rememberLocationManager
 import com.appnotresponding.rumbo.ui.utils.rememberMediaHardwareManager
 import com.appnotresponding.rumbo.ui.viewModel.DropNoteViewModel
+import com.appnotresponding.rumbo.ui.viewModel.ItineraryHistoryViewModel
 import com.appnotresponding.rumbo.ui.viewModel.MapViewModel
 import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 import com.appnotresponding.rumbo.ui.viewModel.UserLocationViewModel
@@ -116,6 +115,7 @@ fun MapTemplate(
     onProfileClick: () -> Unit = {},
     viewModel: MapViewModel = viewModel(),
     dropNoteViewModel: DropNoteViewModel = viewModel(),
+    itineraryHistoryViewModel: ItineraryHistoryViewModel = viewModel(),
     placesViewModel: PlacesViewModel,
     locationViewModel: UserLocationViewModel,
     userViewModel: UserViewModel,
@@ -138,14 +138,12 @@ fun MapTemplate(
     val locationState = rememberLocationManager()
     val mediaManager = rememberMediaHardwareManager()
     var noteText by remember { mutableStateOf("") }
-    val markerKey = remember(user.profilePictureUrl) { user.profilePictureUrl ?: "" }
+    remember(user.profilePictureUrl) { user.profilePictureUrl ?: "" }
     var profileBitmap by remember(user.profilePictureUrl) { mutableStateOf<ImageBitmap?>(null) }
     LaunchedEffect(user.profilePictureUrl) {
         if (user.profilePictureUrl.isNullOrEmpty()) return@LaunchedEffect
-        val request = ImageRequest.Builder(context)
-            .data(user.profilePictureUrl)
-            .allowHardware(false)
-            .build()
+        val request =
+            ImageRequest.Builder(context).data(user.profilePictureUrl).allowHardware(false).build()
         val result = ImageLoader(context).execute(request)
         if (result is SuccessResult) {
             profileBitmap = result.image.toBitmap().asImageBitmap()
@@ -158,8 +156,7 @@ fun MapTemplate(
         position = CameraPosition.fromLatLngZoom(LatLng(latitude, longitude), 15f)
     }
     var currentMapStyle by remember { mutableIntStateOf(MapColorScheme.FOLLOW_SYSTEM) }
-    val mapId =
-        stringResource(R.string.map_id)
+    val mapId = stringResource(R.string.map_id)
 
     var permission = rememberPermissionState(locationPermission)
     var showButton by remember { mutableStateOf(false) }
@@ -179,12 +176,11 @@ fun MapTemplate(
     }
 
     LaunchedEffect(
-        userLocationState.latitude,
-        userLocationState.longitude,
-        state.centerInUserFirstTime
+        userLocationState.latitude, userLocationState.longitude, state.centerInUserFirstTime
     ) {
         Log.d("RECOMPOSE", "Enntrando en launch")
-        val tieneUbicacionReal = userLocationState.latitude != 0.0 || userLocationState.longitude != 0.0
+        val tieneUbicacionReal =
+            userLocationState.latitude != 0.0 || userLocationState.longitude != 0.0
 
         if (tieneUbicacionReal) {
             viewModel.updateUserMarker(userLocationState.latitude, userLocationState.longitude)
@@ -199,8 +195,7 @@ fun MapTemplate(
             } else if (tieneUbicacionReal && placesState.selectedPlace != null) {
                 cameraPositionState.position = CameraPosition.fromLatLngZoom(
                     LatLng(
-                        placesState.selectedPlace!!.latitude,
-                        placesState.selectedPlace!!.longitude
+                        placesState.selectedPlace!!.latitude, placesState.selectedPlace!!.longitude
                     ), 14f
                 )
                 viewModel.updateCenterInUserFirstTime()
@@ -238,6 +233,21 @@ fun MapTemplate(
         currentMapStyle = if (isDarkTheme) MapColorScheme.DARK else MapColorScheme.LIGHT
     }
 
+    LaunchedEffect(
+        user.id,
+        placesState.selectedPlace?.id,
+        userLocationState.latitude,
+        userLocationState.longitude
+    ) {
+        itineraryHistoryViewModel.markPlaceVisitedIfNeeded(
+            userId = user.id,
+            place = placesState.selectedPlace,
+            userLat = userLocationState.latitude,
+            userLng = userLocationState.longitude,
+            context = context
+        )
+    }
+
     LaunchedEffect(placesState.selectedPlace) {
         val place = placesState.selectedPlace
         if (place != null) {
@@ -253,8 +263,6 @@ fun MapTemplate(
             placesViewModel.clearFocusLocation()
         }
     }
-
-
     Scaffold(
         contentWindowInsets = WindowInsets(0),
         topBar = { MainTopBar(user, onProfileClick = onProfileClick) },
@@ -347,12 +355,14 @@ fun MapTemplate(
                     MarkerComposable(
                         state = rememberUpdatedMarkerState(
                             LatLng(
-                                userLocationState.latitude,
-                                userLocationState.longitude
+                                userLocationState.latitude, userLocationState.longitude
                             )
                         ), title = "${user.name} (Tú)"
-                    ){
-                        Avatar(user = user, modifier = Modifier.border(1.dp, Color.White, CircleShape))
+                    ) {
+                        Avatar(
+                            user = user,
+                            modifier = Modifier.border(1.dp, Color.White, CircleShape)
+                        )
                     }
                     friendsState.friends.forEach { friend ->
                         if (friend.sharingLocation && (friend.latitude != 0.0 || friend.longitude != 0.0)) {
@@ -375,13 +385,17 @@ fun MapTemplate(
                     )
                     if (state.routePoints.isNotEmpty()) {
                         Polyline(
-                            points = state.routePoints, color = MaterialTheme.colorScheme.primary, width = 10f
+                            points = state.routePoints,
+                            color = MaterialTheme.colorScheme.primary,
+                            width = 10f
                         )
                     }
 
                     if (state.userRouteVisible) {
                         Polyline(
-                            points = state.userRoutePoints, color = MaterialTheme.colorScheme.tertiary, width = 10f
+                            points = state.userRoutePoints,
+                            color = MaterialTheme.colorScheme.tertiary,
+                            width = 10f
                         )
                     }
 
@@ -398,12 +412,9 @@ fun MapTemplate(
                                     selectedDropNote = note
                                     popupStateViewDN = true
                                     true
-                                }
-                            ) {
+                                }) {
                                 DropNoteBubble(
-                                    modifier = Modifier.size(48.dp),
-                                    d = note,
-                                    author = author
+                                    modifier = Modifier.size(48.dp), d = note, author = author
                                 )
                             }
                         }
@@ -484,9 +495,12 @@ fun MapTemplate(
 
                         onSendClick = {
                             if (noteText.isNotBlank() || mediaManager.imageUri != null) {
-                                val tieneUbicacion = userLocationState.latitude != 0.0 || userLocationState.longitude != 0.0
-                                val lat = if (tieneUbicacion) userLocationState.latitude else 4.627293
-                                val lng = if (tieneUbicacion) userLocationState.longitude else -74.063228
+                                val tieneUbicacion =
+                                    userLocationState.latitude != 0.0 || userLocationState.longitude != 0.0
+                                val lat =
+                                    if (tieneUbicacion) userLocationState.latitude else 4.627293
+                                val lng =
+                                    if (tieneUbicacion) userLocationState.longitude else -74.063228
 
                                 dropNoteViewModel.uploadAndSaveDropNote(
                                     content = noteText,
@@ -498,8 +512,7 @@ fun MapTemplate(
                                         noteText = ""
                                         mediaManager.clearImage()
                                         popupStateDNComposer = false
-                                    }
-                                )
+                                    })
                             }
                         },
 
@@ -525,8 +538,7 @@ fun MapTemplate(
             onDismissRequest = {
                 popupStateViewDN = false
                 selectedDropNote = null
-            }
-        ) {
+            }) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -552,10 +564,8 @@ fun MapTemplate(
                             },
                             onFailure = { error ->
                                 Log.e("MapTemplate", "Error al eliminar DropNote: $error")
-                            }
-                        )
-                    }
-                )
+                            })
+                    })
             }
         }
     }
