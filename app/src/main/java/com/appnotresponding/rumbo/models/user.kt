@@ -10,7 +10,9 @@ data class User(
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
     val altitude: Double = 0.0,
-    val profilePictureUrl: String? = null
+    val profilePictureUrl: String? = null,
+    val sharingLocation: Boolean = false,
+    val activity: String? = null
 )
 
 val sampleUser = User(
@@ -22,5 +24,6 @@ val sampleUser = User(
     latitude = 0.0,
     longitude = 0.0,
     altitude = 0.0,
-    profilePictureUrl = "https://randomuser.me/api/portraits/men/1.jpg"
+    profilePictureUrl = "https://randomuser.me/api/portraits/men/1.jpg",
+    sharingLocation = false
 )

@@ -12,12 +12,15 @@ import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 import com.appnotresponding.rumbo.ui.viewModel.UserLocationViewModel
 import com.appnotresponding.rumbo.ui.viewModel.UserViewModel
 
+import com.appnotresponding.rumbo.ui.viewModel.FriendsViewModel
+
 @Composable
 fun MapScreen(
     controller: NavHostController,
     placesViewModel: PlacesViewModel,
     locationViewModel: UserLocationViewModel,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    friendsViewModel: FriendsViewModel
 ) {
     val userState by userViewModel.currentUserState.collectAsState()
     val user = userState ?: sampleUser.copy(name = "Cargando...")
@@ -29,6 +32,7 @@ fun MapScreen(
                 popUpTo(controller.graph.startDestinationId) { inclusive = true }
                 launchSingleTop = true
             }
-        }, placesViewModel = placesViewModel, locationViewModel = locationViewModel
+        }, placesViewModel = placesViewModel, locationViewModel = locationViewModel,
+        userViewModel = userViewModel, friendsViewModel = friendsViewModel
     )
 }
