@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -29,17 +30,23 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  * @param reviews La lista de objetos Review que contienen las reseñas asociadas al lugar
  */
 @Composable
-fun PlacePreviewCard(place: Place, reviews: List<Review>) {
+fun PlacePreviewCard(
+    place: Place,
+    reviews: List<Review>,
+    onNavigateClick: () -> Unit = {},
+    onReviewClick: () -> Unit = {}
+) {
     Surface(shape = MaterialTheme.shapes.large) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
         ) {
-            PlaceInfo(p = place)
+            PlaceInfo(p = place, onNavigateClick = onNavigateClick, onReviewClick = onReviewClick)
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .heightIn(max = 350.dp)
                     .padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(vertical = 8.dp)

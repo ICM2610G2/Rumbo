@@ -3,6 +3,7 @@ package com.appnotresponding.rumbo.ui.templates
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -61,6 +64,7 @@ import com.appnotresponding.rumbo.ui.components.atoms.AvatarSize
 import com.appnotresponding.rumbo.ui.components.atoms.UserProfileBubble
 import com.appnotresponding.rumbo.ui.components.molecules.map.CancelRoute
 import com.appnotresponding.rumbo.ui.components.molecules.map.LocateMe
+import com.appnotresponding.rumbo.ui.components.molecules.map.ToggleHeatmap
 import com.appnotresponding.rumbo.ui.components.molecules.map.WriteDropNote
 import com.appnotresponding.rumbo.ui.components.organisms.common.MainTopBar
 import com.appnotresponding.rumbo.ui.components.organisms.common.Nav
@@ -95,6 +99,8 @@ import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
+import com.google.maps.android.compose.TileOverlay
+
 import org.osmdroid.util.GeoPoint
 
 
@@ -122,12 +128,18 @@ fun MapTemplate(
     val placesState by placesViewModel.uiState.collectAsState()
 
     var popupStateDNComposer by remember { mutableStateOf(false) }
-    var popupStateReview by remember { mutableStateOf(false) }
+    var popupStateReviewComposer by remember { mutableStateOf(false) }
+    val currentPreviewedPlace = placesState.previewedPlace
+    val popupStateReview = currentPreviewedPlace != null
     var popupStateViewDN by remember { mutableStateOf(false) }
     var selectedDropNote by remember { mutableStateOf<DropNote?>(null) }
     val locationState = rememberLocationManager()
     val mediaManager = rememberMediaHardwareManager()
     var noteText by remember { mutableStateOf("") }
+    var reviewText by remember { mutableStateOf("") }
+    var reviewRating by remember { mutableStateOf(0f) }
+    var isUploadingReview by remember { mutableStateOf(false) }
+
     val markerKey = remember(user.profilePictureUrl) { user.profilePictureUrl ?: "" }
     var profileBitmap by remember(user.profilePictureUrl) { mutableStateOf<ImageBitmap?>(null) }
     LaunchedEffect(user.profilePictureUrl) {
@@ -173,7 +185,7 @@ fun MapTemplate(
         userLocationState.longitude,
         state.centerInUserFirstTime
     ) {
-        Log.d("RECOMPOSE", "Enntrando en launch")
+        Log.d("RECOMPOSE", "Enntrando en launch de location")
         val tieneUbicacionReal = userLocationState.latitude != 0.0 || userLocationState.longitude != 0.0
 
         if (tieneUbicacionReal) {
@@ -195,8 +207,11 @@ fun MapTemplate(
                 )
                 viewModel.updateCenterInUserFirstTime()
             }
-            // Si aún no hay ubicación real, la cámara se queda en Bogotá (valor inicial)
         }
+    }
+
+    LaunchedEffect(placesState.selectedPlace) {
+        val tieneUbicacionReal = userLocationState.latitude != 0.0 || userLocationState.longitude != 0.0
 
         if (tieneUbicacionReal && placesState.selectedPlace != null) {
             val startPoint = GeoPoint(userLocationState.latitude, userLocationState.longitude)
@@ -204,13 +219,20 @@ fun MapTemplate(
                 placesState.selectedPlace!!.latitude, placesState.selectedPlace!!.longitude
             )
             val points = arrayListOf(startPoint, destination)
-            val road = roadManager.getRoad(points)
-            val routePoints = road.mRouteHigh.map { geoPoint ->
-                LatLng(geoPoint.latitude, geoPoint.longitude)
+            val routePoints = withContext(Dispatchers.IO) {
+                try {
+                    val road = roadManager.getRoad(points)
+                    road.mRouteHigh.map { geoPoint ->
+                        LatLng(geoPoint.latitude, geoPoint.longitude)
+                    }
+                } catch (e: Exception) {
+                    emptyList()
+                }
             }
-            viewModel.updateRoutePoints(routePoints)
+            if (routePoints.isNotEmpty()) {
+                viewModel.updateRoutePoints(routePoints)
+            }
         }
-
 
         if (placesState.selectedPlace != null) {
             viewModel.updateAdditionalMarker(
@@ -218,9 +240,8 @@ fun MapTemplate(
                     placesState.selectedPlace!!.latitude, placesState.selectedPlace!!.longitude
                 ), placesState.selectedPlace!!.name
             )
-            GeoPoint(
-                placesState.selectedPlace!!.latitude, placesState.selectedPlace!!.longitude
-            )
+        } else {
+            viewModel.updateRoutePoints(emptyList())
         }
     }
 
@@ -246,6 +267,10 @@ fun MapTemplate(
                             viewModel.cancelAdditionalMarkerVisibility()
                         }
                     }
+                    ToggleHeatmap(
+                        isHeatmapActive = state.isHeatmapVisible,
+                        onClick = { viewModel.toggleHeatmap() }
+                    )
                     WriteDropNote {
                         popupStateDNComposer = !popupStateDNComposer
                     }
@@ -317,6 +342,41 @@ fun MapTemplate(
                     if (state.userRouteVisible) {
                         Polyline(
                             points = state.userRoutePoints, color = MaterialTheme.colorScheme.tertiary, width = 10f
+                        )
+                    }
+
+                    if (state.isHeatmapVisible && state.heatmapClusters.isNotEmpty()) {
+                        state.heatmapClusters.forEach { cluster ->
+                            val color = when {
+                                cluster.count == 1 -> androidx.compose.ui.graphics.Color.Cyan
+                                cluster.count == 2 -> androidx.compose.ui.graphics.Color.Green
+                                cluster.count == 3 -> androidx.compose.ui.graphics.Color(0xFFFFA500) // Naranja
+                                else -> androidx.compose.ui.graphics.Color.Red
+                            }
+                            val radius = when {
+                                cluster.count == 1 -> 30.0
+                                cluster.count == 2 -> 60.0
+                                cluster.count == 3 -> 90.0
+                                else -> 120.0
+                            }
+                            com.google.maps.android.compose.Circle(
+                                center = cluster.position,
+                                fillColor = color.copy(alpha = 0.5f),
+                                strokeColor = color,
+                                radius = radius
+                            )
+                        }
+                    }
+
+                    placesState.availablePlaces.forEach { place ->
+                        val position = LatLng(place.latitude, place.longitude)
+                        Marker(
+                            state = rememberUpdatedMarkerState(position),
+                            title = place.name,
+                            onClick = {
+                                placesViewModel.showPreview(place)
+                                true
+                            }
                         )
                     }
 
@@ -444,15 +504,96 @@ fun MapTemplate(
             }
         }
     }
-    if (popupStateReview) {
+    if (popupStateReview && currentPreviewedPlace != null) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .clickable(
+                    interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+                    indication = null,
+                    onClick = { placesViewModel.showPreview(null) }
+                )
                 .padding(16.dp)
                 .offset(y = -(90).dp),
             contentAlignment = Alignment.BottomCenter
         ) {
-            PlacePreviewCard(place = samplePlace, reviews = listOf(sampleReview))
+            Box(modifier = Modifier.clickable(
+                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+                indication = null,
+                onClick = {}
+            )) {
+                PlacePreviewCard(
+                    place = currentPreviewedPlace,
+                    reviews = currentPreviewedPlace.reviews,
+                    onNavigateClick = {
+                        placesViewModel.selectForNavigation(currentPreviewedPlace)
+                        placesViewModel.showPreview(null)
+                    },
+                    onReviewClick = {
+                        popupStateReviewComposer = true
+                    }
+                )
+            }
+        }
+    }
+    if (popupStateReviewComposer && currentPreviewedPlace != null) {
+        Dialog(
+            onDismissRequest = {
+                if (!isUploadingReview) {
+                    popupStateReviewComposer = false
+                    reviewText = ""
+                    reviewRating = 0f
+                    mediaManager.clearImage()
+                }
+            }, properties = DialogProperties(
+                usePlatformDefaultWidth = false
+            )
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.55f))
+                    .padding(20.dp), contentAlignment = Alignment.Center
+            ) {
+                com.appnotresponding.rumbo.ui.components.organisms.map.ReviewComposer(
+                    rating = reviewRating,
+                    onRatingChange = { reviewRating = it },
+                    textValue = reviewText,
+                    onTextChange = { reviewText = it },
+                    isUploading = isUploadingReview,
+                    imageUri = mediaManager.imageUri,
+                    onImageClick = { mediaManager.launchCamera() },
+                    onGalleryClick = { mediaManager.launchGallery() },
+                    onSendClick = {
+                        isUploadingReview = true
+                        val newReview = com.appnotresponding.rumbo.models.Review(
+                            id = "",
+                            user = user,
+                            rating = reviewRating,
+                            text = reviewText,
+                            time = System.currentTimeMillis()
+                        )
+                        placesViewModel.uploadAndSaveReview(
+                            placeId = currentPreviewedPlace.id,
+                            review = newReview,
+                            imageUri = mediaManager.imageUri,
+                            onSuccess = {
+                                isUploadingReview = false
+                                popupStateReviewComposer = false
+                                reviewText = ""
+                                reviewRating = 0f
+                                mediaManager.clearImage()
+                                // Volvemos a abrir la tarjeta para que se vea la reseña recién creada
+                                placesViewModel.showPreview(currentPreviewedPlace)
+                            },
+                            onFailure = { error ->
+                                isUploadingReview = false
+                                Log.e("MapTemplate", "Error al subir reseña: $error")
+                            }
+                        )
+                    }
+                )
+            }
         }
     }
     if (popupStateViewDN && selectedDropNote != null) {

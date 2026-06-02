@@ -87,6 +87,26 @@ fun CancelRoute(onClick: () -> Unit = {}) {
     }
 }
 
+@Composable
+fun ToggleHeatmap(isHeatmapActive: Boolean = false, onClick: () -> Unit = {}) {
+    val bgColor = if (isHeatmapActive) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary
+    val iconTint = if (isHeatmapActive) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onPrimary
+    Box(
+        modifier = Modifier
+            .aspectRatio(1f)
+            .clip(CircleShape)
+            .background(bgColor), contentAlignment = Alignment.Center
+    ) {
+        IconButton(onClick = onClick) {
+            Icon(
+                painter = painterResource(R.drawable.ic_map), // Reusing map icon or any suitable icon
+                contentDescription = "Toggle Heatmap",
+                tint = iconTint,
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true, name = "MapFloatingActions - Light")
 @Composable
 private fun MapFloatingActionsLightPreview() {

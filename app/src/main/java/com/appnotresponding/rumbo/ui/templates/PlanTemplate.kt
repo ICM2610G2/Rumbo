@@ -51,7 +51,7 @@ fun PlanTemplate(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            PlanPOIList(places = placesList, placesViewModel)
+            PlanPOIList(places = placesList, placesViewModel, controller)
         }
     }
 }

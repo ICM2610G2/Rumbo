@@ -22,6 +22,9 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.clickable
+import androidx.navigation.NavHostController
+import com.appnotresponding.rumbo.navigation.AppScreens
 import coil3.compose.SubcomposeAsyncImage
 import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.models.Place
@@ -38,7 +41,7 @@ import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
  * @param p El lugar a mostrar en la tarjeta.
  */
 @Composable
-fun PlanItemCard(p: Place, placesViewModel: PlacesViewModel) {
+fun PlanItemCard(p: Place, placesViewModel: PlacesViewModel, controller: NavHostController) {
 
     val uiState by placesViewModel.uiState.collectAsState()
     val isInItinerary = uiState.itinerary.any { it.id == p.id }
@@ -52,7 +55,12 @@ fun PlanItemCard(p: Place, placesViewModel: PlacesViewModel) {
                 .aspectRatio(1f)
                 .padding(start = 8.dp, end = 8.dp, bottom = 8.dp, top = 2.dp)
                 .clip(MaterialTheme.shapes.medium)
-                .background(MaterialTheme.colorScheme.secondaryContainer),
+                .background(MaterialTheme.colorScheme.secondaryContainer)
+                .clickable {
+                    placesViewModel.showPreview(p)
+                    placesViewModel.selectForNavigation(p)
+                    controller.navigate(AppScreens.Map.name)
+                },
             contentAlignment = Alignment.Center
         ) {
             SubcomposeAsyncImage(
