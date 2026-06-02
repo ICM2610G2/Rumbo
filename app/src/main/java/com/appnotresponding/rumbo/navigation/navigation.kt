@@ -14,60 +14,54 @@ import com.appnotresponding.rumbo.ui.screens.itinerary.ItineraryScreen
 import com.appnotresponding.rumbo.ui.screens.map.MapScreen
 import com.appnotresponding.rumbo.ui.screens.onboarding.OnBoardingScreen
 import com.appnotresponding.rumbo.ui.screens.plan.PlanScreen
+import com.appnotresponding.rumbo.ui.screens.profile.ProfileScreen
 import com.appnotresponding.rumbo.ui.screens.splash.SplashScreen
 import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
-import androidx.lifecycle.ViewModel
 import com.appnotresponding.rumbo.ui.viewModel.UserLocationViewModel
-
 import com.appnotresponding.rumbo.ui.viewModel.UserViewModel
 
 val placesViewModel: PlacesViewModel = PlacesViewModel()
 
-enum class AppScreens{
-    Splash,
-    LogIn,
-    SignUp,
-    Map,
-    Chat,
-    ChatThread,
-    Plan,
-    Itinerary,
-    OnBoarding
+enum class AppScreens {
+    Splash, LogIn, SignUp, Map, Chat, ChatThread, Plan, Itinerary, Profile, OnBoarding
 }
 
 @Composable
 fun Navigation(
     locationViewModel: UserLocationViewModel = viewModel(),
     userViewModel: UserViewModel = viewModel()
-){
-    val context = LocalContext.current
+) {
+    LocalContext.current
     val navController = rememberNavController()
-    NavHost(navController=navController, startDestination = AppScreens.Splash.name){
-        composable (route = AppScreens.Splash.name){
+    NavHost(navController = navController, startDestination = AppScreens.Splash.name) {
+        composable(route = AppScreens.Splash.name) {
             SplashScreen(navController)
         }
-        composable(route = AppScreens.LogIn.name){
+        composable(route = AppScreens.LogIn.name) {
             LogInScreen(navController)
         }
-        composable (route = AppScreens.SignUp.name){
+        composable(route = AppScreens.SignUp.name) {
             SignUpScreen(navController)
         }
-        composable (route = AppScreens.Map.name) {
+        composable(route = AppScreens.Map.name) {
             MapScreen(navController, placesViewModel, locationViewModel, userViewModel)
         }
-        composable (route = AppScreens.Chat.name) {
+        composable(route = AppScreens.Chat.name) {
             ChatListScreen(navController, userViewModel)
         }
-        composable(route = AppScreens.ChatThread.name){
+        composable(route = AppScreens.ChatThread.name) {
             ChatThreadScreen(navController)
         }
-        composable(route = AppScreens.Plan.name){
+        composable(route = AppScreens.Plan.name) {
             PlanScreen(navController, placesViewModel, locationViewModel, userViewModel)
         }
-        composable(route = AppScreens.Itinerary.name){
+        composable(route = AppScreens.Itinerary.name) {
             ItineraryScreen(navController, placesViewModel, userViewModel)
         }
-        composable(route = AppScreens.OnBoarding.name){
+        composable(route = AppScreens.Profile.name) {
+            ProfileScreen(navController, userViewModel)
+        }
+        composable(route = AppScreens.OnBoarding.name) {
             OnBoardingScreen(navController)
         }
     }
