@@ -37,4 +37,12 @@ class PlacesViewModel : ViewModel() {
     fun clearForNavigation() {
         _uiState.update { it.copy(selectedPlace = null) }
     }
+
+    fun focusOnLocation(latLng: com.google.android.gms.maps.model.LatLng) {
+        _uiState.update { it.copy(focusLocation = latLng) }
+    }
+
+    fun clearFocusLocation() {
+        _uiState.update { it.copy(focusLocation = null) }
+    }
 }

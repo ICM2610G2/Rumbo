@@ -102,7 +102,7 @@ fun MessageComposer(
                     IconButton(onClick = onLocationClick, modifier = Modifier.size(40.dp)) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_marker),
-                            contentDescription = "Enviar ubicación",
+                            contentDescription = "Compartir ubicación",
                             modifier = Modifier.size(22.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )

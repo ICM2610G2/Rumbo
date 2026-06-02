@@ -9,6 +9,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.NotificationsOff
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -78,7 +85,15 @@ fun MainTopBar(u: User, onProfileClick: () -> Unit = {}) {
  * (por ejemplo, "Rumbo al Museo Nacional").
  */
 @Composable
-fun ChatTopBar(u: User, activity: String? = null) {
+fun ChatTopBar(
+    u: User, 
+    activity: String? = null,
+    isGroup: Boolean = false,
+    isMuted: Boolean = false,
+    onMuteClick: (() -> Unit)? = null,
+    onLeaveClick: (() -> Unit)? = null,
+    onBackClick: (() -> Unit)? = null
+) {
     val bottomRoundedShape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
     val displayName = u.name.replace(Regex(" +$"), "")
     Surface(
@@ -89,24 +104,57 @@ fun ChatTopBar(u: User, activity: String? = null) {
                 .fillMaxWidth()
                 .padding(16.dp)
                 .padding(top = 32.dp),
-            horizontalArrangement = Arrangement.Start
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Avatar(user = u)
-            Column {
-
-                Text(
-                    text = displayName,
-                    style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.padding(start = 8.dp),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                if (activity != null) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (onBackClick != null) {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Atrás",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+                Avatar(user = u)
+                Column {
                     Text(
-                        text = activity,
-                        style = MaterialTheme.typography.labelMedium,
+                        text = displayName,
+                        style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.padding(start = 8.dp),
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.onSurface
                     )
+                    if (!activity.isNullOrBlank()) {
+                        Text(
+                            text = activity,
+                            style = MaterialTheme.typography.labelMedium,
+                            modifier = Modifier.padding(start = 8.dp),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            }
+            if (isGroup) {
+                Row {
+                    if (onMuteClick != null) {
+                        IconButton(onClick = onMuteClick) {
+                            Icon(
+                                imageVector = if (isMuted) Icons.Filled.NotificationsOff else Icons.Filled.Notifications,
+                                contentDescription = if (isMuted) "Desilenciar" else "Silenciar",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                    if (onLeaveClick != null) {
+                        IconButton(onClick = onLeaveClick) {
+                            Icon(
+                                imageVector = Icons.Filled.ExitToApp,
+                                contentDescription = "Salir",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
                 }
             }
         }
