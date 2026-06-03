@@ -96,7 +96,8 @@ class DropNoteViewModel : ViewModel() {
                         val user = userSnapshot.getValue(User::class.java)
                         Log.d(TAG, "Usuario parseado[$creatorId]: $user")
                         if (user != null) {
-                            userCache[creatorId] = user
+                            val isOnlineVal = userSnapshot.child("isOnline").getValue(Boolean::class.java) ?: false
+                            userCache[creatorId] = user.copy(isOnline = isOnlineVal)
                             Log.d(TAG, "Usuario cacheado[$creatorId]: avatarUrl=${user.profilePictureUrl}")
                         } else {
                             Log.w(TAG, "Usuario nulo para creatorId=$creatorId — verifica users/$creatorId en Firebase")

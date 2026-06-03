@@ -2,6 +2,7 @@ package com.appnotresponding.rumbo.ui.viewModel
 
 import androidx.lifecycle.ViewModel
 import com.appnotresponding.rumbo.models.User
+import com.appnotresponding.rumbo.ui.utils.toUser
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -85,11 +86,9 @@ class FriendsViewModel : ViewModel() {
         for (friendId in friendIds) {
             val listener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val user = snapshot.getValue(User::class.java)
-                    if (user != null) {
-                        friendsMap[friendId] = user
-                        _uiState.update { it.copy(friends = friendsMap.values.toList()) }
-                    }
+                    val user = snapshot.toUser(friendId)
+                    friendsMap[friendId] = user
+                    _uiState.update { it.copy(friends = friendsMap.values.toList()) }
                 }
 
                 override fun onCancelled(error: DatabaseError) {}
@@ -140,11 +139,9 @@ class FriendsViewModel : ViewModel() {
         for (senderId in senderIds) {
             val listener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    val user = snapshot.getValue(User::class.java)
-                    if (user != null) {
-                        requestUsersMap[senderId] = user
-                        _uiState.update { it.copy(pendingRequests = requestUsersMap.values.toList()) }
-                    }
+                    val user = snapshot.toUser(senderId)
+                    requestUsersMap[senderId] = user
+                    _uiState.update { it.copy(pendingRequests = requestUsersMap.values.toList()) }
                 }
                 override fun onCancelled(error: DatabaseError) {}
             }
@@ -163,7 +160,7 @@ class FriendsViewModel : ViewModel() {
         dbUsers.get().addOnSuccessListener { snapshot ->
             val results = mutableListOf<User>()
             for (child in snapshot.children) {
-                val user = child.getValue(User::class.java) ?: continue
+                val user = child.toUser(child.key ?: "")
                 val fullName = "${user.name} ${user.lastname}".lowercase().trim()
                 if (user.id != myUid && fullName.contains(query.lowercase().trim())) {
                     results.add(user)
@@ -200,7 +197,7 @@ class FriendsViewModel : ViewModel() {
         dbUsers.get().addOnSuccessListener { snapshot ->
             val results = mutableListOf<User>()
             for (child in snapshot.children) {
-                val user = child.getValue(User::class.java) ?: continue
+                val user = child.toUser(child.key ?: "")
                 val userEmail = user.email.lowercase().trim()
                 val userPhone = normalizePhone(user.phone)
                 val matchesEmail = userEmail.isNotBlank() && normalizedEmails.contains(userEmail)

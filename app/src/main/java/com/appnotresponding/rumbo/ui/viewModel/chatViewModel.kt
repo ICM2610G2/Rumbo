@@ -5,6 +5,7 @@ import com.appnotresponding.rumbo.models.ChatConversation
 import com.appnotresponding.rumbo.models.GroupChat
 import com.appnotresponding.rumbo.models.Place
 import com.appnotresponding.rumbo.models.User
+import com.appnotresponding.rumbo.ui.utils.toUser
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -44,6 +45,9 @@ class ChatViewModel : ViewModel() {
     private val resolvedUsers = mutableMapOf<String, User>()
     private var latestChatsSnapshot: DataSnapshot? = null
 
+    private val friendUids = mutableSetOf<String>()
+    private var friendshipListener: ValueEventListener? = null
+
     init {
         authListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
             val uid = firebaseAuth.currentUser?.uid
@@ -61,11 +65,9 @@ class ChatViewModel : ViewModel() {
         if (userListeners.containsKey(otherUid)) return
         val userListener = object : ValueEventListener {
             override fun onDataChange(userSnapshot: DataSnapshot) {
-                val user = userSnapshot.getValue(User::class.java)
-                if (user != null) {
-                    resolvedUsers[otherUid] = user
-                    rebuildConversationsList(myUid)
-                }
+                val user = userSnapshot.toUser(otherUid)
+                resolvedUsers[otherUid] = user
+                rebuildConversationsList(myUid)
             }
             override fun onCancelled(error: DatabaseError) {}
         }
@@ -83,88 +85,72 @@ class ChatViewModel : ViewModel() {
             return
         }
 
-        var pending = children.size
-        if (pending == 0) {
-            _uiState.update { it.copy(directChats = emptyList()) }
-            return
-        }
-
         for (child in children) {
-            val chatId = child.key
-            if (chatId == null) {
-                pending--
-                if (pending == 0) {
-                    _uiState.update { it.copy(directChats = conversations.sortedByDescending { c -> c.lastMessageTimestamp }) }
-                }
-                continue
-            }
+            val chatId = child.key ?: continue
             val participants = child.child("participants").children.map { it.value as? String ?: "" }
-            if (!participants.contains(myUid)) {
-                pending--
-                if (pending == 0) {
-                    _uiState.update { it.copy(directChats = conversations.sortedByDescending { c -> c.lastMessageTimestamp }) }
-                }
-                continue
-            }
-            val otherUid = participants.firstOrNull { it != myUid }
-            if (otherUid == null) {
-                pending--
-                if (pending == 0) {
-                    _uiState.update { it.copy(directChats = conversations.sortedByDescending { c -> c.lastMessageTimestamp }) }
-                }
-                continue
-            }
+            if (!participants.contains(myUid)) continue
+            val otherUid = participants.firstOrNull { it != myUid } ?: continue
+
+            val areFriends = friendUids.contains(otherUid)
+            if (!areFriends) continue
+
+            setupUserListener(otherUid, myUid)
+
             val lastMessage = child.child("lastMessage").value as? String ?: ""
             val lastTimestamp = child.child("lastMessageTimestamp").value as? Long ?: 0L
             val unreadCount = (child.child("unreadCounts").child(myUid).getValue(Int::class.java)
                 ?: child.child("unreadCounts").child(myUid).getValue(Long::class.java)?.toInt()
                 ?: 0).coerceAtLeast(0)
 
-            db.getReference("friendships").child(myUid).child(otherUid).get().addOnSuccessListener { friendshipSnap ->
-                val areFriends = friendshipSnap.exists() && friendshipSnap.value == true
-                if (!areFriends) {
-                    pending--
-                    if (pending == 0) {
-                        _uiState.update { it.copy(directChats = conversations.sortedByDescending { c -> c.lastMessageTimestamp }) }
-                    }
-                    return@addOnSuccessListener
-                }
-
-                val user = resolvedUsers[otherUid]
-                if (user != null) {
-                    conversations.add(
-                        ChatConversation(
-                            chatId = chatId,
-                            otherUserId = otherUid,
-                            otherUserName = user.name,
-                            otherUserPhotoUrl = user.profilePictureUrl,
-                            otherUserActivity = user.activity,
-                            isOtherUserOnline = user.isOnline,
-                            lastMessage = lastMessage,
-                            lastMessageTimestamp = lastTimestamp,
-                            unreadCount = unreadCount
-                        )
+            val user = resolvedUsers[otherUid]
+            if (user != null) {
+                conversations.add(
+                    ChatConversation(
+                        chatId = chatId,
+                        otherUserId = otherUid,
+                        otherUserName = user.name,
+                        otherUserPhotoUrl = user.profilePictureUrl,
+                        otherUserActivity = user.activity,
+                        isOtherUserOnline = user.isOnline,
+                        lastMessage = lastMessage,
+                        lastMessageTimestamp = lastTimestamp,
+                        unreadCount = unreadCount
                     )
-                } else {
-                    setupUserListener(otherUid, myUid)
-                }
-                pending--
-                if (pending == 0) {
-                    _uiState.update { it.copy(directChats = conversations.sortedByDescending { c -> c.lastMessageTimestamp }) }
-                }
-            }.addOnFailureListener {
-                pending--
-                if (pending == 0) {
-                    _uiState.update { it.copy(directChats = conversations.sortedByDescending { c -> c.lastMessageTimestamp }) }
-                }
+                )
             }
         }
+        _uiState.update { it.copy(directChats = conversations.sortedByDescending { c -> c.lastMessageTimestamp }) }
+    }
+
+    private fun listenToFriendships(myUid: String) {
+        friendshipListener?.let { db.getReference("friendships").child(myUid).removeEventListener(it) }
+        val listener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val uids = snapshot.children.mapNotNull { it.key }.toSet()
+                friendUids.clear()
+                friendUids.addAll(uids)
+                rebuildConversationsList(myUid)
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        friendshipListener = listener
+        db.getReference("friendships").child(myUid).addValueEventListener(listener)
     }
 
     private fun listenToDirectChats(myUid: String) {
+        listenToFriendships(myUid)
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 latestChatsSnapshot = snapshot
+
+                snapshot.children.forEach { child ->
+                    val participants = child.child("participants").children.map { it.value as? String ?: "" }
+                    val otherUid = participants.firstOrNull { it != myUid }
+                    if (otherUid != null) {
+                        setupUserListener(otherUid, myUid)
+                    }
+                }
+                
                 rebuildConversationsList(myUid)
             }
 
@@ -285,6 +271,13 @@ class ChatViewModel : ViewModel() {
     }
 
     private fun clearAllListeners() {
+        val myUid = auth.currentUser?.uid
+        if (myUid != null) {
+            friendshipListener?.let { db.getReference("friendships").child(myUid).removeEventListener(it) }
+        }
+        friendshipListener = null
+        friendUids.clear()
+
         for ((ref, listener) in chatListeners) {
             ref.removeEventListener(listener)
         }

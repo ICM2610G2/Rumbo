@@ -116,7 +116,8 @@ fun ChatListScreen(
                             id = convo.otherUserId,
                             name = convo.otherUserName,
                             profilePictureUrl = convo.otherUserPhotoUrl,
-                            activity = convo.otherUserActivity
+                            activity = convo.otherUserActivity,
+                            isOnline = convo.isOtherUserOnline
                         )
                         ChatListItem(
                             modifier = Modifier

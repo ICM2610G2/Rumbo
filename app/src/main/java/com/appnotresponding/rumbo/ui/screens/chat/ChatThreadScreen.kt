@@ -150,7 +150,7 @@ fun ChatThreadScreen(
         chatAvatarUser = avatarUser,
         isGroup = isGroup,
         isMuted = isMuted,
-        isOnline = !isGroup && (otherUser?.isOnline ?: chatState.selectedChatIsOnline),
+        isOnline = !isGroup && threadState.otherUserIsOnline,
         onMuteClick = {
             if (isMuted) {
                 chatViewModel.unmuteGroup(chatId)

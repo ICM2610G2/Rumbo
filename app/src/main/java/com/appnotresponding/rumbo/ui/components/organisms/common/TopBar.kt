@@ -98,6 +98,17 @@ fun ChatTopBar(
 ) {
     val bottomRoundedShape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
     val displayName = u.name.replace(Regex(" +$"), "")
+
+    val subtitle: String? = when {
+        !isGroup && isOnline -> "En línea"
+        !activity.isNullOrBlank() -> activity
+        else -> null
+    }
+    val subtitleColor = if (!isGroup && isOnline)
+        androidx.compose.ui.graphics.Color(0xFF4CAF50)
+    else
+        MaterialTheme.colorScheme.primary
+
     Surface(
         shape = bottomRoundedShape, color = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
@@ -134,11 +145,11 @@ fun ChatTopBar(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    if (!activity.isNullOrBlank()) {
+                    if (subtitle != null) {
                         Text(
-                            text = activity,
+                            text = subtitle,
                             style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.primary,
+                            color = subtitleColor,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )

@@ -2,6 +2,7 @@ package com.appnotresponding.rumbo.ui.viewModel
 
 import androidx.lifecycle.ViewModel
 import com.appnotresponding.rumbo.models.User
+import com.appnotresponding.rumbo.ui.utils.toUser
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -44,6 +45,7 @@ class UserViewModel : ViewModel() {
                 userStatusRef.child("isOnline").onDisconnect().setValue(false)
                 userStatusRef.child("lastSeenAt").onDisconnect().setValue(ServerValue.TIMESTAMP)
                 userStatusRef.child("isOnline").setValue(true)
+                userStatusRef.child("id").setValue(uid)
             }
 
             override fun onCancelled(error: DatabaseError) {}
@@ -57,8 +59,8 @@ class UserViewModel : ViewModel() {
         dbRef.child(uid).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 try {
-                    val user = snapshot.getValue(User::class.java)
-                    android.util.Log.d("UserViewModel", "fetchUserData success: user=${user?.name}, sharingLocation=${user?.sharingLocation}")
+                    val user = snapshot.toUser(uid)
+                    android.util.Log.d("UserViewModel", "fetchUserData success: user=${user.name}, id=${user.id}, sharingLocation=${user.sharingLocation}")
                     _currentUserState.value = user
                 } catch (e: Exception) {
                     android.util.Log.e("UserViewModel", "Error deserializing User object: ${e.message}", e)

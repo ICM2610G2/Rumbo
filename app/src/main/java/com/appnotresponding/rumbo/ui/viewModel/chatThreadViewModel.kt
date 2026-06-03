@@ -3,6 +3,7 @@ package com.appnotresponding.rumbo.ui.viewModel
 import androidx.lifecycle.ViewModel
 import com.appnotresponding.rumbo.models.ChatMessage
 import com.appnotresponding.rumbo.models.User
+import com.appnotresponding.rumbo.ui.utils.toUser
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.storage.FirebaseStorage
@@ -21,7 +22,8 @@ data class ChatThreadState(
     val messages: List<ChatMessage> = emptyList(),
     val isSending: Boolean = false,
     val messageAuthors: Map<String, User> = emptyMap(),
-    val lastReadTimestamp: Long = 0
+    val lastReadTimestamp: Long = 0,
+    val otherUserIsOnline: Boolean = false
 )
 
 class ChatThreadViewModel : ViewModel() {
@@ -37,6 +39,8 @@ class ChatThreadViewModel : ViewModel() {
     private var currentRef: com.google.firebase.database.DatabaseReference? = null
     private var currentMetaListener: ValueEventListener? = null
     private var currentMetaRef: com.google.firebase.database.DatabaseReference? = null
+    private var onlineListener: ValueEventListener? = null
+    private var onlineRef: com.google.firebase.database.DatabaseReference? = null
 
     private val dbUsers = db.getReference("users")
     private val userCache = mutableMapOf<String, User>()
@@ -48,6 +52,27 @@ class ChatThreadViewModel : ViewModel() {
         }
         userListeners.clear()
         userCache.clear()
+    }
+
+    private fun listenToOtherUserOnline(otherUid: String) {
+        // Limpia listener previo si existe
+        onlineListener?.let { onlineRef?.removeEventListener(it) }
+        val ref = dbUsers.child(otherUid).child("isOnline")
+        onlineRef = ref
+        val listener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val isOnline = snapshot.getValue(Boolean::class.java) ?: false
+                _uiState.update { it.copy(otherUserIsOnline = isOnline) }
+                // Actualiza también el cache para que messageAuthors refleje el estado
+                userCache[otherUid]?.let { cached ->
+                    userCache[otherUid] = cached.copy(isOnline = isOnline)
+                    _uiState.update { it.copy(messageAuthors = userCache.toMap()) }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        onlineListener = listener
+        ref.addValueEventListener(listener)
     }
 
     private fun resolveUsersAndEmit(rawMessages: List<ChatMessage>, extraUid: String? = null) {
@@ -64,10 +89,8 @@ class ChatThreadViewModel : ViewModel() {
             if (!userCache.containsKey(senderId) && !userListeners.containsKey(senderId)) {
                 val listener = object : ValueEventListener {
                     override fun onDataChange(userSnapshot: DataSnapshot) {
-                        val user = userSnapshot.getValue(User::class.java)
-                        if (user != null) {
-                            userCache[senderId] = user
-                        }
+                        val user = userSnapshot.toUser(senderId)
+                        userCache[senderId] = user
                         pushState()
                     }
 
@@ -89,8 +112,16 @@ class ChatThreadViewModel : ViewModel() {
         currentMetaRef?.let { ref ->
             currentMetaListener?.let { ref.removeEventListener(it) }
         }
+        _uiState.update { it.copy(otherUserIsOnline = false) }
 
         val myUid = auth.currentUser?.uid ?: ""
+
+        // Escucha isOnline del otro usuario en tiempo real
+        val parts = chatId.split("_")
+        val otherUid = parts.firstOrNull { it != myUid }
+        if (otherUid != null) {
+            listenToOtherUserOnline(otherUid)
+        }
         val metaRef = db.getReference("chats").child(chatId)
         currentMetaRef = metaRef
         currentMetaListener = object : ValueEventListener {
@@ -132,6 +163,11 @@ class ChatThreadViewModel : ViewModel() {
         currentMetaRef?.let { ref ->
             currentMetaListener?.let { ref.removeEventListener(it) }
         }
+        // En grupos no hay estado online individual
+        onlineListener?.let { onlineRef?.removeEventListener(it) }
+        onlineListener = null
+        onlineRef = null
+        _uiState.update { it.copy(otherUserIsOnline = false) }
 
         val myUid = auth.currentUser?.uid ?: ""
         val metaRef = db.getReference("groupChats").child(placeId)
@@ -363,5 +399,6 @@ class ChatThreadViewModel : ViewModel() {
         currentMetaRef?.let { ref ->
             currentMetaListener?.let { ref.removeEventListener(it) }
         }
+        onlineListener?.let { onlineRef?.removeEventListener(it) }
     }
 }

@@ -107,14 +107,8 @@ fun Avatar(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = backgroundColor, shape = CircleShape)
-                .then(
-                    if (onlineBorderWidth > 0.dp) {
-                        Modifier.border(onlineBorderWidth, onlineBorderColor, CircleShape)
-                    } else {
-                        Modifier
-                    }
-                ), contentAlignment = Alignment.Center
+                .background(color = backgroundColor, shape = CircleShape),
+            contentAlignment = Alignment.Center
         ) {
             //Verificar si hay foto de perfil
             when {
@@ -178,8 +172,27 @@ fun Avatar(
                         )
                     }
                 }
+
+                else -> {
+                    Image(
+                        painter = painterResource(R.drawable.ic_user),
+                        contentDescription = contentDescription,
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimaryContainer),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(size.size * 0.2f)
+                    )
+                }
             }
 
+            // Dibuja el borde sobre la imagen o el contenido para asegurar que no quede tapado
+            if (onlineBorderWidth > 0.dp) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .border(onlineBorderWidth, onlineBorderColor, CircleShape)
+                )
+            }
         }
 
         // Indicador de online

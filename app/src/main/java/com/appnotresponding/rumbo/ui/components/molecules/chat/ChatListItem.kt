@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -64,9 +65,13 @@ fun ChatListItem(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box {
-                Avatar(user = user, isOnline = isOnline)
-            }
+            // Borde verde cuando el usuario está en línea
+            Avatar(
+                user = user,
+                isOnline = isOnline,
+                borderWidth = if (isOnline) 2.dp else 0.dp,
+                borderColor = if (isOnline) Color(0xFF4CAF50) else MaterialTheme.colorScheme.outline
+            )
 
             Column(modifier = Modifier.weight(1f)) {
                 Row(
@@ -81,7 +86,15 @@ fun ChatListItem(
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f, fill = false)
                     )
-                    if (status != null) {
+                    if (isOnline) {
+                        Text(
+                            text = " · En línea",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = Color(0xFF4CAF50),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    } else if (status != null) {
                         Text(
                             text = " · ",
                             style = MaterialTheme.typography.titleSmall,
