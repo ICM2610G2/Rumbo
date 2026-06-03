@@ -1,0 +1,25 @@
+package com.appnotresponding.rumbo.ui.utils
+
+import android.util.Log
+import com.google.firebase.messaging.FirebaseMessagingService
+import com.google.firebase.messaging.RemoteMessage
+
+//https://stackoverflow.com/questions/54997485/android-notification-during-app-is-in-background-intent-data-is-empty
+class MyFirebaseMessagingService : FirebaseMessagingService() {
+
+    override fun onMessageReceived(remoteMessage: RemoteMessage) {
+
+        Log.i("FirebaseApp"
+            , "Message Received!!!")
+        val title = remoteMessage.notification?.title
+        val body = remoteMessage.notification?.body
+        if(title != null && body != null){
+            Log.i("FirebaseApp"
+                , title)
+            Log.i("FirebaseApp"
+                , body)
+//Build and display notification with remote data
+            showNotification(title, body, this)
+        }
+    }
+}

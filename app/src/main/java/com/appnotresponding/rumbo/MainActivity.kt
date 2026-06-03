@@ -10,6 +10,8 @@ import android.os.StrictMode
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -32,6 +34,12 @@ var isDarkTheme by mutableStateOf(false)
 
 // https://developer.android.com/reference/androidx/fragment/app/FragmentActivity
 class MainActivity : FragmentActivity(), SensorEventListener {
+
+    val requestPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+        ActivityResultCallback {}
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = FirebaseAuth.getInstance()
@@ -40,6 +48,8 @@ class MainActivity : FragmentActivity(), SensorEventListener {
             StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
 
+
+        requestPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
         // Inicializar sensor
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
