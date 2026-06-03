@@ -1,6 +1,7 @@
 package com.appnotresponding.rumbo.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -44,10 +45,36 @@ enum class AppScreens {
 
 @Composable
 fun Navigation(
+    openChat: Boolean = false,
+    senderId: String? = null,
+    chatId: String? = null,
+    senderName: String? = null,
+    senderPhotoUrl: String? = null,
+    isOnline: Boolean = false,
     locationViewModel: UserLocationViewModel = viewModel(),
-    userViewModel: UserViewModel = viewModel()
+    userViewModel: UserViewModel = viewModel(),
 ) {
     val navController = rememberNavController()
+
+    LaunchedEffect(openChat, chatId) {
+
+        if (
+            openChat &&
+            !chatId.isNullOrBlank() &&
+            !senderName.isNullOrBlank()
+        ) {
+
+            chatViewModel.selectDirectChat(
+                chatId = chatId,
+                chatTitle = senderName,
+                photoUrl = senderPhotoUrl ?: "",
+                isOnline = isOnline
+            )
+
+            navController.navigate(AppScreens.ChatThread.name)
+        }
+    }
+
     NavHost(navController = navController, startDestination = AppScreens.Splash.name) {
         composable(route = AppScreens.Splash.name) {
             SplashScreen(navController)

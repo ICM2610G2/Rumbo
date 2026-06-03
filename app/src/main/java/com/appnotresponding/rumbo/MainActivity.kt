@@ -1,5 +1,6 @@
 package com.appnotresponding.rumbo
 
+import android.content.Intent
 import android.location.Geocoder
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -10,6 +11,8 @@ import android.os.StrictMode
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -32,6 +35,12 @@ var isDarkTheme by mutableStateOf(false)
 
 // https://developer.android.com/reference/androidx/fragment/app/FragmentActivity
 class MainActivity : FragmentActivity(), SensorEventListener {
+
+    val requestPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+        ActivityResultCallback {}
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = FirebaseAuth.getInstance()
@@ -40,9 +49,18 @@ class MainActivity : FragmentActivity(), SensorEventListener {
             StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
 
+
+        requestPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
         // Inicializar sensor
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
+
+        val openChat = intent.getBooleanExtra("openChat", false)
+        val senderId = intent.getStringExtra("senderId")
+        val chatId = intent.getStringExtra("chatId")
+        val senderName = intent.getStringExtra("senderName")
+        val senderPhotoUrl = intent.getStringExtra("senderPhotoUrl")
+        val isOnline = intent.getBooleanExtra("isOnline", false)
 
         enableEdgeToEdge()
         setContent {
@@ -53,7 +71,14 @@ class MainActivity : FragmentActivity(), SensorEventListener {
                 }.build()
             }
             RumboTheme(darkTheme = isDarkTheme) {
-                Navigation()
+                Navigation(
+                    openChat = openChat,
+                    senderId = senderId,
+                    chatId = chatId,
+                    senderName = senderName,
+                    senderPhotoUrl = senderPhotoUrl,
+                    isOnline = isOnline
+                )
             }
         }
     }
@@ -78,4 +103,9 @@ class MainActivity : FragmentActivity(), SensorEventListener {
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+    }
 }

@@ -78,6 +78,7 @@ dependencies {
     implementation(libs.firebase.storage)
     implementation(libs.googleid)
     implementation(libs.androidx.compose.runtime)
+    implementation(libs.firebase.messaging)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
