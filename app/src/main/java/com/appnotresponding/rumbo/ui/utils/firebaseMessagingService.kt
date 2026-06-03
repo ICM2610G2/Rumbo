@@ -14,12 +14,16 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val title = remoteMessage.data["title"]
         val body = remoteMessage.data["body"]
         val senderId = remoteMessage.data["senderId"]
+        val chatId = remoteMessage.data["chatId"]
+        val senderName = remoteMessage.data["senderName"]
+        val senderPhotoUrl = remoteMessage.data["senderPhotoUrl"]
+        val isOnline = remoteMessage.data["isAvailable"]?.toBoolean()
         if(title != null && body != null){
             Log.i("FirebaseApp"
                 , title)
             Log.i("FirebaseApp"
                 , body)
-            showNotification(title, body, this)
+            showNotification(title, body, this, senderId, chatId, senderName, senderPhotoUrl, isOnline)
         }
     }
 }

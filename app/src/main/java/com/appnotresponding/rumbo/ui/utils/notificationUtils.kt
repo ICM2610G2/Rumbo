@@ -14,21 +14,38 @@ fun showNotification(
     title: String,
     message: String,
     context: Context,
-    targetUid: String? = null
+    senderId: String? = null,
+    chatId: String? = null,
+    senderName: String? = null,
+    senderPhotoUrl: String? = null,
+    isOnline: Boolean? = null
 ) {
     val notManager = getSystemService(context, NotificationManager::class.java)
 
     val intent = Intent(context, MainActivity::class.java).apply {
-        Log.i("NotifExp", targetUid?.toString() ?: "null")
-        targetUid?.let {
-            putExtra("targetUid", it)
+        senderId?.let {
+            putExtra("senderId", it)
         }
+        chatId?.let {
+            putExtra("chatId", it)
+        }
+        senderName?.let {
+            putExtra("senderName", it)
+        }
+        senderPhotoUrl?.let {
+            putExtra("senderPhotoUrl", it)
+        }
+        isOnline?.let {
+            putExtra("isOnline", it)
+        }
+        putExtra("openChat", true)
+
         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
     }
-
+    val requestCode = chatId?.hashCode() ?: System.currentTimeMillis().toInt()
     val pendingIntent = PendingIntent.getActivity(
         context,
-        targetUid?.hashCode() ?: 0,
+        requestCode,
         intent,
         PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )

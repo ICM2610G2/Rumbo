@@ -1,5 +1,6 @@
 package com.appnotresponding.rumbo
 
+import android.content.Intent
 import android.location.Geocoder
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -54,6 +55,13 @@ class MainActivity : FragmentActivity(), SensorEventListener {
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
 
+        val openChat = intent.getBooleanExtra("openChat", false)
+        val senderId = intent.getStringExtra("senderId")
+        val chatId = intent.getStringExtra("chatId")
+        val senderName = intent.getStringExtra("senderName")
+        val senderPhotoUrl = intent.getStringExtra("senderPhotoUrl")
+        val isOnline = intent.getBooleanExtra("isOnline", false)
+
         enableEdgeToEdge()
         setContent {
             // Se usa la integración de coil para mejorar el rendimiento de carga de imágenes, especialmente para listas con muchas imágenes docs: https://coil-kt.github.io/coil/network/
@@ -63,7 +71,14 @@ class MainActivity : FragmentActivity(), SensorEventListener {
                 }.build()
             }
             RumboTheme(darkTheme = isDarkTheme) {
-                Navigation()
+                Navigation(
+                    openChat = openChat,
+                    senderId = senderId,
+                    chatId = chatId,
+                    senderName = senderName,
+                    senderPhotoUrl = senderPhotoUrl,
+                    isOnline = isOnline
+                )
             }
         }
     }
@@ -88,4 +103,9 @@ class MainActivity : FragmentActivity(), SensorEventListener {
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+    }
 }
