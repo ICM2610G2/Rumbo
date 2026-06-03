@@ -109,6 +109,7 @@ import com.google.maps.android.compose.TileOverlay
 import com.google.maps.android.heatmaps.Gradient
 import com.google.maps.android.heatmaps.HeatmapTileProvider
 import androidx.compose.ui.graphics.toArgb
+import com.appnotresponding.rumbo.ui.components.molecules.map.ExpandableFAB
 
 import org.osmdroid.util.GeoPoint
 
@@ -349,49 +350,27 @@ fun MapTemplate(
                             viewModel.cancelAdditionalMarkerVisibility()
                         }
                     }
-                    ToggleHeatmap(
+                    ExpandableFAB(
                         isHeatmapActive = state.isHeatmapVisible,
-                        onClick = { viewModel.toggleHeatmap() }
-                    )
-                    WriteDropNote {
-                        popupStateDNComposer = !popupStateDNComposer
-                    }
-                    LocateMe {
-                        if (locationState.hasPermission) {
-                            cameraPositionState.position =
-                                CameraPosition.fromLatLngZoom(state.userMarker.position, 16f)
-                            Log.d(
-                                "MapTemplate",
-                                "Ubicacion: ${locationState.latitude}, ${locationState.longitude}"
-                            )
-                        } else {
-                            locationState.requestPermission()
-                        }
-                    }
-                    Box(
-                        modifier = Modifier
-                            .aspectRatio(1f)
-                            .clip(CircleShape)
-                            .background(
-                                if (user.sharingLocation) MaterialTheme.colorScheme.primary 
-                                else MaterialTheme.colorScheme.surfaceVariant
-                            ), contentAlignment = Alignment.Center
-                    ) {
-                        IconButton(onClick = {
+                        onHeatmapClick = { viewModel.toggleHeatmap() },
+                        onDropNoteClick = { popupStateDNComposer = !popupStateDNComposer },
+                        onLocateMeClick = {
+                            if (locationState.hasPermission) {
+                                cameraPositionState.position =
+                                    CameraPosition.fromLatLngZoom(state.userMarker.position, 16f)
+                                Log.d(
+                                    "MapTemplate",
+                                    "Ubicacion: ${locationState.latitude}, ${locationState.longitude}"
+                                )
+                            } else {
+                                locationState.requestPermission()
+                            }
+                        },
+                        isUserRouteActive = user.sharingLocation,
+                        onUserRouteClick = {
                             userViewModel.toggleLocationSharing(!user.sharingLocation)
-                        }) {
-                            Icon(
-                                modifier = Modifier.size(24.dp),
-                                painter = painterResource(
-                                    if (user.sharingLocation) R.drawable.ic_eye_open 
-                                    else R.drawable.ic_eye_crossed
-                                ),
-                                contentDescription = "Compartir ubicación",
-                                tint = if (user.sharingLocation) MaterialTheme.colorScheme.onPrimary 
-                                       else MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
                         }
-                    }
+                    )
                 }
             }
         },
