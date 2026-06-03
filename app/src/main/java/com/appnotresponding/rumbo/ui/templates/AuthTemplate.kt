@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -35,7 +36,7 @@ fun AuthTemplate(
 
     Box(
         modifier = modifier
-            .fillMaxSize()
+            .fillMaxSize().imePadding()
             .background(MaterialTheme.colorScheme.background)
             .background(brush = backgroundBrush)
             .padding(24.dp), contentAlignment = Alignment.Center
