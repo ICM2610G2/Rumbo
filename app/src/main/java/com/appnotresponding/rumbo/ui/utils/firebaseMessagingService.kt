@@ -11,14 +11,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         Log.i("FirebaseApp"
             , "Message Received!!!")
-        val title = remoteMessage.notification?.title
-        val body = remoteMessage.notification?.body
+        val title = remoteMessage.data["title"]
+        val body = remoteMessage.data["body"]
+        val senderId = remoteMessage.data["senderId"]
         if(title != null && body != null){
             Log.i("FirebaseApp"
                 , title)
             Log.i("FirebaseApp"
                 , body)
-//Build and display notification with remote data
             showNotification(title, body, this)
         }
     }

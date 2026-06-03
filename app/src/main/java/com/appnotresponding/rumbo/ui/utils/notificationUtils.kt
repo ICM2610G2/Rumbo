@@ -39,7 +39,7 @@ fun showNotification(
     )
         .setContentTitle(title)
         .setContentText(message)
-        .setSmallIcon(R.drawable.outline_tour_24)
+        .setSmallIcon(R.drawable.brand)
         .setAutoCancel(true)
         .setContentIntent(pendingIntent)
         .build()

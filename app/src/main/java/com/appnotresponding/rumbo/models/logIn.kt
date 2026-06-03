@@ -14,6 +14,10 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import android.util.Log
+import com.appnotresponding.rumbo.ui.utils.MyApp.Companion.fcmToken
+import com.google.firebase.Firebase
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.messaging.messaging
 
 // https://kotlinlang.org/docs/sealed-classes.html
 sealed class AuthResult {
@@ -114,6 +118,15 @@ class LoginViewModel : ViewModel() {
         _loginState.update { it.copy(authResult = AuthResult.Loading) }
 
         auth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
+            Firebase.messaging.token.addOnSuccessListener { token ->
+                fcmToken = token
+                FirebaseDatabase.getInstance().getReference("tokens/" + auth.currentUser!!.uid)
+                    .setValue(fcmToken).addOnSuccessListener {
+                    Log.i("FirebaseApp", "Token guardado correctamente")
+                }.addOnFailureListener { e ->
+                    Log.e("FirebaseApp", "Error guardando token: ${e.message}")
+                }
+            }
             saveCredentials(email, password)
             _loginState.update { it.copy(authResult = AuthResult.Success) }
         }.addOnFailureListener { e ->
@@ -168,6 +181,15 @@ class LoginViewModel : ViewModel() {
     }
 
     private fun firebaseSignIn(email: String, password: String) {
+        Firebase.messaging.token.addOnSuccessListener { token ->
+            fcmToken = token
+            FirebaseDatabase.getInstance().getReference("tokens/" + auth.currentUser!!.uid)
+                .setValue(fcmToken).addOnSuccessListener {
+                    Log.i("FirebaseApp", "Token guardado correctamente")
+                }.addOnFailureListener { e ->
+                    Log.e("FirebaseApp", "Error guardando token: ${e.message}")
+                }
+        }
         _loginState.update { it.copy(authResult = AuthResult.Loading) }
         auth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
             _loginState.update { it.copy(authResult = AuthResult.Success) }
