@@ -20,7 +20,7 @@ data class ProfileState(
     val isSavingProfile: Boolean = false,
     val profileError: String = "",
     val profileSuccess: String = "",
-    val itineraryHistory: Map<String, Map<String, List<VisitedPlace>>> = emptyMap(),
+    val itineraryHistory: Map<String, List<VisitedPlace>> = emptyMap(),
     val userDropNotes: List<DropNote> = emptyList()
 )
 
@@ -119,22 +119,25 @@ class ProfileViewModel : ViewModel() {
         loadedHistoryUid = uid
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val grouped = linkedMapOf<String, Map<String, List<VisitedPlace>>>()
+                val dayMap = mutableMapOf<String, MutableList<VisitedPlace>>()
                 snapshot.children.forEach { citySnapshot ->
-                    val days = linkedMapOf<String, List<VisitedPlace>>()
                     citySnapshot.children.forEach { daySnapshot ->
+                        val dayKey = daySnapshot.key ?: "Sin fecha"
                         val places = daySnapshot.children.mapNotNull {
                             it.getValue(VisitedPlace::class.java)
-                        }.sortedByDescending { it.visitedAt }
+                        }
                         if (places.isNotEmpty()) {
-                            days[daySnapshot.key ?: "Sin fecha"] = places
+                            val list = dayMap.getOrPut(dayKey) { mutableListOf() }
+                            list.addAll(places)
                         }
                     }
-                    if (days.isNotEmpty()) {
-                        grouped[citySnapshot.key ?: "Sin ciudad"] = days
-                    }
                 }
-                _uiState.update { it.copy(itineraryHistory = grouped) }
+                
+                val sortedGrouped = dayMap.mapValues { entry ->
+                    entry.value.sortedByDescending { it.visitedAt }
+                }
+                
+                _uiState.update { it.copy(itineraryHistory = sortedGrouped) }
             }
 
             override fun onCancelled(error: DatabaseError) {

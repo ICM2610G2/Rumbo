@@ -1,17 +1,17 @@
 package com.appnotresponding.rumbo.models
 
 data class Place(
-    val id: String,
-    val name: String,
-    val address: String,
-    val description: String?,
-    val openHours: List<String>?,
-    val price: String?,
-    val latitude: Double,
-    val longitude: Double,
-    val rating: Double?,
-    val reviews: List<Review>,
-    val imageUrl: String?
+    val id: String = "",
+    val name: String = "",
+    val address: String = "",
+    val description: String? = null,
+    val openHours: List<String>? = null,
+    val price: String? = null,
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0,
+    val rating: Double? = null,
+    val reviews: List<Review> = emptyList(),
+    val imageUrl: String? = null
 )
 
 val samplePlace = Place(

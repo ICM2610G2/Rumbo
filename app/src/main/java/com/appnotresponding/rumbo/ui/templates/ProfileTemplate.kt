@@ -72,7 +72,7 @@ enum class ProfileMenu {
 @Composable
 fun ProfileTemplate(
     user: User,
-    itineraryHistory: Map<String, Map<String, List<VisitedPlace>>>,
+    itineraryHistory: Map<String, List<VisitedPlace>>,
     dropNotes: List<DropNote>,
     selectedPhotoUri: Uri?,
     isSavingProfile: Boolean,
@@ -312,7 +312,7 @@ private fun EditProfileSection(
 
 @Composable
 private fun ItineraryHistorySection(
-    itineraryHistory: Map<String, Map<String, List<VisitedPlace>>>
+    itineraryHistory: Map<String, List<VisitedPlace>>
 ) {
     if (itineraryHistory.isEmpty()) {
         EmptyState(text = "Aún no hay lugares visitados.")
@@ -320,33 +320,48 @@ private fun ItineraryHistorySection(
     }
 
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        itineraryHistory.forEach { (cityKey, days) ->
+        itineraryHistory.toSortedMap(compareByDescending { it }).forEach { (day, places) ->
             ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    val cityName = days.values.flatten().firstOrNull()?.city ?: cityKey
-                    Text(
-                        text = cityName,
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    days.toSortedMap(compareByDescending { it }).forEach { (day, places) ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Text(
-                            text = day,
-                            style = MaterialTheme.typography.titleSmall,
+                            text = formatDateHeader(day),
+                            style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        places.forEach { place ->
-                            VisitedPlaceRow(place)
+                        val placeCount = places.size
+                        Text(
+                            text = "$placeCount lugar${if (placeCount > 1) "es" else ""}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                    places.forEachIndexed { index, place ->
+                        VisitedPlaceRow(place)
+                        if (index < places.size - 1) {
+                            Spacer(modifier = Modifier.height(10.dp))
+                            HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
                             Spacer(modifier = Modifier.height(10.dp))
                         }
-                        HorizontalDivider()
-                        Spacer(modifier = Modifier.height(12.dp))
                     }
                 }
             }
         }
+    }
+}
+
+private fun formatDateHeader(day: String): String {
+    return try {
+        val date = java.time.LocalDate.parse(day)
+        val formatter = DateTimeFormatter.ofPattern("d 'de' MMMM, yyyy", java.util.Locale("es", "ES"))
+        date.format(formatter)
+    } catch (e: Exception) {
+        day
     }
 }
 
