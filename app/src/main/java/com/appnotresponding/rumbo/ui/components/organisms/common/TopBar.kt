@@ -100,8 +100,8 @@ fun ChatTopBar(
     val displayName = u.name.replace(Regex(" +$"), "")
 
     val subtitle: String? = when {
-        !isGroup && isOnline -> "En línea"
         !activity.isNullOrBlank() -> activity
+        !isGroup && isOnline -> "En línea"
         else -> null
     }
     val subtitleColor = if (!isGroup && isOnline)

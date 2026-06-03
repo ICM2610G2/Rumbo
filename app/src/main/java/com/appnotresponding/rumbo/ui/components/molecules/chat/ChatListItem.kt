@@ -86,15 +86,7 @@ fun ChatListItem(
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f, fill = false)
                     )
-                    if (isOnline) {
-                        Text(
-                            text = " · En línea",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = Color(0xFF4CAF50),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    } else if (status != null) {
+                    if (status != null && isOnline) {
                         Text(
                             text = " · ",
                             style = MaterialTheme.typography.titleSmall,
