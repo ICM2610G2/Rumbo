@@ -24,21 +24,18 @@ import com.appnotresponding.rumbo.ui.components.atoms.RumboButtonStyle
 
 @Composable
 fun FriendRequestItem(
-    user: User,
-    onAcceptClick: () -> Unit,
-    onDeclineClick: () -> Unit,
-    modifier: Modifier = Modifier
+    user: User, onAcceptClick: () -> Unit, onDeclineClick: () -> Unit, modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
             .border(
                 width = 1.dp,
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
+                color = MaterialTheme.colorScheme.outlineVariant,
                 shape = MaterialTheme.shapes.medium
             )
             .background(
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
                 shape = MaterialTheme.shapes.medium
             )
             .padding(12.dp)
@@ -49,7 +46,7 @@ fun FriendRequestItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Avatar(user = user)
-            Column(modifier = Modifier.weight(1f)) {
+            Column(modifier = Modifier.weight(6f)) {
                 Text(
                     text = "${user.name} ${user.lastname}",
                     style = MaterialTheme.typography.titleSmall,
@@ -62,10 +59,12 @@ fun FriendRequestItem(
                 )
             }
             Column(
+                modifier = Modifier.weight(4f),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 RumboButton(
+                    modifier = Modifier.fillMaxWidth(),
                     text = "Aceptar",
                     onClick = onAcceptClick,
                     style = RumboButtonStyle.Primary,
@@ -73,6 +72,7 @@ fun FriendRequestItem(
                     icon = painterResource(R.drawable.ic_check)
                 )
                 RumboButton(
+                    modifier = Modifier.fillMaxWidth(),
                     text = "Rechazar",
                     onClick = onDeclineClick,
                     style = RumboButtonStyle.Secondary,

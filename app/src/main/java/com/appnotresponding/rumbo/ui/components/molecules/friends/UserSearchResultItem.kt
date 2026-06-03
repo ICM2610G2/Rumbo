@@ -2,16 +2,12 @@ package com.appnotresponding.rumbo.ui.components.molecules.friends
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,11 +35,11 @@ fun UserSearchResultItem(
             .fillMaxWidth()
             .border(
                 width = 1.dp,
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                color = MaterialTheme.colorScheme.outlineVariant,
                 shape = MaterialTheme.shapes.medium
             )
             .background(
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
                 shape = MaterialTheme.shapes.medium
             )
             .padding(12.dp)
@@ -66,8 +62,8 @@ fun UserSearchResultItem(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            if (isAlreadyFriend) {
-                RumboButton(
+            when {
+                isAlreadyFriend -> RumboButton(
                     text = "Amigos",
                     onClick = {},
                     enabled = false,
@@ -75,8 +71,7 @@ fun UserSearchResultItem(
                     size = RumboButtonSize.Small,
                     icon = painterResource(R.drawable.ic_check)
                 )
-            } else if (isPending) {
-                RumboButton(
+                isPending -> RumboButton(
                     text = "Pendiente",
                     onClick = {},
                     enabled = false,
@@ -84,20 +79,13 @@ fun UserSearchResultItem(
                     size = RumboButtonSize.Small,
                     icon = painterResource(R.drawable.ic_user)
                 )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(MaterialTheme.colorScheme.primary, CircleShape)
-                        .clickable(onClick = onAddClick),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_user_add),
-                        contentDescription = "Agregar amigo",
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
+                else -> RumboButton(
+                    text = "Agregar",
+                    onClick = onAddClick,
+                    style = RumboButtonStyle.Primary,
+                    size = RumboButtonSize.Small,
+                    icon = painterResource(R.drawable.ic_user_add)
+                )
             }
         }
     }

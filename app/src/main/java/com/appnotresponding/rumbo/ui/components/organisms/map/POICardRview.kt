@@ -103,7 +103,7 @@ fun PlacePreviewCard(
                 Text(
                     text = place.name,
                     style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -124,7 +124,7 @@ fun PlacePreviewCard(
                                 Text(
                                     text = "Horario:\n${formatHoursForCard(hours)}",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onBackground
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }
@@ -133,14 +133,14 @@ fun PlacePreviewCard(
                                 Text(
                                     text = "Precio: $price",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onBackground
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }
                         Text(
                             text = place.description ?: "No hay información",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onBackground
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Column(
                             modifier = Modifier
@@ -180,7 +180,7 @@ fun PlacePreviewCard(
                     Text(
                         text = "Reseñas de ${place.name}",
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
                 }

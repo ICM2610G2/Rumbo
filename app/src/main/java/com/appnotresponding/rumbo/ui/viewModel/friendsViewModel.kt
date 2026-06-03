@@ -242,6 +242,18 @@ class FriendsViewModel : ViewModel() {
         // 2. Add mutual friendship
         dbFriendships.child(myUid).child(senderUid).setValue(true)
         dbFriendships.child(senderUid).child(myUid).setValue(true)
+
+        // 3. Create the direct chat channel so it appears in both users' chat list.
+        //    The chat ID is deterministic: sorted UIDs joined by "_".
+        val chatId = listOf(myUid, senderUid).sorted().joinToString("_")
+        val chatRef = FirebaseDatabase.getInstance().getReference("chats").child(chatId)
+        chatRef.get().addOnSuccessListener { snapshot ->
+            if (!snapshot.exists()) {
+                chatRef.child("participants").setValue(listOf(myUid, senderUid))
+                chatRef.child("lastMessage").setValue("")
+                chatRef.child("lastMessageTimestamp").setValue(0)
+            }
+        }
     }
 
     fun declineFriendRequest(senderUid: String) {

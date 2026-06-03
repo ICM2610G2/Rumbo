@@ -17,10 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AddAPhoto
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -118,17 +115,17 @@ fun SignUpForm(
             modifier = Modifier
                 .fillMaxWidth()
                 .blur(50.dp)
-                .background(Color.White.copy(alpha = 0.18f), RoundedCornerShape(50))
+                .background(Color.White.copy(alpha = 0.18f), CircleShape)
         )
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(24.dp))
+                .clip(MaterialTheme.shapes.extraLarge)
                 .background(
                     color = MaterialTheme.colorScheme.surface.copy(alpha = 0.25f),
-                    shape = RoundedCornerShape(24.dp)
+                    shape = MaterialTheme.shapes.extraLarge
                 )
-                .border(1.2.dp, Color.White.copy(alpha = 0.2f), RoundedCornerShape(24.dp))
+                .border(1.2.dp, Color.White.copy(alpha = 0.2f), MaterialTheme.shapes.extraLarge)
                 .padding(24.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp),

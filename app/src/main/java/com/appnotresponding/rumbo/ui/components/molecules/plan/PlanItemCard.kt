@@ -1,5 +1,8 @@
 package com.appnotresponding.rumbo.ui.components.molecules.plan
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,8 +16,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil3.compose.SubcomposeAsyncImage
@@ -33,38 +37,48 @@ import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.models.Place
 import com.appnotresponding.rumbo.navigation.AppScreens
 import com.appnotresponding.rumbo.ui.components.atoms.RumboButton
+import com.appnotresponding.rumbo.ui.components.atoms.RumboButtonSize
 import com.appnotresponding.rumbo.ui.components.atoms.RumboButtonStyle
 import com.appnotresponding.rumbo.ui.components.atoms.RumboRatingDisplay
 import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 
 /**
- * PlanItemCard.kt
- *
- * Componente que representa una tarjeta de un lugar en el planificador.
- * Muestra la imagen, nombre, descripción, precio y un botón para añadir al itinerario.
- *
- * @param p El lugar a mostrar en la tarjeta.
+ * Tarjeta de un lugar en el planificador.
+ * El fondo y borde de la card se animan al añadir/quitar del itinerario,
+ * manteniendo el lenguaje visual de la app (primaryContainer cuando está activo).
  */
 @Composable
 fun PlanItemCard(p: Place, placesViewModel: PlacesViewModel, controller: NavHostController) {
-
     val uiState by placesViewModel.uiState.collectAsState()
     val isInItinerary = uiState.itinerary.any { it.id == p.id }
-    val icon = if (isInItinerary) R.drawable.ic_minus else R.drawable.ic_plus
-    val msg = if (isInItinerary) "Eliminar del Itinerario" else "Añadir al Itinerario"
 
-    ElevatedCard(
-        modifier = Modifier.fillMaxWidth(), colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-        ), elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = 2.dp
-        ), shape = MaterialTheme.shapes.medium
+    val containerColor by animateColorAsState(
+        targetValue = if (isInItinerary) MaterialTheme.colorScheme.secondaryContainer
+                      else MaterialTheme.colorScheme.surfaceContainerLow,
+        animationSpec = tween(durationMillis = 300),
+        label = "planCardBg"
+    )
+    val borderColor by animateColorAsState(
+        targetValue = if (isInItinerary) MaterialTheme.colorScheme.secondary
+                      else MaterialTheme.colorScheme.outlineVariant,
+        animationSpec = tween(durationMillis = 300),
+        label = "planCardBorder"
+    )
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = containerColor),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
+        shape = MaterialTheme.shapes.medium,
+        border = BorderStroke(1.dp, borderColor)
     ) {
-        Column {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp)
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Box(
                     modifier = Modifier
@@ -76,7 +90,8 @@ fun PlanItemCard(p: Place, placesViewModel: PlacesViewModel, controller: NavHost
                             placesViewModel.showPreview(p)
                             placesViewModel.selectForNavigation(p)
                             controller.navigate(AppScreens.Map.name)
-                        }, contentAlignment = Alignment.Center
+                        },
+                    contentAlignment = Alignment.Center
                 ) {
                     SubcomposeAsyncImage(
                         model = p.imageUrl,
@@ -90,16 +105,19 @@ fun PlanItemCard(p: Place, placesViewModel: PlacesViewModel, controller: NavHost
                                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer),
                                 contentScale = ContentScale.Crop
                             )
-                        })
+                        }
+                    )
                 }
-                Spacer(modifier = Modifier.width(12.dp))
                 Column(
-                    modifier = Modifier.weight(6f), verticalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier.weight(6f),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Text(
                         text = p.name,
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onBackground
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
                     if (p.reviews.isNotEmpty()) {
                         RumboRatingDisplay(
@@ -108,43 +126,26 @@ fun PlanItemCard(p: Place, placesViewModel: PlacesViewModel, controller: NavHost
                         )
                     }
                     Text(
-                        text = p.description ?: "No hay descripción",
+                        text = p.description ?: "Sin descripción",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 3,
+                        overflow = TextOverflow.Ellipsis
                     )
-
                 }
             }
+
+            RumboButton(
+                modifier = Modifier.fillMaxWidth(),
+                text = if (isInItinerary) "Eliminar del Itinerario" else "Añadir al Itinerario",
+                onClick = {
+                    if (isInItinerary) placesViewModel.removeFromItinerary(p)
+                    else placesViewModel.addToItinerary(p)
+                },
+                style = if (isInItinerary) RumboButtonStyle.Secondary else RumboButtonStyle.Primary,
+                size = RumboButtonSize.Small,
+                icon = painterResource(if (isInItinerary) R.drawable.ic_minus else R.drawable.ic_plus)
+            )
         }
-        RumboButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            text = msg, onClick = {
-                if (isInItinerary) {
-                    placesViewModel.removeFromItinerary(p)
-                } else {
-                    placesViewModel.addToItinerary(p)
-                }
-            }, style = RumboButtonStyle.Secondary, icon = painterResource(icon)
-        )
     }
 }
-
-/**
-@Preview(showBackground = true, name = "PlanItemCard - Light")
-@Composable
-private fun PlanItemCardLightPreview() {
-RumboTheme(darkTheme = false) {
-PlanItemCard(p = samplePlace)
-}
-}
-
-@Preview(showBackground = true, name = "PlanItemCard - Dark", backgroundColor = 0xFF1E1E1E)
-@Composable
-private fun PlanItemCardDarkPreview() {
-RumboTheme(darkTheme = true) {
-PlanItemCard(p = samplePlace)
-}
-}
- */

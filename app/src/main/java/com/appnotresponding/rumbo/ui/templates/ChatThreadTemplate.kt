@@ -33,7 +33,10 @@ fun ChatThreadTemplate(
     onCameraClick: () -> Unit = {},
     onLocationClick: () -> Unit = {},
     onMicClick: () -> Unit = {},
+    onSendAudio: () -> Unit = {},
+    onDiscardAudio: () -> Unit = {},
     isRecordingAudio: Boolean = false,
+    isAudioReady: Boolean = false,
     content: @Composable () -> Unit
 ) {
     Scaffold(contentWindowInsets = WindowInsets(0), topBar = {
@@ -62,7 +65,10 @@ fun ChatThreadTemplate(
                 onCameraClick = onCameraClick,
                 onLocationClick = onLocationClick,
                 onMicClick = onMicClick,
-                isRecordingAudio = isRecordingAudio
+                onSendAudio = onSendAudio,
+                onDiscardAudio = onDiscardAudio,
+                isRecordingAudio = isRecordingAudio,
+                isAudioReady = isAudioReady
             )
         }
     }) { paddingValues ->

@@ -93,6 +93,7 @@ fun ChatThreadScreen(
     var mediaRecorder by remember { mutableStateOf<MediaRecorder?>(null) }
     var audioFile by remember { mutableStateOf<File?>(null) }
     var isRecording by remember { mutableStateOf(false) }
+    var isAudioReady by remember { mutableStateOf(false) }
     var pendingCameraUri by remember { mutableStateOf<Uri?>(null) }
     var imagePreviewUrl by remember { mutableStateOf<String?>(null) }
 
@@ -212,20 +213,14 @@ fun ChatThreadScreen(
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
                 if (isRecording) {
+                    // Parar grabación — el usuario decide si enviar o eliminar
                     mediaRecorder?.stop()
                     mediaRecorder?.release()
                     mediaRecorder = null
                     isRecording = false
-                    audioFile?.let { file ->
-                        chatThreadViewModel.sendMediaMessage(
-                            chatId,
-                            currentUser.name,
-                            Uri.fromFile(file),
-                            isGroup,
-                            "audio"
-                        )
-                    }
-                } else {
+                    isAudioReady = audioFile != null
+                } else if (!isAudioReady) {
+                    // Iniciar grabación
                     messageInput = ""
                     audioFile = File.createTempFile("audio", ".mp4", context.cacheDir)
                     val recorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -250,7 +245,20 @@ fun ChatThreadScreen(
                 audioPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
             }
         },
-        isRecordingAudio = isRecording
+        onSendAudio = {
+            audioFile?.let { file ->
+                chatThreadViewModel.sendMediaMessage(chatId, currentUser.name, Uri.fromFile(file), isGroup, "audio")
+            }
+            audioFile = null
+            isAudioReady = false
+        },
+        onDiscardAudio = {
+            audioFile?.delete()
+            audioFile = null
+            isAudioReady = false
+        },
+        isRecordingAudio = isRecording,
+        isAudioReady = isAudioReady
     ) {
         if (threadState.messages.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

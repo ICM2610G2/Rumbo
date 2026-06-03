@@ -1,6 +1,12 @@
 package com.appnotresponding.rumbo.ui.templates
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,19 +22,11 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Icon
-import androidx.compose.ui.res.painterResource
-import com.appnotresponding.rumbo.ui.viewModel.UserViewModel
-import com.appnotresponding.rumbo.ui.viewModel.FriendsViewModel
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -42,10 +40,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -64,15 +62,11 @@ import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.isDarkTheme
 import com.appnotresponding.rumbo.models.DropNote
 import com.appnotresponding.rumbo.models.User
-import com.appnotresponding.rumbo.models.samplePlace
-import com.appnotresponding.rumbo.models.sampleReview
 import com.appnotresponding.rumbo.roadManager
 import com.appnotresponding.rumbo.ui.components.atoms.Avatar
 import com.appnotresponding.rumbo.ui.components.molecules.map.CancelRoute
 import com.appnotresponding.rumbo.ui.components.molecules.map.DropNoteBubble
-import com.appnotresponding.rumbo.ui.components.molecules.map.LocateMe
-import com.appnotresponding.rumbo.ui.components.molecules.map.ToggleHeatmap
-import com.appnotresponding.rumbo.ui.components.molecules.map.WriteDropNote
+import com.appnotresponding.rumbo.ui.components.molecules.map.ExpandableFAB
 import com.appnotresponding.rumbo.ui.components.organisms.common.MainTopBar
 import com.appnotresponding.rumbo.ui.components.organisms.common.Nav
 import com.appnotresponding.rumbo.ui.components.organisms.map.DropNoteComposer
@@ -83,10 +77,12 @@ import com.appnotresponding.rumbo.ui.utils.createLocationRequest
 import com.appnotresponding.rumbo.ui.utils.rememberLocationManager
 import com.appnotresponding.rumbo.ui.utils.rememberMediaHardwareManager
 import com.appnotresponding.rumbo.ui.viewModel.DropNoteViewModel
+import com.appnotresponding.rumbo.ui.viewModel.FriendsViewModel
 import com.appnotresponding.rumbo.ui.viewModel.ItineraryHistoryViewModel
 import com.appnotresponding.rumbo.ui.viewModel.MapViewModel
 import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 import com.appnotresponding.rumbo.ui.viewModel.UserLocationViewModel
+import com.appnotresponding.rumbo.ui.viewModel.UserViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -103,14 +99,13 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.Polyline
+import com.google.maps.android.compose.TileOverlay
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
-import com.google.maps.android.compose.TileOverlay
 import com.google.maps.android.heatmaps.Gradient
 import com.google.maps.android.heatmaps.HeatmapTileProvider
-import androidx.compose.ui.graphics.toArgb
-import com.appnotresponding.rumbo.ui.components.molecules.map.ExpandableFAB
-
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.osmdroid.util.GeoPoint
 
 val locationPermission = android.Manifest.permission.ACCESS_FINE_LOCATION
@@ -164,18 +159,23 @@ fun MapTemplate(
     var isUploadingReview by remember { mutableStateOf(false) }
     var showReplaceRouteDialog by remember { mutableStateOf(false) }
 
-    val isWithinProximity = remember(userLocationState.latitude, userLocationState.longitude, currentPreviewedPlace) {
-        if (currentPreviewedPlace != null && userLocationState.latitude != 0.0 && userLocationState.longitude != 0.0) {
-            val userLatLng = LatLng(userLocationState.latitude, userLocationState.longitude)
-            val placeLatLng = LatLng(currentPreviewedPlace.latitude, currentPreviewedPlace.longitude)
-            val distance = com.google.maps.android.SphericalUtil.computeDistanceBetween(userLatLng, placeLatLng)
-            distance <= 100.0
-        } else {
-            false
+    val isWithinProximity =
+        remember(userLocationState.latitude, userLocationState.longitude, currentPreviewedPlace) {
+            if (currentPreviewedPlace != null && userLocationState.latitude != 0.0 && userLocationState.longitude != 0.0) {
+                val userLatLng = LatLng(userLocationState.latitude, userLocationState.longitude)
+                val placeLatLng =
+                    LatLng(currentPreviewedPlace.latitude, currentPreviewedPlace.longitude)
+                val distance = com.google.maps.android.SphericalUtil.computeDistanceBetween(
+                    userLatLng,
+                    placeLatLng
+                )
+                distance <= 100.0
+            } else {
+                false
+            }
         }
-    }
 
-    val markerKey = remember(user.profilePictureUrl) { user.profilePictureUrl ?: "" }
+    remember(user.profilePictureUrl) { user.profilePictureUrl ?: "" }
     var profileBitmap by remember(user.profilePictureUrl) { mutableStateOf<ImageBitmap?>(null) }
     LaunchedEffect(user.profilePictureUrl) {
         if (user.profilePictureUrl.isNullOrEmpty()) return@LaunchedEffect
@@ -199,15 +199,11 @@ fun MapTemplate(
         if (state.heatmapPoints.isNotEmpty()) {
             try {
                 val colors = intArrayOf(
-                    Color.Blue.toArgb(),
-                    Color.Yellow.toArgb(),
-                    Color.Red.toArgb()
+                    Color.Blue.toArgb(), Color.Yellow.toArgb(), Color.Red.toArgb()
                 )
                 val startPoints = floatArrayOf(0.2f, 0.6f, 1.0f)
                 val gradient = Gradient(colors, startPoints)
-                HeatmapTileProvider.Builder()
-                    .data(state.heatmapPoints)
-                    .gradient(gradient)
+                HeatmapTileProvider.Builder().data(state.heatmapPoints).gradient(gradient)
                     .radius(50) // Blur radius (range 10 to 50)
                     .build()
             } catch (e: Exception) {
@@ -240,7 +236,8 @@ fun MapTemplate(
         userLocationState.latitude, userLocationState.longitude, state.centerInUserFirstTime
     ) {
         Log.d("RECOMPOSE", "Enntrando en launch de location")
-        val tieneUbicacionReal = userLocationState.latitude != 0.0 || userLocationState.longitude != 0.0
+        val tieneUbicacionReal =
+            userLocationState.latitude != 0.0 || userLocationState.longitude != 0.0
 
         if (tieneUbicacionReal) {
             viewModel.updateUserMarker(userLocationState.latitude, userLocationState.longitude)
@@ -264,7 +261,8 @@ fun MapTemplate(
     }
 
     LaunchedEffect(placesState.selectedPlace) {
-        val tieneUbicacionReal = userLocationState.latitude != 0.0 || userLocationState.longitude != 0.0
+        val tieneUbicacionReal =
+            userLocationState.latitude != 0.0 || userLocationState.longitude != 0.0
 
         if (tieneUbicacionReal && placesState.selectedPlace != null) {
             val startPoint = GeoPoint(userLocationState.latitude, userLocationState.longitude)
@@ -343,7 +341,10 @@ fun MapTemplate(
                 verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Bottom)
             ) {
                 if (permission.status.isGranted) {
-                    if (placesState.selectedPlace != null) {
+                    AnimatedVisibility(
+                        visible = placesState.selectedPlace != null,
+                        enter = fadeIn(tween(300)) + slideInVertically(tween(300)) { it },
+                        exit = fadeOut(tween(250)) + slideOutVertically(tween(250)) { it }) {
                         CancelRoute {
                             placesViewModel.clearForNavigation()
                             viewModel.updateRoutePoints(emptyList())
@@ -366,11 +367,10 @@ fun MapTemplate(
                                 locationState.requestPermission()
                             }
                         },
-                        isUserRouteActive = user.sharingLocation,
+                        isUserVisible = user.sharingLocation,
                         onUserRouteClick = {
                             userViewModel.toggleLocationSharing(!user.sharingLocation)
-                        }
-                    )
+                        })
                 }
             }
         },
@@ -420,8 +420,7 @@ fun MapTemplate(
                         ), title = "${user.name} (Tú)"
                     ) {
                         Avatar(
-                            user = user,
-                            modifier = Modifier.border(1.dp, Color.White, CircleShape)
+                            user = user, modifier = Modifier.border(1.dp, Color.White, CircleShape)
                         )
                     }
                     friendsState.friends.forEach { friend ->
@@ -433,7 +432,11 @@ fun MapTemplate(
                             ) {
                                 Avatar(
                                     user = friend,
-                                    modifier = Modifier.border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                                    modifier = Modifier.border(
+                                        2.dp,
+                                        MaterialTheme.colorScheme.primary,
+                                        CircleShape
+                                    )
                                 )
                             }
                         }
@@ -599,17 +602,14 @@ fun MapTemplate(
                 .clickable(
                     interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
                     indication = null,
-                    onClick = { placesViewModel.showPreview(null) }
-                )
+                    onClick = { placesViewModel.showPreview(null) })
                 .padding(16.dp)
-                .offset(y = -(90).dp),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            Box(modifier = Modifier.clickable(
+                .offset(y = -(90).dp), contentAlignment = Alignment.BottomCenter) {
+            Box(
+                modifier = Modifier.clickable(
                 interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
                 indication = null,
-                onClick = {}
-            )) {
+                onClick = {})) {
                 val isInItinerary = placesState.itinerary.any { it.id == currentPreviewedPlace.id }
                 PlacePreviewCard(
                     place = currentPreviewedPlace,
@@ -633,8 +633,7 @@ fun MapTemplate(
                     },
                     onReviewClick = {
                         popupStateReviewComposer = true
-                    }
-                )
+                    })
             }
         }
     }
@@ -691,10 +690,8 @@ fun MapTemplate(
                             onFailure = { error ->
                                 isUploadingReview = false
                                 Log.e("MapTemplate", "Error al subir reseña: $error")
-                            }
-                        )
-                    }
-                )
+                            })
+                    })
             }
         }
     }
@@ -736,7 +733,9 @@ fun MapTemplate(
     }
     if (showReplaceRouteDialog && currentPreviewedPlace != null) {
         androidx.compose.material3.AlertDialog(
-            onDismissRequest = { showReplaceRouteDialog = false },
+            onDismissRequest = {
+                showReplaceRouteDialog = false
+            },
             title = { Text("Ruta activa") },
             text = { Text("Tienes una ruta activa en curso. ¿Deseas reemplazarla?") },
             confirmButton = {
@@ -745,18 +744,15 @@ fun MapTemplate(
                         showReplaceRouteDialog = false
                         placesViewModel.selectForNavigation(currentPreviewedPlace)
                         placesViewModel.showPreview(null)
-                    }
-                ) {
+                    }) {
                     Text("Confirmar")
                 }
             },
             dismissButton = {
                 androidx.compose.material3.TextButton(
-                    onClick = { showReplaceRouteDialog = false }
-                ) {
+                    onClick = { showReplaceRouteDialog = false }) {
                     Text("Cancelar")
                 }
-            }
-        )
+            })
     }
 }

@@ -1,5 +1,8 @@
 package com.appnotresponding.rumbo.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -75,7 +78,14 @@ fun Navigation(
         }
     }
 
-    NavHost(navController = navController, startDestination = AppScreens.Splash.name) {
+    NavHost(
+        navController = navController,
+        startDestination = AppScreens.Splash.name,
+        enterTransition = { fadeIn(tween(280)) },
+        exitTransition = { fadeOut(tween(180)) },
+        popEnterTransition = { fadeIn(tween(280)) },
+        popExitTransition = { fadeOut(tween(180)) }
+    ) {
         composable(route = AppScreens.Splash.name) {
             SplashScreen(navController)
         }

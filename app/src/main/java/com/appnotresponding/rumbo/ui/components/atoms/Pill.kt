@@ -1,5 +1,7 @@
 package com.appnotresponding.rumbo.ui.components.atoms
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,20 +29,19 @@ import androidx.compose.ui.unit.dp
 import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
-// Definición de los estilos de las pills
 enum class RumboPillStyle {
     Filled, Outlined, Tonal
 }
 
 /**
  * Componente RumboPill para mostrar opciones seleccionables en forma de "píldora".
+ * El cambio de estado [selected] se anima suavemente con [animateColorAsState].
+ *
  * @param text El texto a mostrar dentro de la pill
- * @param modifier Modificador para personalizar la apariencia y comportamiento de la pill
  * @param style El estilo visual de la pill (Filled, Outlined, Tonal)
- * @param selected Indica si la pill está seleccionada o no, afectando su apariencia
- * @param onClick Acción a ejecutar al hacer clic en la pill (opcional)
- * @param icon Icono opcional para mostrar junto al texto dentro de la pill
- * @param iconContentDescription Descripción para accesibilidad del icono (opcional)
+ * @param selected Indica si la pill está seleccionada, afectando fondo, texto y borde
+ * @param onClick Acción a ejecutar al hacer clic (opcional)
+ * @param icon Icono opcional a mostrar junto al texto
  */
 @Composable
 fun RumboPill(
@@ -51,53 +53,45 @@ fun RumboPill(
     icon: Painter? = null,
     iconContentDescription: String? = null
 ) {
-    val shape = CircleShape
-
-    val backgroundColor: Color
-    val textColor: Color
-    val borderColor: Color
+    val targetBg: Color
+    val targetText: Color
+    val targetBorder: Color
 
     when (style) {
-        //Definicion del estillo relleno
         RumboPillStyle.Filled -> {
-            backgroundColor =
-                if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer
-            textColor =
-                if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
-            borderColor = Color.Transparent
+            targetBg = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer
+            targetText = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
+            targetBorder = Color.Transparent
         }
-
-        //Definicion del estillo de contorno
         RumboPillStyle.Outlined -> {
-            backgroundColor = Color.Transparent
-            textColor =
-                if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-            borderColor =
-                if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+            targetBg = Color.Transparent
+            targetText = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+            targetBorder = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
         }
-
-        //Definicion del estilo de tono
         RumboPillStyle.Tonal -> {
-            backgroundColor =
-                if (selected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh
-            textColor =
-                if (selected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
-            borderColor = Color.Transparent
+            targetBg = if (selected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh
+            targetText = if (selected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+            targetBorder = Color.Transparent
         }
     }
 
+    val backgroundColor by animateColorAsState(targetBg, tween(200), label = "pillBg")
+    val textColor by animateColorAsState(targetText, tween(200), label = "pillText")
+    val borderColor by animateColorAsState(targetBorder, tween(200), label = "pillBorder")
+
     Row(
         modifier = modifier
-            .clip(shape)
-            .background(backgroundColor, shape)
+            .clip(CircleShape)
+            .background(backgroundColor, CircleShape)
             .then(
-                if (borderColor != Color.Transparent) Modifier.border(1.dp, borderColor, shape)
+                if (style == RumboPillStyle.Outlined)
+                    Modifier.border(1.dp, borderColor, CircleShape)
                 else Modifier
             )
-            .then(if (onClick != null) Modifier.clickable { onClick() }
-            else Modifier)
+            .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier)
             .padding(horizontal = 12.dp, vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically) {
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         if (icon != null) {
             Icon(
                 painter = icon,
@@ -107,7 +101,6 @@ fun RumboPill(
             )
             Spacer(modifier = Modifier.width(4.dp))
         }
-
         Text(
             text = text,
             style = MaterialTheme.typography.labelLarge,
@@ -127,12 +120,7 @@ private fun PillLightPreview() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                RumboPill(
-                    text = "Playa",
-                    style = RumboPillStyle.Filled,
-                    selected = true,
-                    icon = painterResource(id = R.drawable.ic_globe)
-                )
+                RumboPill(text = "Playa", style = RumboPillStyle.Filled, selected = true, icon = painterResource(id = R.drawable.ic_globe))
                 RumboPill(text = "Montaña", style = RumboPillStyle.Filled)
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -156,12 +144,7 @@ private fun PillDarkPreview() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                RumboPill(
-                    text = "Playa",
-                    style = RumboPillStyle.Filled,
-                    selected = true,
-                    icon = painterResource(id = R.drawable.ic_globe)
-                )
+                RumboPill(text = "Playa", style = RumboPillStyle.Filled, selected = true, icon = painterResource(id = R.drawable.ic_globe))
                 RumboPill(text = "Montaña", style = RumboPillStyle.Filled)
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

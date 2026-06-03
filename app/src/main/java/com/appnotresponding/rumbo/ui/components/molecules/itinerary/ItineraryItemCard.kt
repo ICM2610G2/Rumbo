@@ -1,5 +1,7 @@
 package com.appnotresponding.rumbo.ui.components.molecules.itinerary
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,14 +16,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil3.compose.SubcomposeAsyncImage
@@ -41,6 +44,7 @@ import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.models.Place
 import com.appnotresponding.rumbo.navigation.AppScreens
 import com.appnotresponding.rumbo.ui.components.atoms.RumboButton
+import com.appnotresponding.rumbo.ui.components.atoms.RumboButtonSize
 import com.appnotresponding.rumbo.ui.components.atoms.RumboButtonStyle
 import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 import java.text.Normalizer
@@ -51,9 +55,9 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 /**
- * Componente que muestra la información de un lugar en el itinerario, incluyendo su imagen, nombre, horario, precio y un botón para iniciar el desplazamiento.
- *
- * @param p El objeto Place que contiene la información del lugar a mostrar.
+ * Tarjeta de un lugar en el itinerario activo.
+ * El fondo y borde se animan según si la ruta a este lugar está activa,
+ * usando primaryContainer para el estado activo (lenguaje visual unificado).
  */
 @Composable
 fun ItineraryItemCard(p: Place, placesViewModel: PlacesViewModel, controller: NavHostController) {
@@ -64,52 +68,47 @@ fun ItineraryItemCard(p: Place, placesViewModel: PlacesViewModel, controller: Na
     var showReplaceRouteDialog by remember { mutableStateOf(false) }
 
     if (showReplaceRouteDialog) {
-        androidx.compose.material3.AlertDialog(
-            onDismissRequest = {
-            showReplaceRouteDialog = false
-        },
+        AlertDialog(
+            onDismissRequest = { showReplaceRouteDialog = false },
             title = { Text("Ruta activa") },
             text = { Text("Tienes una ruta activa en curso. ¿Deseas reemplazarla?") },
             confirmButton = {
-                androidx.compose.material3.TextButton(
-                    onClick = {
-                        showReplaceRouteDialog = false
-                        placesViewModel.selectForNavigation(p)
-                        controller.navigate(AppScreens.Map.name)
-                    }) {
-                    Text("Confirmar")
-                }
+                TextButton(onClick = {
+                    showReplaceRouteDialog = false
+                    placesViewModel.selectForNavigation(p)
+                    controller.navigate(AppScreens.Map.name)
+                }) { Text("Confirmar") }
             },
             dismissButton = {
-                androidx.compose.material3.TextButton(
-                    onClick = { showReplaceRouteDialog = false }) {
-                    Text("Cancelar")
-                }
-            })
+                TextButton(onClick = { showReplaceRouteDialog = false }) { Text("Cancelar") }
+            }
+        )
     }
 
-    ElevatedCard(
+    val containerColor by animateColorAsState(
+        targetValue = if (isActiveRoute) MaterialTheme.colorScheme.primaryContainer
+                      else MaterialTheme.colorScheme.surfaceContainerLow,
+        animationSpec = tween(durationMillis = 300),
+        label = "itineraryCardBg"
+    )
+    val borderColor by animateColorAsState(
+        targetValue = if (isActiveRoute) MaterialTheme.colorScheme.primary
+                      else MaterialTheme.colorScheme.outlineVariant,
+        animationSpec = tween(durationMillis = 300),
+        label = "itineraryCardBorder"
+    )
+
+    Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = if (isActiveRoute) {
-                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-            } else {
-                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-            }
-        ),
+        colors = CardDefaults.cardColors(containerColor = containerColor),
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = if (isActiveRoute) 4.dp else 2.dp
         ),
-        shape = MaterialTheme.shapes.medium
+        shape = MaterialTheme.shapes.medium,
+        border = BorderStroke(1.dp, borderColor)
     ) {
-        Column (
-            modifier = Modifier
-                .padding(12.dp),
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Row(modifier = Modifier.fillMaxWidth()) {
                 Box(
                     modifier = Modifier
                         .weight(4f)
@@ -130,13 +129,13 @@ fun ItineraryItemCard(p: Place, placesViewModel: PlacesViewModel, controller: Na
                                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer),
                                 contentScale = ContentScale.Crop
                             )
-                        })
+                        }
+                    )
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(
-                    modifier = Modifier
-                        .weight(6f),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier.weight(6f),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -145,15 +144,17 @@ fun ItineraryItemCard(p: Place, placesViewModel: PlacesViewModel, controller: Na
                         Text(
                             text = p.name,
                             style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.weight(1f, fill = false)
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.weight(1f, fill = false),
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
                         )
                         if (isActiveRoute) {
                             Box(
                                 modifier = Modifier
                                     .background(
                                         color = MaterialTheme.colorScheme.primary,
-                                        shape = MaterialTheme.shapes.small
+                                        shape = MaterialTheme.shapes.extraSmall
                                     )
                                     .padding(horizontal = 8.dp, vertical = 2.dp)
                             ) {
@@ -168,11 +169,13 @@ fun ItineraryItemCard(p: Place, placesViewModel: PlacesViewModel, controller: Na
                     Text(
                         text = formatOpenHours(p.openHours),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -181,6 +184,7 @@ fun ItineraryItemCard(p: Place, placesViewModel: PlacesViewModel, controller: Na
                 RumboButton(
                     modifier = Modifier.weight(1f),
                     text = if (isActiveRoute) "Ver Ruta Activa" else "Iniciar Desplazamiento",
+                    size = RumboButtonSize.Small,
                     onClick = {
                         if (isActiveRoute) {
                             controller.navigate(AppScreens.Map.name)
@@ -218,31 +222,22 @@ fun ItineraryItemCard(p: Place, placesViewModel: PlacesViewModel, controller: Na
 fun formatOpenHours(
     openHours: List<String>?, now: LocalDateTime = LocalDateTime.now()
 ): String {
-    if (openHours.isNullOrEmpty()) {
-        return "No hay información de horario"
-    }
+    if (openHours.isNullOrEmpty()) return "No hay información de horario"
 
     val parsedHours = openHours.mapNotNull { parseWeekdayDescription(it) }
-    if (parsedHours.isEmpty()) {
-        return "No hay información de horario"
-    }
+    if (parsedHours.isEmpty()) return "No hay información de horario"
 
     val normalizedHours = parsedHours.associateBy { normalizeDayKey(it.first) }
     val todayKeySpanish = normalizeDayKey(dayOfWeekToSpanish(now.dayOfWeek))
     val todayRanges =
-        (normalizedHours[todayKeySpanish])?.second.orEmpty().mapNotNull(::parseTimeRange)
-            .sortedBy { it.first }
+        normalizedHours[todayKeySpanish]?.second.orEmpty().mapNotNull(::parseTimeRange).sortedBy { it.first }
 
     val timeNow = now.toLocalTime()
     val openRange = todayRanges.firstOrNull { timeNow >= it.first && timeNow < it.second }
-    if (openRange != null) {
-        return "Abierto hoy hasta ${openRange.second.format(TIME_FORMATTER)}"
-    }
+    if (openRange != null) return "Abierto hoy hasta ${openRange.second.format(TIME_FORMATTER)}"
 
     val nextToday = todayRanges.firstOrNull { timeNow < it.first }
-    if (nextToday != null) {
-        return "Cerrado ahora. Abre hoy a ${nextToday.first.format(TIME_FORMATTER)}"
-    }
+    if (nextToday != null) return "Cerrado ahora. Abre hoy a ${nextToday.first.format(TIME_FORMATTER)}"
 
     val nextOpening = findNextOpening(normalizedHours, now.dayOfWeek)
     return if (nextOpening != null) {
@@ -267,10 +262,7 @@ private fun parseWeekdayDescription(raw: String): Pair<String, List<String>>? {
     val hoursText = parts[1].trim()
     if (hoursText.isEmpty()) return day to emptyList()
     val lowered = hoursText.lowercase(Locale.getDefault())
-    if (lowered.contains("cerrado") || lowered.contains("closed")) {
-        return day to emptyList()
-    }
-    // Normaliza guion largo a guion simple antes de separar rangos.
+    if (lowered.contains("cerrado") || lowered.contains("closed")) return day to emptyList()
     val cleaned = hoursText.replace("–", "-")
     val ranges = cleaned.split(",").map { it.trim() }.filter { it.isNotEmpty() }
     return day to ranges
@@ -290,12 +282,10 @@ private fun parseTimeRange(raw: String): Pair<LocalTime, LocalTime>? {
 /**
  * Intenta parsear una hora con el formato configurado.
  */
-private fun parseTime(raw: String): LocalTime? {
-    try {
-        return LocalTime.parse(raw, TIME_FORMATTER)
-    } catch (_: Exception) {
-    }
-    return null
+private fun parseTime(raw: String): LocalTime? = try {
+    LocalTime.parse(raw, TIME_FORMATTER)
+} catch (_: Exception) {
+    null
 }
 
 /**
@@ -307,7 +297,7 @@ private fun findNextOpening(
     for (offset in 1..7) {
         val nextDay = today.plus(offset.toLong())
         val dayLabelSpanish = dayOfWeekToSpanish(nextDay)
-        val ranges = (normalizedHours[normalizeDayKey(dayLabelSpanish)])?.second.orEmpty()
+        val ranges = normalizedHours[normalizeDayKey(dayLabelSpanish)]?.second.orEmpty()
             .mapNotNull(::parseTimeRange).sortedBy { it.first }
         val firstRange = ranges.firstOrNull()
         if (firstRange != null) {
@@ -317,7 +307,7 @@ private fun findNextOpening(
     return null
 }
 
-/** Convierte un DayOfWeek a su nombre en español, para hacer match con el array que devuelve la api. */
+/** Convierte un DayOfWeek a su nombre en español. */
 private fun dayOfWeekToSpanish(day: DayOfWeek): String = when (day) {
     DayOfWeek.MONDAY -> "lunes"
     DayOfWeek.TUESDAY -> "martes"
@@ -336,21 +326,3 @@ private fun normalizeDayKey(day: String): String {
     val normalized = Normalizer.normalize(lowered, Normalizer.Form.NFD)
     return normalized.replace(Regex("\\p{Mn}+"), "")
 }
-
-/**
-@Preview(showBackground = true, name = "ItineraryItemCard - Light")
-@Composable
-private fun ItineraryItemCardLightPreview() {
-RumboTheme(darkTheme = false) {
-ItineraryItemCard(p = samplePlace)
-}
-}
-
-@Preview(showBackground = true, name = "ItineraryItemCard - Dark", backgroundColor = 0xFF1E1E1E)
-@Composable
-private fun ItineraryItemCardDarkPreview() {
-RumboTheme(darkTheme = true) {
-ItineraryItemCard(p = samplePlace)
-}
-}
- */

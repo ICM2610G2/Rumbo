@@ -1,6 +1,16 @@
 package com.appnotresponding.rumbo.ui.components.atoms
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,9 +28,12 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -30,33 +43,22 @@ import androidx.compose.ui.unit.dp
 import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
 
-// Definición de tipos de botón
 enum class RumboButtonStyle {
     Primary, Secondary, Tertiary
 }
 
-//Definición de estilos y tamaños para el botón, con valores de padding e iconos asociados
 enum class RumboButtonSize(
     val height: Dp, val horizontalPadding: Dp, val verticalPadding: Dp, val iconSize: Dp
 ) {
-    Small(32.dp, 12.dp, 6.dp, 16.dp), Medium(44.dp, 20.dp, 10.dp, 18.dp), Large(
-        52.dp, 28.dp, 14.dp, 20.dp
-    )
+    Small(32.dp, 12.dp, 6.dp, 16.dp),
+    Medium(44.dp, 20.dp, 10.dp, 18.dp),
+    Large(52.dp, 28.dp, 14.dp, 20.dp)
 }
 
-
 /**
- * Componente de botón personalizable para la aplicación Rumbo.
- *
- * @param text El texto que se mostrará dentro del botón.
- * @param onClick La función que se ejecutará cuando el botón sea presionado.
- * @param modifier Modificador para personalizar el diseño del botón.
- * @param style El estilo visual del botón (Primary, Secondary, Tertiary).
- * @param size El tamaño del botón (Small, Medium, Large).
- * @param enabled Indica si el botón está habilitado o deshabilitado.
- * @param loading Indica si el botón está en estado de carga, mostrando un indicador de progreso.
- * @param icon Un ícono opcional que se mostrará junto al texto del botón.
- * @param iconContentDescription Descripción para accesibilidad del ícono.
+ * Botón personalizable de Rumbo. Incluye:
+ * - Scale spring al presionar (0.97) para feedback táctil en todos los estilos.
+ * - AnimatedContent en el texto para crossfade cuando cambia (p.ej. "Añadir" → "Eliminar").
  */
 @Composable
 fun RumboButton(
@@ -70,119 +72,98 @@ fun RumboButton(
     icon: Painter? = null,
     iconContentDescription: String? = null
 ) {
-    val contentPadding =
-        PaddingValues(horizontal = size.horizontalPadding, vertical = size.verticalPadding)
+    val contentPadding = PaddingValues(horizontal = size.horizontalPadding, vertical = size.verticalPadding)
     val shape = MaterialTheme.shapes.medium
     val isInteractable = enabled && !loading
-    val textStyle =
-        if (size == RumboButtonSize.Large) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.labelLarge
+    val textStyle = if (size == RumboButtonSize.Large) MaterialTheme.typography.bodyMedium
+                    else MaterialTheme.typography.labelLarge
+
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed && isInteractable) 0.97f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
+        label = "buttonScale"
+    )
+
+    val scaledModifier = modifier
+        .height(size.height)
+        .graphicsLayer { scaleX = scale; scaleY = scale }
 
     when (style) {
-        // Definicion del estilo del botón primario
-        RumboButtonStyle.Primary -> {
-            Button(
-                onClick = onClick,
-                modifier = modifier.height(size.height),
-                enabled = isInteractable,
-                contentPadding = contentPadding,
-                shape = shape,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (loading) MaterialTheme.colorScheme.primary.copy(alpha = 0.6f) else MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
-                    disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-            ) {
-                ButtonContent(
-                    text,
-                    textStyle,
-                    MaterialTheme.colorScheme.onPrimary,
-                    loading,
-                    MaterialTheme.colorScheme.onPrimary,
-                    icon,
-                    iconContentDescription,
-                    size.iconSize,
-                    enabled
-                )
-            }
+        RumboButtonStyle.Primary -> Button(
+            onClick = onClick,
+            modifier = scaledModifier,
+            enabled = isInteractable,
+            contentPadding = contentPadding,
+            shape = shape,
+            interactionSource = interactionSource,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (loading) MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+                                 else MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+        ) {
+            ButtonContent(text, textStyle, MaterialTheme.colorScheme.onPrimary, loading,
+                MaterialTheme.colorScheme.onPrimary, icon, iconContentDescription, size.iconSize, enabled)
         }
 
-        // Definicion del estilo del botón secundario
-        RumboButtonStyle.Secondary -> {
-            OutlinedButton(
-                onClick = onClick,
-                modifier = modifier.height(size.height),
-                enabled = isInteractable,
-                contentPadding = contentPadding,
-                shape = shape,
-                border = BorderStroke(
-                    1.dp, if (enabled && !loading) MaterialTheme.colorScheme.secondary
-                    else if (loading) MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
-                    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-                ),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = if (loading) MaterialTheme.colorScheme.onSecondaryContainer.copy(
-                        alpha = 0.6f
-                    ) else MaterialTheme.colorScheme.onSecondaryContainer,
-                    disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
-                    disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-            ) {
-                ButtonContent(
-                    text,
-                    textStyle,
-                    if (loading) MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSecondaryContainer,
-                    loading,
-                    MaterialTheme.colorScheme.onSecondaryContainer,
-                    icon,
-                    iconContentDescription,
-                    size.iconSize,
-                    enabled
-                )
-            }
+        RumboButtonStyle.Secondary -> OutlinedButton(
+            onClick = onClick,
+            modifier = scaledModifier,
+            enabled = isInteractable,
+            contentPadding = contentPadding,
+            shape = shape,
+            interactionSource = interactionSource,
+            border = BorderStroke(
+                1.dp, when {
+                    loading -> MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
+                    enabled -> MaterialTheme.colorScheme.secondary
+                    else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                }
+            ),
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = if (loading) MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.6f)
+                               else MaterialTheme.colorScheme.onSecondaryContainer,
+                disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+        ) {
+            val contentColor = if (loading) MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.6f)
+                               else MaterialTheme.colorScheme.onSecondaryContainer
+            ButtonContent(text, textStyle, contentColor, loading, MaterialTheme.colorScheme.onSecondaryContainer,
+                icon, iconContentDescription, size.iconSize, enabled)
         }
 
-        // Definicion del estilo del botón terciario
-        RumboButtonStyle.Tertiary -> {
-            TextButton(
-                onClick = onClick,
-                modifier = modifier.height(size.height),
-                enabled = isInteractable,
-                contentPadding = contentPadding,
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = if (loading) MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f) else MaterialTheme.colorScheme.tertiary,
-                    disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-            ) {
-                ButtonContent(
-                    text,
-                    textStyle,
-                    if (loading) MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f) else MaterialTheme.colorScheme.tertiary,
-                    loading,
-                    MaterialTheme.colorScheme.tertiary,
-                    icon,
-                    iconContentDescription,
-                    size.iconSize,
-                    enabled
-                )
-            }
+        RumboButtonStyle.Tertiary -> TextButton(
+            onClick = onClick,
+            modifier = scaledModifier,
+            enabled = isInteractable,
+            contentPadding = contentPadding,
+            interactionSource = interactionSource,
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = if (loading) MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f)
+                               else MaterialTheme.colorScheme.tertiary,
+                disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+        ) {
+            val contentColor = if (loading) MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f)
+                               else MaterialTheme.colorScheme.tertiary
+            ButtonContent(text, textStyle, contentColor, loading, MaterialTheme.colorScheme.tertiary,
+                icon, iconContentDescription, size.iconSize, enabled)
         }
     }
 }
 
 /**
- * Contenido interno del botón, mostrando el texto, ícono y estado de carga.
- *
- * @param text El texto que se mostrará dentro del botón.
- * @param textStyle El estilo de texto a utilizar.
- * @param textColor El color del texto.
- * @param loading Indica si el botón está en estado de carga, mostrando un indicador de progreso.
- * @param loaderColor El color del indicador de carga.
- * @param icon Un ícono opcional que se mostrará junto al texto del botón.
- * @param iconContentDescription Descripción para accesibilidad del ícono.
- * @param iconSize El tamaño del ícono a mostrar.
- * @param enabled Indica si el botón está habilitado o deshabilitado, afectando la opacidad del texto.
+ * Contenido del botón. El texto usa [AnimatedContent] para un crossfade suave
+ * cuando su valor cambia (p.ej. "Añadir" → "Eliminar del itinerario").
  */
 @Composable
 private fun ButtonContent(
@@ -196,30 +177,27 @@ private fun ButtonContent(
     iconSize: Dp,
     enabled: Boolean
 ) {
-    // Definición del icono de carga
     if (loading) {
-        CircularProgressIndicator(
-            modifier = Modifier.size(18.dp), color = loaderColor, strokeWidth = 2.dp
-        )
+        CircularProgressIndicator(modifier = Modifier.size(18.dp), color = loaderColor, strokeWidth = 2.dp)
         Spacer(modifier = Modifier.width(8.dp))
     }
 
-    // Definición del icono del botón, solo se muestra si no está en estado de carga
     if (icon != null && !loading) {
-        Icon(
-            painter = icon,
-            contentDescription = iconContentDescription,
-            modifier = Modifier.size(iconSize)
-        )
+        Icon(painter = icon, contentDescription = iconContentDescription, modifier = Modifier.size(iconSize))
         Spacer(modifier = Modifier.width(8.dp))
     }
 
-    // Definición del texto del botón, con opacidad reducida si el botón está deshabilitado
-    Text(
-        text = text,
-        style = textStyle,
-        color = if (enabled) textColor else textColor.copy(alpha = 0.38f)
-    )
+    AnimatedContent(
+        targetState = text,
+        transitionSpec = { fadeIn(tween(150)) togetherWith fadeOut(tween(100)) },
+        label = "buttonText"
+    ) { targetText ->
+        Text(
+            text = targetText,
+            style = textStyle,
+            color = if (enabled) textColor else textColor.copy(alpha = 0.38f)
+        )
+    }
 }
 
 @Preview(showBackground = true, name = "Buttons - Light")
@@ -231,19 +209,14 @@ private fun ButtonLightPreview() {
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            RumboButton(text = "Primary", onClick = {}, style = RumboButtonStyle.Primary)
+            RumboButton(text = "Primary", onClick = {})
             RumboButton(text = "Secondary", onClick = {}, style = RumboButtonStyle.Secondary)
             RumboButton(text = "Tertiary", onClick = {}, style = RumboButtonStyle.Tertiary)
             RumboButton(text = "Disabled", onClick = {}, enabled = false)
             RumboButton(text = "Loading...", onClick = {}, loading = true)
             RumboButton(text = "Small", onClick = {}, size = RumboButtonSize.Small)
             RumboButton(text = "Large", onClick = {}, size = RumboButtonSize.Large)
-            RumboButton(
-                text = "With Icon",
-                onClick = {},
-                icon = painterResource(id = R.drawable.ic_check),
-                iconContentDescription = "Check Icon"
-            )
+            RumboButton(text = "Con Ícono", onClick = {}, icon = painterResource(R.drawable.ic_check))
         }
     }
 }
@@ -257,19 +230,14 @@ private fun ButtonDarkPreview() {
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            RumboButton(text = "Primary", onClick = {}, style = RumboButtonStyle.Primary)
+            RumboButton(text = "Primary", onClick = {})
             RumboButton(text = "Secondary", onClick = {}, style = RumboButtonStyle.Secondary)
             RumboButton(text = "Tertiary", onClick = {}, style = RumboButtonStyle.Tertiary)
             RumboButton(text = "Disabled", onClick = {}, enabled = false)
             RumboButton(text = "Loading...", onClick = {}, loading = true)
             RumboButton(text = "Small", onClick = {}, size = RumboButtonSize.Small)
             RumboButton(text = "Large", onClick = {}, size = RumboButtonSize.Large)
-            RumboButton(
-                text = "With Icon",
-                onClick = {},
-                icon = painterResource(id = R.drawable.ic_globe),
-                iconContentDescription = "Plus Icon"
-            )
+            RumboButton(text = "Con Ícono", onClick = {}, icon = painterResource(R.drawable.ic_globe))
         }
     }
 }

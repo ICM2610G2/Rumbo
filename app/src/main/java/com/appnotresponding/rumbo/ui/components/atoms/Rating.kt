@@ -1,5 +1,12 @@
 package com.appnotresponding.rumbo.ui.components.atoms
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -25,14 +33,9 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
 import java.util.Locale
 
 /**
- * Componente interno de valoración con estrellas para mostrar y permitir la selección de una calificación.
- * @param rating Valor de la calificación actual (puede ser un número decimal para medias estrellas)
- * @param modifier  Modificador para personalizar la apariencia y comportamiento del componente
- * @param maxStars Número máximo de estrellas a mostrar (por defecto 5)
- * @param starSize Tamaño de cada estrella (por defecto 24.dp)
- * @param filledColor Color de las estrellas llenas (por defecto el color primario del tema)
- * @param emptyColor Color de las estrellas vacías (por defecto el color de variante de contorno del tema)
- * @param onRatingChanged Función opcional que se llama cuando el usuario selecciona una nueva calificación, recibiendo el nuevo valor de calificación como argumento
+ * Estrellas de valoración interactivas o de solo lectura.
+ * En modo interactivo: scale spring 1.25 al presionar cada estrella (sin ripple, solo escala).
+ * En ambos modos: [animateColorAsState] para transición suave de color al cambiar rating.
  */
 @Composable
 fun RumboRatingStar(
@@ -44,43 +47,59 @@ fun RumboRatingStar(
     emptyColor: Color = MaterialTheme.colorScheme.outlineVariant,
     onRatingChanged: ((Float) -> Unit)? = null
 ) {
-    // Contenedor horizontal para las estrellas, con espacio entre ellas y alineación vertical centrada
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(2.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Crea cada estrella según el valor de rating, usando iconos diferentes para estrellas llenas, medias y vacías
         for (i in 1..maxStars) {
+            val isFilled = i <= rating || i - 0.5f <= rating
             val starIcon = when {
                 i <= rating -> R.drawable.ic_star_filled
                 i - 0.5f <= rating -> R.drawable.ic_star_half
                 else -> R.drawable.ic_star_empty
             }
-            val tint = if (i <= rating || i - 0.5f <= rating) filledColor else emptyColor
+
+            // Color animado para transición suave al cambiar rating
+            val tint by animateColorAsState(
+                targetValue = if (isFilled) filledColor else emptyColor,
+                animationSpec = tween(durationMillis = 150),
+                label = "starTint$i"
+            )
+
+            // InteractionSource siempre creado (regla de composables); se usa solo si es interactivo
+            val interactionSource = remember { MutableInteractionSource() }
+            val isPressed by interactionSource.collectIsPressedAsState()
+            val scale by animateFloatAsState(
+                targetValue = if (onRatingChanged != null && isPressed) 1.25f else 1f,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessHigh
+                ),
+                label = "starScale$i"
+            )
+
             Icon(
                 painter = painterResource(id = starIcon),
                 contentDescription = "Star $i",
                 modifier = Modifier
                     .size(starSize)
+                    .graphicsLayer { scaleX = scale; scaleY = scale }
                     .then(
-                        if (onRatingChanged != null) {
-                            Modifier.clickable { onRatingChanged(i.toFloat()) }
-                        } else Modifier),
-                tint = tint)
+                        if (onRatingChanged != null) Modifier.clickable(
+                            interactionSource = interactionSource,
+                            indication = null  // Solo escala, sin ripple sobre el ícono
+                        ) { onRatingChanged(i.toFloat()) }
+                        else Modifier
+                    ),
+                tint = tint
+            )
         }
     }
 }
 
 /**
- * Componente de visualización de calificación que muestra una fila de estrellas junto con el valor numérico de la calificación.
- * @param rating Valor de la calificación a mostrar
- * @param modifier Modificador para personalizar la apariencia y comportamiento del componente
- * @param maxStars Número máximo de estrellas a mostrar (por defecto 5)
- * @param starSize Tamaño de cada estrella (por defecto 16.dp)
- * @param showText Indica si se debe mostrar el valor numérico de la calificación junto a las estrellas (por defecto true)
- * @param filledColor Color de las estrellas llenas (por defecto el color primario del tema)
- * @param emptyColor Color de las estrellas vacías (por defecto el color de variante de contorno del tema)
+ * Visualización de calificación con estrellas y valor numérico, solo lectura.
  */
 @Composable
 fun RumboRatingDisplay(
@@ -129,8 +148,7 @@ private fun RatingStarLightPreview() {
             RumboRatingDisplay(rating = 5.0f)
 
             var rating by remember { mutableFloatStateOf(3f) }
-            RumboRatingStar(
-                rating = rating, starSize = 32.dp, onRatingChanged = { rating = it })
+            RumboRatingStar(rating = rating, starSize = 32.dp, onRatingChanged = { rating = it })
             Text(
                 text = "Toca para valorar: ${rating.toInt()}/5",
                 style = MaterialTheme.typography.labelMedium,
@@ -154,8 +172,7 @@ private fun RatingStarDarkPreview() {
             RumboRatingDisplay(rating = 5.0f)
 
             var rating by remember { mutableFloatStateOf(3f) }
-            RumboRatingStar(
-                rating = rating, starSize = 32.dp, onRatingChanged = { rating = it })
+            RumboRatingStar(rating = rating, starSize = 32.dp, onRatingChanged = { rating = it })
             Text(
                 text = "Toca para valorar: ${rating.toInt()}/5",
                 style = MaterialTheme.typography.labelMedium,

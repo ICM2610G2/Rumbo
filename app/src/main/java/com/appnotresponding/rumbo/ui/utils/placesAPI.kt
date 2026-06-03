@@ -227,7 +227,6 @@ fun searchNearbyPlaces(
                 "X-Goog-Api-Key" to apiKey,
                 "Accept-Language" to "es",
 
-                // MUY IMPORTANTE
                 "X-Goog-FieldMask" to
                         "places.id," +
                         "places.displayName," +

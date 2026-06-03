@@ -18,12 +18,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
+
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.appnotresponding.rumbo.models.User
 import com.appnotresponding.rumbo.models.sampleUser
 import com.appnotresponding.rumbo.ui.components.atoms.Avatar
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
+
+private val OnlineGreen = Color(0xFF4CAF50)
 
 /**
  * Componente que representa un elemento de la lista de chats, mostrando el nombre del remitente, el último mensaje, el estado (opcional) y la hora del último mensaje.
@@ -51,11 +54,11 @@ fun ChatListItem(
             .fillMaxWidth()
             .border(
                 width = 1.dp,
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                color = MaterialTheme.colorScheme.outlineVariant,
                 shape = MaterialTheme.shapes.medium
             )
             .background(
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
                 shape = MaterialTheme.shapes.medium
             )
             .padding(16.dp)
@@ -70,7 +73,7 @@ fun ChatListItem(
                 user = user,
                 isOnline = isOnline,
                 borderWidth = if (isOnline) 2.dp else 0.dp,
-                borderColor = if (isOnline) Color(0xFF4CAF50) else MaterialTheme.colorScheme.outline
+                borderColor = if (isOnline) OnlineGreen else MaterialTheme.colorScheme.outline
             )
 
             Column(modifier = Modifier.weight(1f)) {
