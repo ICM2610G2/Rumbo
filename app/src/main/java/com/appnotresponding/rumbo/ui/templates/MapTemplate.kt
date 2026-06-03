@@ -36,7 +36,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -100,6 +99,10 @@ import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.google.maps.android.compose.TileOverlay
+import com.google.maps.android.heatmaps.Gradient
+import com.google.maps.android.heatmaps.HeatmapTileProvider
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 
 import org.osmdroid.util.GeoPoint
 
@@ -162,6 +165,30 @@ fun MapTemplate(
     var currentMapStyle by remember { mutableIntStateOf(MapColorScheme.FOLLOW_SYSTEM) }
     val mapId =
         stringResource(R.string.map_id)
+
+    val heatmapTileProvider = remember(state.heatmapPoints) {
+        if (state.heatmapPoints.isNotEmpty()) {
+            try {
+                val colors = intArrayOf(
+                    Color.Blue.toArgb(),
+                    Color.Yellow.toArgb(),
+                    Color.Red.toArgb()
+                )
+                val startPoints = floatArrayOf(0.2f, 0.6f, 1.0f)
+                val gradient = Gradient(colors, startPoints)
+                HeatmapTileProvider.Builder()
+                    .data(state.heatmapPoints)
+                    .gradient(gradient)
+                    .radius(50) // Blur radius (range 10 to 50)
+                    .build()
+            } catch (e: Exception) {
+                Log.e("MapTemplate", "Error building HeatmapTileProvider", e)
+                null
+            }
+        } else {
+            null
+        }
+    }
 
     var permission = rememberPermissionState(locationPermission)
     var showButton by remember { mutableStateOf(false) }
@@ -345,25 +372,10 @@ fun MapTemplate(
                         )
                     }
 
-                    if (state.isHeatmapVisible && state.heatmapClusters.isNotEmpty()) {
-                        state.heatmapClusters.forEach { cluster ->
-                            val color = when {
-                                cluster.count == 1 -> androidx.compose.ui.graphics.Color.Cyan
-                                cluster.count == 2 -> androidx.compose.ui.graphics.Color.Green
-                                cluster.count == 3 -> androidx.compose.ui.graphics.Color(0xFFFFA500) // Naranja
-                                else -> androidx.compose.ui.graphics.Color.Red
-                            }
-                            val radius = when {
-                                cluster.count == 1 -> 30.0
-                                cluster.count == 2 -> 60.0
-                                cluster.count == 3 -> 90.0
-                                else -> 120.0
-                            }
-                            com.google.maps.android.compose.Circle(
-                                center = cluster.position,
-                                fillColor = color.copy(alpha = 0.5f),
-                                strokeColor = color,
-                                radius = radius
+                    if (state.isHeatmapVisible && heatmapTileProvider != null) {
+                        key(heatmapTileProvider) {
+                            TileOverlay(
+                                tileProvider = heatmapTileProvider
                             )
                         }
                     }

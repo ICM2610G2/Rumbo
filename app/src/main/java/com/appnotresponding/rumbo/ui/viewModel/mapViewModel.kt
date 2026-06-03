@@ -22,7 +22,8 @@ data class MapState(
     val centerInUserFirstTime: Boolean = true,
     val lastSafeLatLng: LatLng = LatLng(0.0, 0.0),
     val isHeatmapVisible: Boolean = false,
-    val heatmapClusters: List<HeatmapCluster> = emptyList()
+    val heatmapClusters: List<HeatmapCluster> = emptyList(),
+    val heatmapPoints: List<LatLng> = emptyList()
 )
 
 class MapViewModel : ViewModel() {
@@ -69,7 +70,7 @@ class MapViewModel : ViewModel() {
                     }
 
                     // Allow isolated users (count >= 1)
-                    _uiState.update { it.copy(heatmapClusters = clusters) }
+                    _uiState.update { it.copy(heatmapClusters = clusters, heatmapPoints = points) }
                 }
 
                 override fun onCancelled(error: com.google.firebase.database.DatabaseError) {
