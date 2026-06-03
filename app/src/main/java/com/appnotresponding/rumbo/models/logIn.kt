@@ -181,17 +181,17 @@ class LoginViewModel : ViewModel() {
     }
 
     private fun firebaseSignIn(email: String, password: String) {
-        Firebase.messaging.token.addOnSuccessListener { token ->
-            fcmToken = token
-            FirebaseDatabase.getInstance().getReference("tokens/" + auth.currentUser!!.uid)
-                .setValue(fcmToken).addOnSuccessListener {
-                    Log.i("FirebaseApp", "Token guardado correctamente")
-                }.addOnFailureListener { e ->
-                    Log.e("FirebaseApp", "Error guardando token: ${e.message}")
-                }
-        }
         _loginState.update { it.copy(authResult = AuthResult.Loading) }
         auth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
+            Firebase.messaging.token.addOnSuccessListener { token ->
+                fcmToken = token
+                FirebaseDatabase.getInstance().getReference("tokens/" + auth.currentUser!!.uid)
+                    .setValue(fcmToken).addOnSuccessListener {
+                        Log.i("FirebaseApp", "Token guardado correctamente")
+                    }.addOnFailureListener { e ->
+                        Log.e("FirebaseApp", "Error guardando token: ${e.message}")
+                    }
+            }
             _loginState.update { it.copy(authResult = AuthResult.Success) }
         }.addOnFailureListener { e ->
             clearCredentials()
