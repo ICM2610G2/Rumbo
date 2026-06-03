@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -79,6 +80,8 @@ fun Avatar(
     }
 
     // Tamaño del indicador online proporcional al tamaño del avatar
+    val onlineBorderColor = if (isOnline) Color(0xFF4CAF50) else borderColor
+    val onlineBorderWidth = if (isOnline && borderWidth == 0.dp) 2.dp else borderWidth
     val indicatorSize = when (size) {
         AvatarSize.Small -> 10.dp
         AvatarSize.Medium -> 14.dp
@@ -106,8 +109,8 @@ fun Avatar(
                 .fillMaxSize()
                 .background(color = backgroundColor, shape = CircleShape)
                 .then(
-                    if (borderWidth > 0.dp) {
-                        Modifier.border(borderWidth, borderColor, CircleShape)
+                    if (onlineBorderWidth > 0.dp) {
+                        Modifier.border(onlineBorderWidth, onlineBorderColor, CircleShape)
                     } else {
                         Modifier
                     }
@@ -177,16 +180,18 @@ fun Avatar(
                 }
             }
 
+        }
+
         // Indicador de online
         if (isOnline) {
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .size(indicatorSize)
+                    .sizeIn(minWidth = indicatorSize, minHeight = indicatorSize)
                     .background(Color(0xFF4CAF50), CircleShape)
                     .border(indicatorBorderWidth, MaterialTheme.colorScheme.surface, CircleShape)
             )
-        }
         }
     }
 }

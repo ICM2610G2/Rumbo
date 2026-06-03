@@ -305,10 +305,10 @@ fun MapTemplate(
                             ), contentAlignment = Alignment.Center
                     ) {
                         IconButton(onClick = {
-                            Log.d("MapTemplate", "Eye button clicked! Current state sharingLocation=${user.sharingLocation}, toggling to ${!user.sharingLocation}")
                             userViewModel.toggleLocationSharing(!user.sharingLocation)
                         }) {
                             Icon(
+                                modifier = Modifier.size(24.dp),
                                 painter = painterResource(
                                     if (user.sharingLocation) R.drawable.ic_eye_open 
                                     else R.drawable.ic_eye_crossed
@@ -316,7 +316,6 @@ fun MapTemplate(
                                 contentDescription = "Compartir ubicación",
                                 tint = if (user.sharingLocation) MaterialTheme.colorScheme.onPrimary 
                                        else MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(22.dp)
                             )
                         }
                     }

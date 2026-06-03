@@ -37,6 +37,7 @@ fun WriteDropNote(onClick: () -> Unit = {}) {
     ) {
         IconButton(onClick = onClick) {
             Icon(
+                modifier = Modifier.size(24.dp),
                 painter = painterResource(R.drawable.ic_pencil),
                 contentDescription = "Write Drop Note",
                 tint = MaterialTheme.colorScheme.onPrimary,
@@ -61,6 +62,7 @@ fun LocateMe(onClick: () -> Unit = {}) {
     ) {
         IconButton(onClick = onClick) {
             Icon(
+                modifier = Modifier.size(24.dp),
                 painter = painterResource(R.drawable.ic_location_crosshairs),
                 contentDescription = "Locate Me",
                 tint = MaterialTheme.colorScheme.onPrimary,
@@ -79,6 +81,7 @@ fun CancelRoute(onClick: () -> Unit = {}) {
     ) {
         IconButton(onClick = onClick) {
             Icon(
+                modifier = Modifier.size(24.dp),
                 painter = painterResource(R.drawable.ic_cancel),
                 contentDescription = "Cancel Route",
                 tint = MaterialTheme.colorScheme.onPrimary,

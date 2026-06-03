@@ -217,6 +217,7 @@ class ChatViewModel : ViewModel() {
                     val group = GroupChat(
                         placeId = placeId,
                         placeName = placeName,
+                        placePhotoUrl = place.imageUrl,
                         lastMessage = lastMessage,
                         lastMessageTimestamp = lastTimestamp,
                         unreadCount = unreadCount,
@@ -248,12 +249,12 @@ class ChatViewModel : ViewModel() {
         }
     }
 
-    fun selectGroupChat(placeId: String, placeName: String) {
+    fun selectGroupChat(placeId: String, placeName: String, photoUrl: String? = null) {
         _uiState.update {
             it.copy(
                 selectedChatId = placeId,
                 selectedChatTitle = placeName,
-                selectedChatPhoto = null,
+                selectedChatPhoto = photoUrl,
                 selectedChatIsOnline = false,
                 isGroupChat = true
             )

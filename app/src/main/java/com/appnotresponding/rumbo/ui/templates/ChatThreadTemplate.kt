@@ -3,6 +3,7 @@ package com.appnotresponding.rumbo.ui.templates
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -49,6 +50,7 @@ fun ChatThreadTemplate(
     }, bottomBar = {
         Box(
             modifier = Modifier
+                .imePadding()
                 .navigationBarsPadding()
                 .padding(start = 16.dp, top = 4.dp, end = 16.dp, bottom = 12.dp)
         ) {

@@ -68,12 +68,18 @@ fun ChatListItem(
                 Avatar(user = user, isOnline = isOnline)
             }
 
-            Column(modifier = Modifier.weight(8.5f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(modifier = Modifier.weight(1f)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
                         text = user.name,
                         style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false)
                     )
                     if (status != null) {
                         Text(
@@ -85,6 +91,9 @@ fun ChatListItem(
                             text = status,
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.primary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f, fill = false)
                         )
                     }
                 }
@@ -104,7 +113,7 @@ fun ChatListItem(
 
                 }
             }
-            Column(modifier = Modifier.weight(1.5f), horizontalAlignment = Alignment.End) {
+            Column(horizontalAlignment = Alignment.End) {
                 if (timestamp.isNotEmpty()) {
                     Text(
                         text = timestamp,

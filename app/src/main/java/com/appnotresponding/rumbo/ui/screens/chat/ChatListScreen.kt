@@ -152,21 +152,23 @@ fun ChatListScreen(
                         )
                     }
                     items(chatState.groupChats) { group ->
-                        val isMuted = group.mutedBy[myUid] == true
-                        val groupUser = User(name = group.placeName)
+                        val groupUser = User(
+                            name = group.placeName,
+                            profilePictureUrl = group.placePhotoUrl
+                        )
                         ChatListItem(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
                                     chatViewModel.selectGroupChat(
                                         placeId = group.placeId,
-                                        placeName = group.placeName
+                                        placeName = group.placeName,
+                                        photoUrl = group.placePhotoUrl
                                     )
                                     controller.navigate(AppScreens.ChatThread.name)
                                 },
                             user = groupUser,
-                            lastMessage = if (isMuted) "🔇 Silenciado" else group.lastMessage,
-                            status = "Grupo",
+                            lastMessage = group.lastMessage,
                             timestamp = formatTimestamp(group.lastMessageTimestamp),
                             hasUnread = group.unreadCount > 0,
                             unreadCount = group.unreadCount

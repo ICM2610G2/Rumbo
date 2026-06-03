@@ -15,6 +15,7 @@ data class ChatConversation(
 data class GroupChat(
     val placeId: String = "",
     val placeName: String = "",
+    val placePhotoUrl: String? = null,
     val lastMessage: String = "",
     val lastMessageTimestamp: Long = 0,
     val unreadCount: Int = 0,

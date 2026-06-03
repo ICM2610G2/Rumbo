@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -107,7 +108,10 @@ fun ChatTopBar(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 if (onBackClick != null) {
                     IconButton(onClick = onBackClick) {
                         Icon(
@@ -118,33 +122,26 @@ fun ChatTopBar(
                     }
                 }
                 Avatar(user = u, isOnline = isOnline)
-                Column {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 8.dp)
+                ) {
                     Text(
                         text = displayName,
                         style = MaterialTheme.typography.labelLarge,
-                        modifier = Modifier.padding(start = 8.dp),
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     if (!activity.isNullOrBlank()) {
                         Text(
                             text = activity,
                             style = MaterialTheme.typography.labelMedium,
-                            modifier = Modifier.padding(start = 8.dp),
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.primary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
-                    }
-                }
-            }
-            if (isGroup) {
-                Row {
-                    if (onLeaveClick != null) {
-                        IconButton(onClick = onLeaveClick) {
-                            Icon(
-                                imageVector = Icons.Filled.ExitToApp,
-                                contentDescription = "Salir",
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                        }
                     }
                 }
             }

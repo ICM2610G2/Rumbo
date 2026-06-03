@@ -61,9 +61,9 @@ fun FriendRequestItem(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 RumboButton(
                     text = "Aceptar",
