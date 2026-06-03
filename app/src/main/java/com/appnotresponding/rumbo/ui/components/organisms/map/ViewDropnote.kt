@@ -45,9 +45,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.appnotresponding.rumbo.R
 
 fun formatTimestamp(timestamp: Long): String {
     val date = Date(timestamp)
@@ -133,7 +136,7 @@ fun ViewDropNote(
                         modifier = Modifier.size(36.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.Delete,
+                            painter = painterResource(R.drawable.ic_destroy),
                             contentDescription = "Eliminar DropNote",
                             tint = MaterialTheme.colorScheme.error
                         )
@@ -206,7 +209,7 @@ fun ViewDropNote(
                             model = imageUrl,
                             contentDescription = "Imagen ampliada",
                             modifier = Modifier
-                                .fillMaxWidth()
+                                .fillMaxWidth().clip(RoundedCornerShape(12.dp))
                                 .clickable { isImageExpanded = false },
                             contentScale = ContentScale.Fit
                         )

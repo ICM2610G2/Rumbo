@@ -1,5 +1,6 @@
 package com.appnotresponding.rumbo.ui.components.molecules.itinerary
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -87,23 +89,26 @@ fun ItineraryItemCard(p: Place, placesViewModel: PlacesViewModel, controller: Na
     }
 
     ElevatedCard(
-        modifier = Modifier.fillMaxWidth(), colors = CardDefaults.elevatedCardColors(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
             containerColor = if (isActiveRoute) {
                 MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
             } else {
                 MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
             }
         ),
-
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = if (isActiveRoute) 4.dp else 2.dp
-        ), shape = MaterialTheme.shapes.medium
+        ),
+        shape = MaterialTheme.shapes.medium
     ) {
-        Column {
+        Column (
+            modifier = Modifier
+                .padding(12.dp),
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp)
             ) {
                 Box(
                     modifier = Modifier
@@ -129,7 +134,9 @@ fun ItineraryItemCard(p: Place, placesViewModel: PlacesViewModel, controller: Na
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(
-                    modifier = Modifier.weight(6f), verticalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier
+                        .weight(6f),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -163,40 +170,40 @@ fun ItineraryItemCard(p: Place, placesViewModel: PlacesViewModel, controller: Na
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onBackground
                     )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {}
                 }
             }
-            RumboButton(
-                modifier = Modifier.weight(1f).fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                text = if (isActiveRoute) "Ver Ruta Activa" else "Iniciar Desplazamiento",
-                onClick = {
-                    if (isActiveRoute) {
-                        controller.navigate(AppScreens.Map.name)
-                    } else if (selectedPlace != null) {
-                        showReplaceRouteDialog = true
-                    } else {
-                        placesViewModel.selectForNavigation(p)
-                        controller.navigate(AppScreens.Map.name)
-                    }
-                },
-                style = if (isActiveRoute) RumboButtonStyle.Primary else RumboButtonStyle.Secondary,
-                icon = painterResource(R.drawable.ic_map)
-            )
-            IconButton(onClick = { placesViewModel.removeFromItinerary(p) }) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Eliminar del Itinerario",
-                    tint = MaterialTheme.colorScheme.error
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RumboButton(
+                    modifier = Modifier.weight(1f),
+                    text = if (isActiveRoute) "Ver Ruta Activa" else "Iniciar Desplazamiento",
+                    onClick = {
+                        if (isActiveRoute) {
+                            controller.navigate(AppScreens.Map.name)
+                        } else if (selectedPlace != null) {
+                            showReplaceRouteDialog = true
+                        } else {
+                            placesViewModel.selectForNavigation(p)
+                            controller.navigate(AppScreens.Map.name)
+                        }
+                    },
+                    style = if (isActiveRoute) RumboButtonStyle.Primary else RumboButtonStyle.Secondary,
+                    icon = painterResource(R.drawable.ic_map)
                 )
+                IconButton(onClick = { placesViewModel.removeFromItinerary(p) }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_destroy),
+                        contentDescription = "Eliminar del Itinerario",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
             }
         }
     }
-
 }
 
 /**

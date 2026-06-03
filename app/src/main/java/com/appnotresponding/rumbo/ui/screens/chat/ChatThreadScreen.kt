@@ -75,6 +75,21 @@ fun ChatThreadScreen(
     var unreadDividerTimestamp by remember(chatId) { mutableStateOf<Long?>(null) }
 
     val mediaManager = rememberMediaHardwareManager()
+
+    LaunchedEffect(mediaManager.imageUri) {
+        mediaManager.imageUri?.let { uri ->
+            chatThreadViewModel.sendMediaMessage(
+                chatId,
+                currentUser.name,
+                uri,
+                isGroup,
+                "image"
+            )
+
+            mediaManager.clearImage()
+        }
+    }
+
     var mediaRecorder by remember { mutableStateOf<MediaRecorder?>(null) }
     var audioFile by remember { mutableStateOf<File?>(null) }
     var isRecording by remember { mutableStateOf(false) }
