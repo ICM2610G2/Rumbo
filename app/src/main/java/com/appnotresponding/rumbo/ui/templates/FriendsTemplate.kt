@@ -2,7 +2,6 @@ package com.appnotresponding.rumbo.ui.templates
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -18,38 +17,33 @@ import com.appnotresponding.rumbo.ui.components.organisms.common.MainTopBar
 import com.appnotresponding.rumbo.ui.components.organisms.common.Nav
 
 @Composable
-fun ChatTemplate(
+fun FriendsTemplate(
     currentUser: User,
-    title: String,
-    subtitle: String,
-    modifier: Modifier = Modifier,
     controller: NavHostController,
     content: @Composable () -> Unit
 ) {
     Scaffold(
         contentWindowInsets = WindowInsets(0),
         topBar = { MainTopBar(u = currentUser, controller = controller) },
-        bottomBar = { Nav(controller) }) { paddingValues ->
+        bottomBar = { Nav(controller) }
+    ) { paddingValues ->
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
             Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
                 Text(
-                    text = title,
+                    text = "Amigos",
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = subtitle,
+                    text = "Busca y conecta con otros viajeros",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-
-            Spacer(modifier = Modifier.weight(0.02f))
-
             Box(
                 modifier = Modifier
                     .weight(1f)

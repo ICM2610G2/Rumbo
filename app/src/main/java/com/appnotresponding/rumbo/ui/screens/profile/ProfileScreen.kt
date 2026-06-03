@@ -1,6 +1,7 @@
 package com.appnotresponding.rumbo.ui.screens.profile
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -21,8 +22,12 @@ import androidx.navigation.NavHostController
 import com.appnotresponding.rumbo.auth
 import com.appnotresponding.rumbo.navigation.AppScreens
 import com.appnotresponding.rumbo.ui.templates.ProfileTemplate
+import com.appnotresponding.rumbo.ui.utils.MyApp.Companion.fcmToken
 import com.appnotresponding.rumbo.ui.viewModel.ProfileViewModel
 import com.appnotresponding.rumbo.ui.viewModel.UserViewModel
+import com.google.firebase.Firebase
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.messaging.messaging
 
 @Composable
 fun ProfileScreen(
@@ -74,7 +79,17 @@ fun ProfileScreen(
                 onSuccess = { selectedPhotoUri = null })
         },
         onSignOut = {
-            auth.signOut()
+            Firebase.messaging.token.addOnSuccessListener { token ->
+                fcmToken = token
+                FirebaseDatabase.getInstance().getReference("tokens/" + auth.currentUser!!.uid)
+                    .setValue(null).addOnSuccessListener {
+                        Log.i("FirebaseApp", "Token guardado correctamente")
+                        auth.signOut()
+                    }.addOnFailureListener { e ->
+                        Log.e("FirebaseApp", "Error guardando token: ${e.message}")
+                        auth.signOut()
+                    }
+            }
             controller.navigate(AppScreens.Splash.name) {
                 popUpTo(controller.graph.startDestinationId) { inclusive = true }
                 launchSingleTop = true

@@ -14,8 +14,12 @@ import kotlinx.coroutines.flow.update
 import com.google.firebase.storage.FirebaseStorage
 
 import android.content.Context
+import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.appnotresponding.rumbo.ui.utils.MyApp.Companion.fcmToken
+import com.google.firebase.Firebase
+import com.google.firebase.messaging.messaging
 
 data class RegisterState(
     val name: String = "",
@@ -176,6 +180,15 @@ class RegisterViewModel : ViewModel() {
                     auth.signInWithEmailAndPassword(state.email, state.password)
                         .addOnCompleteListener { signInTask ->
                             _registerState.update { it.copy(isLoading = false) }
+                            Firebase.messaging.token.addOnSuccessListener { token ->
+                                fcmToken = token
+                                FirebaseDatabase.getInstance().getReference("tokens/" + auth.currentUser!!.uid)
+                                    .setValue(fcmToken).addOnSuccessListener {
+                                        Log.i("FirebaseApp", "Token guardado correctamente")
+                                    }.addOnFailureListener { e ->
+                                        Log.e("FirebaseApp", "Error guardando token: ${e.message}")
+                                    }
+                            }
                             if (signInTask.isSuccessful) {
                                 saveCredentials(state.email, state.password)
                                 onSuccess()

@@ -153,6 +153,14 @@ class PlacesViewModel : ViewModel() {
         _uiState.update { it.copy(selectedPlace = null) }
     }
 
+    fun focusOnLocation(latLng: com.google.android.gms.maps.model.LatLng) {
+        _uiState.update { it.copy(focusLocation = latLng) }
+    }
+
+    fun clearFocusLocation() {
+        _uiState.update { it.copy(focusLocation = null) }
+    }
+
     fun uploadAndSaveReview(
         placeId: String,
         review: com.appnotresponding.rumbo.models.Review,

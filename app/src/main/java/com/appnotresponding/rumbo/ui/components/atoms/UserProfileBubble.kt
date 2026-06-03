@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.allowHardware
+import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.models.User
 import com.appnotresponding.rumbo.models.sampleUser
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
@@ -95,7 +97,7 @@ fun UserProfileBubble(
                 if (!user.profilePictureUrl.isNullOrEmpty() && imageLoadFailed) {
                     Icon(
                         modifier = Modifier.size(bubbleSize * 0.5f),
-                        imageVector = Icons.Rounded.Person,
+                        painter = painterResource(R.drawable.ic_user),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )

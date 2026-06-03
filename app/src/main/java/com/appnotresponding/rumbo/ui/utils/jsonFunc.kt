@@ -1,36 +1,22 @@
 package com.appnotresponding.rumbo.ui.utils
 
-import android.content.Context
-import com.appnotresponding.rumbo.models.Place
-import com.appnotresponding.rumbo.models.Review
-import org.json.JSONArray
-import org.json.JSONObject
+import com.appnotresponding.rumbo.models.User
+import com.google.firebase.database.DataSnapshot
 
-/**
-fun loadPlaces(context: Context): MutableList<Place> {
-    val places = mutableListOf<Place>()
-
-    val jsonString = context.assets.open("places.json").bufferedReader().use { it.readText() }
-    var placesJsonArray = JSONArray(jsonString)
-
-    for (i in 0..placesJsonArray.length() - 1) {
-        val placeObject = placesJsonArray.getJSONObject(i)
-
-        val id = placeObject.getString("id")
-        val name = placeObject.getString("name")
-        val description = placeObject.getString("description")
-        val openHours = placeObject.getString("openHours")
-        val price = placeObject.getString("price")
-        val latitude = placeObject.getDouble("latitude")
-        val longitude = placeObject.getDouble("longitude")
-        val rating = placeObject.getDouble("rating").toFloat()
-        val reviews = emptyList<Review>()
-        val image = placeObject.getString("imageUrl")
-        val place = Place(id, name, description, openHours, price, latitude, longitude, rating, reviews, image)
-        places.add(place)
-    }
-
-    return places
+fun DataSnapshot.toUser(uid: String): User {
+    return User(
+        id = uid,
+        name = child("name").getValue(String::class.java) ?: "",
+        lastname = child("lastname").getValue(String::class.java) ?: "",
+        email = child("email").getValue(String::class.java) ?: "",
+        phone = child("phone").getValue(String::class.java) ?: "",
+        latitude = child("latitude").getValue(Double::class.java) ?: 0.0,
+        longitude = child("longitude").getValue(Double::class.java) ?: 0.0,
+        altitude = child("altitude").getValue(Double::class.java) ?: 0.0,
+        profilePictureUrl = child("profilePictureUrl").getValue(String::class.java),
+        sharingLocation = child("sharingLocation").getValue(Boolean::class.java) ?: false,
+        activity = child("activity").getValue(String::class.java),
+        isOnline = child("isOnline").getValue(Boolean::class.java) ?: false,
+        lastSeenAt = child("lastSeenAt").getValue(Long::class.java) ?: 0L
+    )
 }
-
- */

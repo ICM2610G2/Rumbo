@@ -99,7 +99,7 @@ fun DropNoteComposer(
                     // Botón cámara
                     IconButton(onClick = onImageClick, modifier = Modifier.size(40.dp)) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_picture),
+                            painter = painterResource(id = R.drawable.ic_camera),
                             contentDescription = "Cámara",
                             modifier = Modifier.size(22.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant

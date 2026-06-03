@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -79,6 +80,8 @@ fun Avatar(
     }
 
     // Tamaño del indicador online proporcional al tamaño del avatar
+    val onlineBorderColor = if (isOnline) Color(0xFF4CAF50) else borderColor
+    val onlineBorderWidth = if (isOnline && borderWidth == 0.dp) 2.dp else borderWidth
     val indicatorSize = when (size) {
         AvatarSize.Small -> 10.dp
         AvatarSize.Medium -> 14.dp
@@ -104,14 +107,8 @@ fun Avatar(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = backgroundColor, shape = CircleShape)
-                .then(
-                    if (borderWidth > 0.dp) {
-                        Modifier.border(borderWidth, borderColor, CircleShape)
-                    } else {
-                        Modifier
-                    }
-                ), contentAlignment = Alignment.Center
+                .background(color = backgroundColor, shape = CircleShape),
+            contentAlignment = Alignment.Center
         ) {
             //Verificar si hay foto de perfil
             when {
@@ -175,7 +172,28 @@ fun Avatar(
                         )
                     }
                 }
+
+                else -> {
+                    Image(
+                        painter = painterResource(R.drawable.ic_user),
+                        contentDescription = contentDescription,
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimaryContainer),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(size.size * 0.2f)
+                    )
+                }
             }
+
+            // Dibuja el borde sobre la imagen o el contenido para asegurar que no quede tapado
+            if (onlineBorderWidth > 0.dp) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .border(onlineBorderWidth, onlineBorderColor, CircleShape)
+                )
+            }
+        }
 
         // Indicador de online
         if (isOnline) {
@@ -183,10 +201,10 @@ fun Avatar(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .size(indicatorSize)
+                    .sizeIn(minWidth = indicatorSize, minHeight = indicatorSize)
                     .background(Color(0xFF4CAF50), CircleShape)
                     .border(indicatorBorderWidth, MaterialTheme.colorScheme.surface, CircleShape)
             )
-        }
         }
     }
 }

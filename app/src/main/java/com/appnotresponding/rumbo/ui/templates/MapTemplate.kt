@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import kotlinx.coroutines.Dispatchers
@@ -23,6 +24,11 @@ import kotlinx.coroutines.withContext
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Icon
+import androidx.compose.ui.res.painterResource
+import com.appnotresponding.rumbo.ui.viewModel.UserViewModel
+import com.appnotresponding.rumbo.ui.viewModel.FriendsViewModel
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -36,6 +42,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -100,7 +108,6 @@ import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.google.maps.android.compose.TileOverlay
 import com.google.maps.android.heatmaps.Gradient
 import com.google.maps.android.heatmaps.HeatmapTileProvider
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 
 import org.osmdroid.util.GeoPoint
@@ -124,12 +131,13 @@ fun calculateRadiusForZoom(zoom: Float): Double {
 fun MapTemplate(
     user: User,
     controller: NavHostController,
-    onProfileClick: () -> Unit = {},
     viewModel: MapViewModel = viewModel(),
     dropNoteViewModel: DropNoteViewModel = viewModel(),
     itineraryHistoryViewModel: ItineraryHistoryViewModel = viewModel(),
     placesViewModel: PlacesViewModel,
-    locationViewModel: UserLocationViewModel
+    locationViewModel: UserLocationViewModel,
+    userViewModel: UserViewModel,
+    friendsViewModel: FriendsViewModel
 ) {
     Log.d("RECOMPOSE", "MapTemplate recomposed")
 
@@ -139,6 +147,7 @@ fun MapTemplate(
     val dropNoteState by dropNoteViewModel.uiState.collectAsState()
     val userLocationState by locationViewModel.uiState.collectAsState()
     val placesState by placesViewModel.uiState.collectAsState()
+    val friendsState by friendsViewModel.uiState.collectAsState()
 
     var popupStateDNComposer by remember { mutableStateOf(false) }
     var popupStateReviewComposer by remember { mutableStateOf(false) }
@@ -307,13 +316,29 @@ fun MapTemplate(
         )
     }
 
+    LaunchedEffect(placesState.selectedPlace) {
+        val place = placesState.selectedPlace
+        if (place != null) {
+            userViewModel.updateActivity("Rumbo al ${place.name}")
+        } else {
+            userViewModel.updateActivity(null)
+        }
+    }
 
+    LaunchedEffect(placesState.focusLocation) {
+        placesState.focusLocation?.let { latLng ->
+            cameraPositionState.position = CameraPosition.fromLatLngZoom(latLng, 16f)
+            placesViewModel.clearFocusLocation()
+        }
+    }
     Scaffold(
         contentWindowInsets = WindowInsets(0),
-        topBar = { MainTopBar(user, onProfileClick = onProfileClick) },
+        topBar = { MainTopBar(user, controller = controller) },
         floatingActionButton = {
             Column(
-                modifier = Modifier.width(45.dp),
+                modifier = Modifier
+                    .width(56.dp)
+                    .padding(bottom = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Bottom)
             ) {
                 if (permission.status.isGranted) {
@@ -343,7 +368,30 @@ fun MapTemplate(
                             locationState.requestPermission()
                         }
                     }
-
+                    Box(
+                        modifier = Modifier
+                            .aspectRatio(1f)
+                            .clip(CircleShape)
+                            .background(
+                                if (user.sharingLocation) MaterialTheme.colorScheme.primary 
+                                else MaterialTheme.colorScheme.surfaceVariant
+                            ), contentAlignment = Alignment.Center
+                    ) {
+                        IconButton(onClick = {
+                            userViewModel.toggleLocationSharing(!user.sharingLocation)
+                        }) {
+                            Icon(
+                                modifier = Modifier.size(24.dp),
+                                painter = painterResource(
+                                    if (user.sharingLocation) R.drawable.ic_eye_open 
+                                    else R.drawable.ic_eye_crossed
+                                ),
+                                contentDescription = "Compartir ubicación",
+                                tint = if (user.sharingLocation) MaterialTheme.colorScheme.onPrimary 
+                                       else MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
                 }
             }
         },
@@ -396,6 +444,20 @@ fun MapTemplate(
                             user = user,
                             modifier = Modifier.border(1.dp, Color.White, CircleShape)
                         )
+                    }
+                    friendsState.friends.forEach { friend ->
+                        if (friend.sharingLocation && (friend.latitude != 0.0 || friend.longitude != 0.0)) {
+                            val friendPos = LatLng(friend.latitude, friend.longitude)
+                            MarkerComposable(
+                                state = rememberUpdatedMarkerState(friendPos),
+                                title = "${friend.name} ${friend.lastname}"
+                            ) {
+                                Avatar(
+                                    user = friend,
+                                    modifier = Modifier.border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                                )
+                            }
+                        }
                     }
                     Marker(
                         state = rememberUpdatedMarkerState(state.additionalMarker.position),

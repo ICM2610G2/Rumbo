@@ -35,12 +35,14 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
+import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.models.RegisterState
 import com.appnotresponding.rumbo.models.RegisterViewModel
 import com.appnotresponding.rumbo.navigation.AppScreens
@@ -150,7 +152,7 @@ fun SignUpForm(
                     )
                 } else {
                     Icon(
-                        imageVector = Icons.Rounded.AddAPhoto,
+                        painter = painterResource(R.drawable.ic_add_image),
                         contentDescription = "Seleccionar foto",
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(32.dp)

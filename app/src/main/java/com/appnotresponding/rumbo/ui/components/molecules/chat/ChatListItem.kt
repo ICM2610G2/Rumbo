@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,7 +42,9 @@ fun ChatListItem(
     lastMessage: String,
     status: String? = null,
     timestamp: String,
-    hasUnread: Boolean = false
+    hasUnread: Boolean = false,
+    unreadCount: Int = 0,
+    isOnline: Boolean = false
 ) {
     Box(
         modifier = modifier
@@ -62,18 +65,28 @@ fun ChatListItem(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box {
-                Avatar(user = user)
-            }
+            // Borde verde cuando el usuario está en línea
+            Avatar(
+                user = user,
+                isOnline = isOnline,
+                borderWidth = if (isOnline) 2.dp else 0.dp,
+                borderColor = if (isOnline) Color(0xFF4CAF50) else MaterialTheme.colorScheme.outline
+            )
 
             Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
                         text = user.name,
                         style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false)
                     )
-                    if (status != null) {
+                    if (status != null && isOnline) {
                         Text(
                             text = " · ",
                             style = MaterialTheme.typography.titleSmall,
@@ -83,10 +96,12 @@ fun ChatListItem(
                             text = status,
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.primary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f, fill = false)
                         )
                     }
                 }
-                Box(modifier = Modifier.padding(top = 4.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -101,23 +116,43 @@ fun ChatListItem(
                         modifier = Modifier.weight(1f)
                     )
 
-                    if (timestamp.isNotEmpty()) {
-                        Text(
-                            text = timestamp,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    } else if (hasUnread) {
-                        Box(
-                            modifier = Modifier
-                                .size(8.dp)
-                                .background(
-                                    color = MaterialTheme.colorScheme.onSurface, shape = CircleShape
-                                )
-                        )
-                    }
                 }
             }
+            Column(horizontalAlignment = Alignment.End) {
+                if (timestamp.isNotEmpty()) {
+                    Text(
+                        text = timestamp,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (unreadCount > 0 || hasUnread) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                if (unreadCount > 0) {
+                    Box(
+                        modifier = Modifier
+                            .padding(top = 4.dp)
+                            .size(22.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.primary, shape = CircleShape
+                            ), contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = if (unreadCount > 99) "99+" else unreadCount.toString(),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                } else if (hasUnread) {
+                    Box(
+                        modifier = Modifier
+                            .padding(top = 4.dp)
+                            .size(8.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.primary, shape = CircleShape
+                            )
+                    )
+                }
+            }
+
         }
     }
 }
