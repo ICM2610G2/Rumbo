@@ -1,13 +1,14 @@
 package com.appnotresponding.rumbo.models
 
 data class Review(
-    val id: String,
-    val user: User,
+    val id: String = "",
+    val user: User = User(),
     val authorName: String = user.name,
     val authorProfilePhotoUrl: String? = user.profilePictureUrl,
-    val rating: Float,
-    val text: String,
-    val time: Long
+    val rating: Float = 0f,
+    val text: String = "",
+    val photoUrl: String? = null,
+    val time: Long = 0L
 )
 
 val sampleReview = Review(

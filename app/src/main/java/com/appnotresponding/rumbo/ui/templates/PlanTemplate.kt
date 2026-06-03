@@ -18,6 +18,15 @@ import com.appnotresponding.rumbo.ui.components.organisms.common.MainTopBar
 import com.appnotresponding.rumbo.ui.components.organisms.common.Nav
 import com.appnotresponding.rumbo.ui.components.organisms.plan.PlanPOIList
 import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
+import com.appnotresponding.rumbo.ui.components.atoms.RumboTextField
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.layout.fillMaxWidth
+import com.appnotresponding.rumbo.R
 
 /**
  *
@@ -38,6 +47,9 @@ fun PlanTemplate(
     onProfileClick: () -> Unit = {},
     placesViewModel: PlacesViewModel
 ) {
+    val placesState by placesViewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
     Scaffold(
         contentWindowInsets = WindowInsets(0),
         topBar = { MainTopBar(u = user, onProfileClick = onProfileClick) },
@@ -49,9 +61,27 @@ fun PlanTemplate(
         ) {
             LocationHeader(title = "Planea Tu Día", locationName = "Bogotá")
 
+            RumboTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                value = placesState.searchQuery,
+                onValueChange = { query ->
+                    placesViewModel.onSearchQueryChanged(query, context)
+                },
+                placeholder = "Buscar atractivos turísticos...",
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_search),
+                        contentDescription = "Icono de búsqueda",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            )
+
             Spacer(modifier = Modifier.height(16.dp))
 
-            PlanPOIList(places = placesList, placesViewModel)
+            PlanPOIList(places = placesList, placesViewModel, controller)
         }
     }
 }
