@@ -6,23 +6,28 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.ui.Modifier
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.CardDefaults
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
@@ -33,12 +38,6 @@ import coil3.compose.SubcomposeAsyncImage
 import com.appnotresponding.rumbo.R
 import com.appnotresponding.rumbo.models.Place
 import com.appnotresponding.rumbo.navigation.AppScreens
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import com.appnotresponding.rumbo.ui.components.atoms.RumboButton
 import com.appnotresponding.rumbo.ui.components.atoms.RumboButtonStyle
 import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
@@ -64,7 +63,9 @@ fun ItineraryItemCard(p: Place, placesViewModel: PlacesViewModel, controller: Na
 
     if (showReplaceRouteDialog) {
         androidx.compose.material3.AlertDialog(
-            onDismissRequest = { showReplaceRouteDialog = false },
+            onDismissRequest = {
+            showReplaceRouteDialog = false
+        },
             title = { Text("Ruta activa") },
             text = { Text("Tienes una ruta activa en curso. ¿Deseas reemplazarla?") },
             confirmButton = {
@@ -73,24 +74,20 @@ fun ItineraryItemCard(p: Place, placesViewModel: PlacesViewModel, controller: Na
                         showReplaceRouteDialog = false
                         placesViewModel.selectForNavigation(p)
                         controller.navigate(AppScreens.Map.name)
-                    }
-                ) {
+                    }) {
                     Text("Confirmar")
                 }
             },
             dismissButton = {
                 androidx.compose.material3.TextButton(
-                    onClick = { showReplaceRouteDialog = false }
-                ) {
+                    onClick = { showReplaceRouteDialog = false }) {
                     Text("Cancelar")
                 }
-            }
-        )
+            })
     }
 
     ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.elevatedCardColors(
+        modifier = Modifier.fillMaxWidth(), colors = CardDefaults.elevatedCardColors(
             containerColor = if (isActiveRoute) {
                 MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
             } else {
@@ -100,103 +97,102 @@ fun ItineraryItemCard(p: Place, placesViewModel: PlacesViewModel, controller: Na
 
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = if (isActiveRoute) 4.dp else 2.dp
-        ),
-        shape = MaterialTheme.shapes.medium
+        ), shape = MaterialTheme.shapes.medium
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp)
-        ) {
-            Box(
+        Column {
+            Row(
                 modifier = Modifier
-                    .weight(4f)
-                    .aspectRatio(1f)
-                    .clip(MaterialTheme.shapes.medium)
-                    .background(MaterialTheme.colorScheme.secondaryContainer),
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth()
+                    .padding(12.dp)
             ) {
-                SubcomposeAsyncImage(
-                    model = p.imageUrl,
-                    contentDescription = "Imagen de ${p.name}",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize(),
-                    error = {
-                        Image(
-                            painter = painterResource(R.drawable.ic_picture),
-                            contentDescription = null,
-                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer),
-                            contentScale = ContentScale.Crop
-                        )
-                    })
-            }
-            Spacer(modifier = Modifier.width(12.dp))
-            Column(
-                modifier = Modifier
-                    .weight(6f),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                Box(
+                    modifier = Modifier
+                        .weight(4f)
+                        .aspectRatio(1f)
+                        .clip(MaterialTheme.shapes.medium)
+                        .background(MaterialTheme.colorScheme.secondaryContainer),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = p.name,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.weight(1f, fill = false)
-                    )
-                    if (isActiveRoute) {
-                        Box(
-                            modifier = Modifier
-                                .background(
-                                    color = MaterialTheme.colorScheme.primary,
-                                    shape = MaterialTheme.shapes.small
-                                )
-                                .padding(horizontal = 8.dp, vertical = 2.dp)
-                        ) {
-                            Text(
-                                text = "Activa",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onPrimary
+                    SubcomposeAsyncImage(
+                        model = p.imageUrl,
+                        contentDescription = "Imagen de ${p.name}",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize(),
+                        error = {
+                            Image(
+                                painter = painterResource(R.drawable.ic_picture),
+                                contentDescription = null,
+                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer),
+                                contentScale = ContentScale.Crop
                             )
+                        })
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(
+                    modifier = Modifier.weight(6f), verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = p.name,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.weight(1f, fill = false)
+                        )
+                        if (isActiveRoute) {
+                            Box(
+                                modifier = Modifier
+                                    .background(
+                                        color = MaterialTheme.colorScheme.primary,
+                                        shape = MaterialTheme.shapes.small
+                                    )
+                                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                            ) {
+                                Text(
+                                    text = "Activa",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
                         }
                     }
-                }
-                Text(
-                    text = formatOpenHours(p.openHours),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RumboButton(
-                        modifier = Modifier.weight(1f),
-                        text = if (isActiveRoute) "Ver Ruta Activa" else "Iniciar Desplazamiento",
-                        onClick = {
-                            if (isActiveRoute) {
-                                controller.navigate(AppScreens.Map.name)
-                            } else if (selectedPlace != null) {
-                                showReplaceRouteDialog = true
-                            } else {
-                                placesViewModel.selectForNavigation(p)
-                                controller.navigate(AppScreens.Map.name)
-                            }
-                        },
-                        style = if (isActiveRoute) RumboButtonStyle.Primary else RumboButtonStyle.Secondary,
-                        icon = painterResource(R.drawable.ic_map)
+                    Text(
+                        text = formatOpenHours(p.openHours),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
-                    IconButton(onClick = { placesViewModel.removeFromItinerary(p) }) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Eliminar del Itinerario",
-                            tint = MaterialTheme.colorScheme.error
-                        )
-                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {}
                 }
+            }
+            RumboButton(
+                modifier = Modifier.weight(1f).fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                text = if (isActiveRoute) "Ver Ruta Activa" else "Iniciar Desplazamiento",
+                onClick = {
+                    if (isActiveRoute) {
+                        controller.navigate(AppScreens.Map.name)
+                    } else if (selectedPlace != null) {
+                        showReplaceRouteDialog = true
+                    } else {
+                        placesViewModel.selectForNavigation(p)
+                        controller.navigate(AppScreens.Map.name)
+                    }
+                },
+                style = if (isActiveRoute) RumboButtonStyle.Primary else RumboButtonStyle.Secondary,
+                icon = painterResource(R.drawable.ic_map)
+            )
+            IconButton(onClick = { placesViewModel.removeFromItinerary(p) }) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Eliminar del Itinerario",
+                    tint = MaterialTheme.colorScheme.error
+                )
             }
         }
     }
@@ -212,7 +208,9 @@ fun ItineraryItemCard(p: Place, placesViewModel: PlacesViewModel, controller: Na
  * - Si hay un rango mas tarde hoy: "Cerrado ahora. Abre hoy a ...".
  * - Si no hay mas rangos hoy: busca el proximo dia con apertura.
  */
-fun formatOpenHours(openHours: List<String>?, now: LocalDateTime = LocalDateTime.now()): String {
+fun formatOpenHours(
+    openHours: List<String>?, now: LocalDateTime = LocalDateTime.now()
+): String {
     if (openHours.isNullOrEmpty()) {
         return "No hay información de horario"
     }
