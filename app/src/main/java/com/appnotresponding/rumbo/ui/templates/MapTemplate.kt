@@ -106,9 +106,19 @@ import androidx.compose.ui.graphics.toArgb
 
 import org.osmdroid.util.GeoPoint
 
-
 val locationPermission = android.Manifest.permission.ACCESS_FINE_LOCATION
 var locationRequest: LocationRequest = createLocationRequest()
+
+fun calculateRadiusForZoom(zoom: Float): Double {
+    return when {
+        zoom >= 18f -> 100.0
+        zoom >= 16f -> 500.0
+        zoom >= 14f -> 1500.0
+        zoom >= 12f -> 5000.0
+        zoom >= 10f -> 15000.0
+        else -> 50000.0
+    }
+}
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -142,6 +152,18 @@ fun MapTemplate(
     var reviewText by remember { mutableStateOf("") }
     var reviewRating by remember { mutableStateOf(0f) }
     var isUploadingReview by remember { mutableStateOf(false) }
+    var showReplaceRouteDialog by remember { mutableStateOf(false) }
+
+    val isWithinProximity = remember(userLocationState.latitude, userLocationState.longitude, currentPreviewedPlace) {
+        if (currentPreviewedPlace != null && userLocationState.latitude != 0.0 && userLocationState.longitude != 0.0) {
+            val userLatLng = LatLng(userLocationState.latitude, userLocationState.longitude)
+            val placeLatLng = LatLng(currentPreviewedPlace.latitude, currentPreviewedPlace.longitude)
+            val distance = com.google.maps.android.SphericalUtil.computeDistanceBetween(userLatLng, placeLatLng)
+            distance <= 100.0
+        } else {
+            false
+        }
+    }
 
     val markerKey = remember(user.profilePictureUrl) { user.profilePictureUrl ?: "" }
     var profileBitmap by remember(user.profilePictureUrl) { mutableStateOf<ImageBitmap?>(null) }
@@ -328,6 +350,16 @@ fun MapTemplate(
                     modifier = Modifier.fillMaxSize(),
                     cameraPositionState = cameraPositionState,
                     contentDescription = "Mapa de Rumbo",
+                    onMapLongClick = { latLng ->
+                        val currentZoom = cameraPositionState.position.zoom
+                        val radius = calculateRadiusForZoom(currentZoom)
+                        placesViewModel.searchAndShowNearestPlace(
+                            latitude = latLng.latitude,
+                            longitude = latLng.longitude,
+                            radius = radius,
+                            context = context
+                        )
+                    },
                     uiSettings = MapUiSettings(
                         zoomControlsEnabled = false,
                         myLocationButtonEnabled = false,
@@ -380,17 +412,7 @@ fun MapTemplate(
                         }
                     }
 
-                    placesState.availablePlaces.forEach { place ->
-                        val position = LatLng(place.latitude, place.longitude)
-                        Marker(
-                            state = rememberUpdatedMarkerState(position),
-                            title = place.name,
-                            onClick = {
-                                placesViewModel.showPreview(place)
-                                true
-                            }
-                        )
-                    }
+
 
                     dropNoteState.dropNotes.forEach { note ->
                         val position = LatLng(note.latitude, note.longitude)
@@ -534,12 +556,26 @@ fun MapTemplate(
                 indication = null,
                 onClick = {}
             )) {
+                val isInItinerary = placesState.itinerary.any { it.id == currentPreviewedPlace.id }
                 PlacePreviewCard(
                     place = currentPreviewedPlace,
                     reviews = currentPreviewedPlace.reviews,
+                    isInItinerary = isInItinerary,
+                    isReviewEnabled = isWithinProximity,
                     onNavigateClick = {
-                        placesViewModel.selectForNavigation(currentPreviewedPlace)
-                        placesViewModel.showPreview(null)
+                        if (placesState.selectedPlace != null && placesState.selectedPlace?.id != currentPreviewedPlace.id) {
+                            showReplaceRouteDialog = true
+                        } else {
+                            placesViewModel.selectForNavigation(currentPreviewedPlace)
+                            placesViewModel.showPreview(null)
+                        }
+                    },
+                    onAddToItineraryClick = {
+                        if (isInItinerary) {
+                            placesViewModel.removeFromItinerary(currentPreviewedPlace)
+                        } else {
+                            placesViewModel.addToItinerary(currentPreviewedPlace)
+                        }
                     },
                     onReviewClick = {
                         popupStateReviewComposer = true
@@ -646,5 +682,30 @@ fun MapTemplate(
                 )
             }
         }
+    }
+    if (showReplaceRouteDialog && currentPreviewedPlace != null) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showReplaceRouteDialog = false },
+            title = { Text("Ruta activa") },
+            text = { Text("Tienes una ruta activa en curso. ¿Deseas reemplazarla?") },
+            confirmButton = {
+                androidx.compose.material3.TextButton(
+                    onClick = {
+                        showReplaceRouteDialog = false
+                        placesViewModel.selectForNavigation(currentPreviewedPlace)
+                        placesViewModel.showPreview(null)
+                    }
+                ) {
+                    Text("Confirmar")
+                }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(
+                    onClick = { showReplaceRouteDialog = false }
+                ) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 }

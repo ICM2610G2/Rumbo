@@ -38,7 +38,14 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  * @param p El objeto Place que contiene la información del lugar a mostrar
  */
 @Composable
-fun PlaceInfo(p: Place, onNavigateClick: () -> Unit = {}, onReviewClick: () -> Unit = {}) {
+fun PlaceInfo(
+    p: Place,
+    onNavigateClick: () -> Unit = {},
+    onReviewClick: () -> Unit = {},
+    onAddToItineraryClick: () -> Unit = {},
+    isInItinerary: Boolean = false,
+    isReviewEnabled: Boolean = true
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -113,12 +120,22 @@ fun PlaceInfo(p: Place, onNavigateClick: () -> Unit = {}, onReviewClick: () -> U
                     style = RumboButtonStyle.Primary,
                     icon = painterResource(R.drawable.ic_map)
                 )
+                val itineraryText = if (isInItinerary) "Eliminar del Itinerario" else "Añadir al Itinerario"
+                val itineraryIcon = if (isInItinerary) R.drawable.ic_minus else R.drawable.ic_plus
+                RumboButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = itineraryText,
+                    onClick = onAddToItineraryClick,
+                    style = RumboButtonStyle.Secondary,
+                    icon = painterResource(itineraryIcon)
+                )
                 RumboButton(
                     modifier = Modifier.fillMaxWidth(),
                     text = "Escribir Reseña",
                     onClick = onReviewClick,
                     style = RumboButtonStyle.Secondary,
-                    icon = painterResource(R.drawable.ic_text_box_edit)
+                    icon = painterResource(R.drawable.ic_text_box_edit),
+                    enabled = isReviewEnabled
                 )
             }
         }

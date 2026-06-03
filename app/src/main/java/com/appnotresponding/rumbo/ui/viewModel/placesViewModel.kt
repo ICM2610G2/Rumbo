@@ -2,6 +2,7 @@ package com.appnotresponding.rumbo.ui.viewModel
 
 import androidx.lifecycle.ViewModel
 import com.appnotresponding.rumbo.models.Place
+import com.google.android.gms.maps.model.LatLng
 import com.appnotresponding.rumbo.models.PlaceState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,7 +13,8 @@ class PlacesViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(PlaceState())
     val uiState: StateFlow<PlaceState> = _uiState.asStateFlow()
 
-    private var rawPlaces: List<Place> = emptyList()
+    private var rawNearbyPlaces: List<Place> = emptyList()
+    private var rawSearchPlaces: List<Place> = emptyList()
     private var firebaseReviews: Map<String, List<com.appnotresponding.rumbo.models.Review>> = emptyMap()
 
     init {
@@ -44,13 +46,14 @@ class PlacesViewModel : ViewModel() {
     }
 
     fun updatePlaces(list: List<Place>) {
-        rawPlaces = list
+        rawNearbyPlaces = list
         mergePlacesWithReviews()
     }
 
     private fun mergePlacesWithReviews() {
         _uiState.update { currentState ->
-            val merged = rawPlaces.map { place ->
+            val activeList = if (currentState.searchQuery.isBlank()) rawNearbyPlaces else rawSearchPlaces
+            val merged = activeList.map { place ->
                 val reviewsForPlace = (firebaseReviews[place.id] ?: emptyList()).sortedByDescending { it.time }
                 val newRating = if (reviewsForPlace.isNotEmpty()) reviewsForPlace.map { it.rating }.average() else place.rating
                 place.copy(reviews = reviewsForPlace, rating = if (newRating?.isNaN() == true) 0.0 else newRating)
@@ -62,6 +65,26 @@ class PlacesViewModel : ViewModel() {
                 availablePlaces = merged,
                 selectedPlace = mergedSelected ?: currentState.selectedPlace,
                 previewedPlace = mergedPreviewed ?: currentState.previewedPlace
+            )
+        }
+    }
+
+    fun onSearchQueryChanged(query: String, context: android.content.Context) {
+        _uiState.update { it.copy(searchQuery = query) }
+        if (query.isBlank()) {
+            rawSearchPlaces = emptyList()
+            mergePlacesWithReviews()
+        } else {
+            com.appnotresponding.rumbo.ui.utils.searchTextPlaces(
+                query = query,
+                context = context,
+                onPlacesReceived = { places ->
+                    rawSearchPlaces = places
+                    mergePlacesWithReviews()
+                },
+                onError = { error ->
+                    android.util.Log.e("PlacesViewModel", "Error searching places: $error")
+                }
             )
         }
     }
@@ -85,7 +108,45 @@ class PlacesViewModel : ViewModel() {
     }
 
     fun showPreview(place: Place?) {
-        _uiState.update { it.copy(previewedPlace = place) }
+        if (place == null) {
+            _uiState.update { it.copy(previewedPlace = null) }
+            return
+        }
+        val reviewsForPlace = (firebaseReviews[place.id] ?: emptyList()).sortedByDescending { it.time }
+        val newRating = if (reviewsForPlace.isNotEmpty()) reviewsForPlace.map { it.rating }.average() else place.rating
+        val mergedPlace = place.copy(reviews = reviewsForPlace, rating = if (newRating?.isNaN() == true) 0.0 else newRating)
+        _uiState.update { it.copy(previewedPlace = mergedPlace) }
+    }
+
+    fun searchAndShowNearestPlace(
+        latitude: Double,
+        longitude: Double,
+        radius: Double,
+        context: android.content.Context
+    ) {
+        com.appnotresponding.rumbo.ui.utils.searchNearbyPlaces(
+            latitude = latitude,
+            longitude = longitude,
+            radius = radius,
+            context = context,
+            onPlacesReceived = { places ->
+                if (places.isNotEmpty()) {
+                    val pressLatLng = LatLng(latitude, longitude)
+                    val nearestPlace = places.minByOrNull { place ->
+                        com.google.maps.android.SphericalUtil.computeDistanceBetween(
+                            pressLatLng,
+                            LatLng(place.latitude, place.longitude)
+                        )
+                    }
+                    showPreview(nearestPlace)
+                } else {
+                    android.util.Log.d("PlacesViewModel", "No places found near the long press location.")
+                }
+            },
+            onError = { error ->
+                android.util.Log.e("PlacesViewModel", "Error fetching places for long press: $error")
+            }
+        )
     }
 
     fun clearForNavigation() {
