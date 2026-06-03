@@ -46,12 +46,16 @@ class ChatThreadViewModel : ViewModel() {
     private val userCache = mutableMapOf<String, User>()
     private val userListeners = mutableMapOf<String, ValueEventListener>()
 
+    private var currentMessages: List<ChatMessage> = emptyList()
+
     private fun clearUserListeners() {
         userListeners.forEach { (senderId, listener) ->
             dbUsers.child(senderId).removeEventListener(listener)
         }
         userListeners.clear()
         userCache.clear()
+
+        currentMessages = emptyList()
     }
 
     private fun listenToOtherUserOnline(otherUid: String) {
@@ -75,6 +79,8 @@ class ChatThreadViewModel : ViewModel() {
         ref.addValueEventListener(listener)
     }
 
+
+    /**
     private fun resolveUsersAndEmit(rawMessages: List<ChatMessage>, extraUid: String? = null) {
         val uniqueSenderIds = (rawMessages.map { it.senderId } + listOfNotNull(extraUid)).distinct()
 
@@ -102,10 +108,66 @@ class ChatThreadViewModel : ViewModel() {
         }
 
         pushState()
+    } */
+    private fun resolveUsersAndEmit(
+        rawMessages: List<ChatMessage>,
+        extraUid: String? = null
+    ) {
+        currentMessages = rawMessages
+
+        val uniqueSenderIds =
+            (rawMessages.map { it.senderId } + listOfNotNull(extraUid))
+                .distinct()
+
+        uniqueSenderIds.forEach { senderId ->
+
+            if (userCache.containsKey(senderId) || userListeners.containsKey(senderId)) {
+                return@forEach
+            }
+
+            val listener = object : ValueEventListener {
+
+                override fun onDataChange(userSnapshot: DataSnapshot) {
+                    val user = userSnapshot.toUser(senderId)
+
+                    userCache[senderId] = user
+
+                    emitCurrentState()
+                }
+
+                override fun onCancelled(error: DatabaseError) {}
+            }
+
+            userListeners[senderId] = listener
+
+            dbUsers
+                .child(senderId)
+                .addValueEventListener(listener)
+        }
+
+        emitCurrentState()
+    }
+
+    private fun emitCurrentState() {
+
+        _uiState.update {
+            it.copy(
+                messages = currentMessages,
+                messageAuthors = userCache.toMap()
+            )
+        }
     }
 
     fun listenToMessages(chatId: String) {
         clearUserListeners()
+        currentMessages = emptyList()
+
+        _uiState.update {
+            it.copy(
+                messages = emptyList(),
+                messageAuthors = emptyMap()
+            )
+        }
         currentRef?.let { ref ->
             currentListener?.let { ref.removeEventListener(it) }
         }
