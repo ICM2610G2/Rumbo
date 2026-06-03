@@ -134,10 +134,10 @@ fun ProfileTemplate(
                         },
                         leadingIcon = {
                             Icon(
-                                imageVector = when (menu) {
-                                    ProfileMenu.EditData -> Icons.Rounded.Edit
-                                    ProfileMenu.ItineraryHistory -> Icons.Rounded.Event
-                                    ProfileMenu.Memories -> Icons.Rounded.Image
+                                painter = when (menu) {
+                                    ProfileMenu.EditData -> painterResource(R.drawable.ic_user)
+                                    ProfileMenu.ItineraryHistory -> painterResource(R.drawable.ic_list)
+                                    ProfileMenu.Memories -> painterResource(R.drawable.ic_recuerdos)
                                 }, contentDescription = null, modifier = Modifier.size(18.dp)
                             )
                         })
@@ -195,10 +195,10 @@ private fun ProfileHeader(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = onBackClick) {
-                    Icon(Icons.Rounded.ArrowBack, contentDescription = "Volver")
+                    Icon(painter = painterResource(R.drawable.ic_arrow_left), contentDescription = "Volver")
                 }
                 IconButton(onClick = onSignOut) {
-                    Icon(Icons.Rounded.Logout, contentDescription = "Cerrar sesión")
+                    Icon(painter = painterResource(R.drawable.ic_logout), contentDescription = "Cerrar sesión")
                 }
             }
 
@@ -226,7 +226,7 @@ private fun ProfileHeader(
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
-                            imageVector = Icons.Rounded.PhotoCamera,
+                            painter = painterResource(R.drawable.ic_camera),
                             contentDescription = "Cambiar foto",
                             modifier = Modifier.size(18.dp)
                         )

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -101,104 +102,108 @@ fun ItineraryItemCard(p: Place, placesViewModel: PlacesViewModel, controller: Na
         ),
         shape = MaterialTheme.shapes.medium
     ) {
-        Row(
+        Column (
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp)
+                .padding(12.dp),
         ) {
-            Box(
+            Row(
                 modifier = Modifier
-                    .weight(4f)
-                    .aspectRatio(1f)
-                    .clip(MaterialTheme.shapes.medium)
-                    .background(MaterialTheme.colorScheme.secondaryContainer),
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth()
             ) {
-                SubcomposeAsyncImage(
-                    model = p.imageUrl,
-                    contentDescription = "Imagen de ${p.name}",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize(),
-                    error = {
-                        Image(
-                            painter = painterResource(R.drawable.ic_picture),
-                            contentDescription = null,
-                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer),
-                            contentScale = ContentScale.Crop
-                        )
-                    })
-            }
-            Spacer(modifier = Modifier.width(12.dp))
-            Column(
-                modifier = Modifier
-                    .weight(6f),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                Box(
+                    modifier = Modifier
+                        .weight(4f)
+                        .aspectRatio(1f)
+                        .clip(MaterialTheme.shapes.medium)
+                        .background(MaterialTheme.colorScheme.secondaryContainer),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = p.name,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.weight(1f, fill = false)
-                    )
-                    if (isActiveRoute) {
-                        Box(
-                            modifier = Modifier
-                                .background(
-                                    color = MaterialTheme.colorScheme.primary,
-                                    shape = MaterialTheme.shapes.small
-                                )
-                                .padding(horizontal = 8.dp, vertical = 2.dp)
-                        ) {
-                            Text(
-                                text = "Activa",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onPrimary
+                    SubcomposeAsyncImage(
+                        model = p.imageUrl,
+                        contentDescription = "Imagen de ${p.name}",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize(),
+                        error = {
+                            Image(
+                                painter = painterResource(R.drawable.ic_picture),
+                                contentDescription = null,
+                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer),
+                                contentScale = ContentScale.Crop
                             )
+                        })
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(
+                    modifier = Modifier
+                        .weight(6f),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = p.name,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.weight(1f, fill = false)
+                        )
+                        if (isActiveRoute) {
+                            Box(
+                                modifier = Modifier
+                                    .background(
+                                        color = MaterialTheme.colorScheme.primary,
+                                        shape = MaterialTheme.shapes.small
+                                    )
+                                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                            ) {
+                                Text(
+                                    text = "Activa",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
                         }
                     }
-                }
-                Text(
-                    text = formatOpenHours(p.openHours),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RumboButton(
-                        modifier = Modifier.weight(1f),
-                        text = if (isActiveRoute) "Ver Ruta Activa" else "Iniciar Desplazamiento",
-                        onClick = {
-                            if (isActiveRoute) {
-                                controller.navigate(AppScreens.Map.name)
-                            } else if (selectedPlace != null) {
-                                showReplaceRouteDialog = true
-                            } else {
-                                placesViewModel.selectForNavigation(p)
-                                controller.navigate(AppScreens.Map.name)
-                            }
-                        },
-                        style = if (isActiveRoute) RumboButtonStyle.Primary else RumboButtonStyle.Secondary,
-                        icon = painterResource(R.drawable.ic_map)
+                    Text(
+                        text = formatOpenHours(p.openHours),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
-                    IconButton(onClick = { placesViewModel.removeFromItinerary(p) }) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Eliminar del Itinerario",
-                            tint = MaterialTheme.colorScheme.error
-                        )
-                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RumboButton(
+                    modifier = Modifier.weight(1f),
+                    text = if (isActiveRoute) "Ver Ruta Activa" else "Iniciar Desplazamiento",
+                    onClick = {
+                        if (isActiveRoute) {
+                            controller.navigate(AppScreens.Map.name)
+                        } else if (selectedPlace != null) {
+                            showReplaceRouteDialog = true
+                        } else {
+                            placesViewModel.selectForNavigation(p)
+                            controller.navigate(AppScreens.Map.name)
+                        }
+                    },
+                    style = if (isActiveRoute) RumboButtonStyle.Primary else RumboButtonStyle.Secondary,
+                    icon = painterResource(R.drawable.ic_map)
+                )
+                IconButton(onClick = { placesViewModel.removeFromItinerary(p) }) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_destroy),
+                        contentDescription = "Eliminar del Itinerario",
+                        tint = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         }
     }
-
 }
 
 /**

@@ -113,7 +113,8 @@ fun ToggleHeatmap(isHeatmapActive: Boolean = false, onClick: () -> Unit = {}) {
     ) {
         IconButton(onClick = onClick) {
             Icon(
-                painter = painterResource(R.drawable.ic_map), // Reusing map icon or any suitable icon
+                modifier = Modifier.size(24.dp),
+                painter = painterResource(R.drawable.ic_heat),
                 contentDescription = "Toggle Heatmap",
                 tint = iconTint,
             )
