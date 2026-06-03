@@ -1,6 +1,9 @@
 package com.appnotresponding.rumbo.ui.components.organisms.plan
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,6 +15,7 @@ import com.appnotresponding.rumbo.models.Place
 import com.appnotresponding.rumbo.models.samplePlace
 import com.appnotresponding.rumbo.ui.components.molecules.plan.PlanItemCard
 import com.appnotresponding.rumbo.ui.theme.RumboTheme
+import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 
 /**
  *
@@ -22,35 +26,42 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  * @param places La lista de lugares (Place) que se van a mostrar en la pantalla.
  */
 
+import androidx.navigation.NavHostController
+
 @Composable
-fun PlanPOIList(places: List<Place>) {
+fun PlanPOIList(places: List<Place>, placesViewModel: PlacesViewModel, controller: NavHostController) {
 
     LazyColumn(
         modifier = Modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(places) { place ->
-            PlanItemCard(p = place)
+            PlanItemCard(p = place, placesViewModel, controller)
+        }
+        item {
+            Spacer(modifier = Modifier.height(96.dp))
         }
     }
 }
 
+/**
 @Preview(showBackground = true, name = "PlanPOIList - Light")
 @Composable
 private fun PlanPOIListLightPreview() {
-    RumboTheme(darkTheme = false) {
-        PlanPOIList(
-            places = listOf(samplePlace, samplePlace, samplePlace)
-        )
-    }
+RumboTheme(darkTheme = false) {
+PlanPOIList(
+places = listOf(samplePlace, samplePlace, samplePlace)
+)
+}
 }
 
 @Preview(showBackground = true, name = "PlanPOIList - Dark", backgroundColor = 0xFF1E1E1E)
 @Composable
 private fun PlanPOIListDarkPreview() {
-    RumboTheme(darkTheme = true) {
-        PlanPOIList(
-            places = listOf(samplePlace, samplePlace, samplePlace)
-        )
-    }
+RumboTheme(darkTheme = true) {
+PlanPOIList(
+places = listOf(samplePlace, samplePlace, samplePlace)
+)
 }
+}
+ */

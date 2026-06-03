@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -37,7 +38,14 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  * @param p El objeto Place que contiene la información del lugar a mostrar
  */
 @Composable
-fun PlaceInfo(p: Place) {
+fun PlaceInfo(
+    p: Place,
+    onNavigateClick: () -> Unit = {},
+    onReviewClick: () -> Unit = {},
+    onAddToItineraryClick: () -> Unit = {},
+    isInItinerary: Boolean = false,
+    isReviewEnabled: Boolean = true
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -56,11 +64,13 @@ fun PlaceInfo(p: Place) {
                 model = p.imageUrl,
                 contentDescription = "Imagen de ${p.name}",
                 contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
                 error = {
                     Image(
                         painter = painterResource(R.drawable.ic_picture),
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer)
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer),
+                        contentScale = ContentScale.Crop
                     )
                 })
         }
@@ -75,17 +85,59 @@ fun PlaceInfo(p: Place) {
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onBackground
             )
+
+            p.openHours?.let { hours ->
+                if (hours.isNotEmpty() && hours.first().isNotBlank()) {
+                    Text(
+                        text = "Horario: ${hours.joinToString(", ")}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+            }
+
+            p.price?.let { price ->
+                if (price.isNotBlank()) {
+                    Text(
+                        text = "Precio: $price",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+            }
+
             Text(
-                text = p.description,
+                text = p.description ?: "No hay información",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onBackground
             )
-            RumboButton(
-                text = "Escribir Reseña",
-                onClick = {},
-                style = RumboButtonStyle.Secondary,
-                icon = painterResource(R.drawable.ic_text_box_edit)
-            )
+
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                RumboButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "Navegar al lugar",
+                    onClick = onNavigateClick,
+                    style = RumboButtonStyle.Primary,
+                    icon = painterResource(R.drawable.ic_map)
+                )
+                val itineraryText = if (isInItinerary) "Eliminar del Itinerario" else "Añadir al Itinerario"
+                val itineraryIcon = if (isInItinerary) R.drawable.ic_minus else R.drawable.ic_plus
+                RumboButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = itineraryText,
+                    onClick = onAddToItineraryClick,
+                    style = RumboButtonStyle.Secondary,
+                    icon = painterResource(itineraryIcon)
+                )
+                RumboButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "Escribir Reseña",
+                    onClick = onReviewClick,
+                    style = RumboButtonStyle.Secondary,
+                    icon = painterResource(R.drawable.ic_text_box_edit),
+                    enabled = isReviewEnabled
+                )
+            }
         }
     }
 }
@@ -119,10 +171,22 @@ fun ReviewItem(r: Review) {
             )
             RumboRatingDisplay(rating = r.rating)
             Text(
-                text = "¡Me encantó este lugar! La vista es increíble y el ambiente es muy relajante. Definitivamente volveré.",
+                text = r.text,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onBackground
             )
+            if (!r.photoUrl.isNullOrEmpty()) {
+                SubcomposeAsyncImage(
+                    model = r.photoUrl,
+                    contentDescription = "Foto adjunta",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp)
+                        .aspectRatio(16f/9f)
+                        .clip(MaterialTheme.shapes.medium)
+                )
+            }
         }
     }
 }

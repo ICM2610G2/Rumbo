@@ -9,19 +9,24 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.appnotresponding.rumbo.models.Place
 import com.appnotresponding.rumbo.models.User
-import com.appnotresponding.rumbo.models.samplePlace
-import com.appnotresponding.rumbo.models.sampleUser
 import com.appnotresponding.rumbo.ui.components.molecules.common.LocationHeader
 import com.appnotresponding.rumbo.ui.components.organisms.common.MainTopBar
 import com.appnotresponding.rumbo.ui.components.organisms.common.Nav
 import com.appnotresponding.rumbo.ui.components.organisms.plan.PlanPOIList
-import com.appnotresponding.rumbo.ui.theme.RumboTheme
+import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
+import com.appnotresponding.rumbo.ui.components.atoms.RumboTextField
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.layout.fillMaxWidth
+import com.appnotresponding.rumbo.R
 
 /**
  *
@@ -35,13 +40,19 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  */
 
 @Composable
-fun PlanTemplate(user: User, placesList: List<Place>,
-                 controller: NavHostController) {
+fun PlanTemplate(
+    user: User,
+    placesList: List<Place>,
+    controller: NavHostController,
+    placesViewModel: PlacesViewModel
+) {
+    val placesState by placesViewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
     Scaffold(
         contentWindowInsets = WindowInsets(0),
-        topBar = { MainTopBar(u = user) },
-        bottomBar = { Nav(controller) }
-    ) { paddingValues ->
+        topBar = { MainTopBar(u = user, controller = controller) },
+        bottomBar = { Nav(controller) }) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -49,33 +60,53 @@ fun PlanTemplate(user: User, placesList: List<Place>,
         ) {
             LocationHeader(title = "Planea Tu Día", locationName = "Bogotá")
 
+            RumboTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                value = placesState.searchQuery,
+                onValueChange = { query ->
+                    placesViewModel.onSearchQueryChanged(query, context)
+                },
+                placeholder = "Buscar atractivos turísticos...",
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_search),
+                        contentDescription = "Icono de búsqueda",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            )
+
             Spacer(modifier = Modifier.height(16.dp))
 
-            PlanPOIList(places = placesList)
+            PlanPOIList(places = placesList, placesViewModel, controller)
         }
     }
 }
 
+/**
 @Preview(showBackground = true, name = "PlanTemplate - Light")
 @Composable
 private fun PlanTemplateLightPreview() {
-    RumboTheme(darkTheme = false) {
-        PlanTemplate(
-            user = sampleUser,
-            placesList = listOf(samplePlace, samplePlace, samplePlace),
-            controller = rememberNavController()
-        )
-    }
+RumboTheme(darkTheme = false) {
+PlanTemplate(
+user = sampleUser,
+placesList = listOf(samplePlace, samplePlace, samplePlace),
+controller = rememberNavController()
+)
+}
 }
 
 @Preview(showBackground = true, name = "PlanTemplate - Dark", backgroundColor = 0xFF1E1E1E)
 @Composable
 private fun PlanTemplateDarkPreview() {
-    RumboTheme(darkTheme = true) {
-        PlanTemplate(
-            user = sampleUser,
-            placesList = listOf(samplePlace, samplePlace, samplePlace),
-            controller = rememberNavController()
-        )
-    }
+RumboTheme(darkTheme = true) {
+PlanTemplate(
+user = sampleUser,
+placesList = listOf(samplePlace, samplePlace, samplePlace),
+controller = rememberNavController()
+)
 }
+}
+ */

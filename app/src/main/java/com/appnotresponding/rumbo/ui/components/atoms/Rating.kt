@@ -65,8 +65,8 @@ fun RumboRatingStar(
                     .size(starSize)
                     .then(
                         if (onRatingChanged != null) {
-                        Modifier.clickable { onRatingChanged(i.toFloat()) }
-                    } else Modifier),
+                            Modifier.clickable { onRatingChanged(i.toFloat()) }
+                        } else Modifier),
                 tint = tint)
         }
     }

@@ -4,13 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 /**
@@ -26,22 +27,19 @@ fun AuthTemplate(
     modifier: Modifier = Modifier, content: @Composable BoxScope.() -> Unit
 ) {
 
-    val highlightGreen = Color(0xFFC4F031)
-    val darkBackground = Color(0xFF151515)
-
-
     val backgroundBrush = Brush.radialGradient(
         colors = listOf(
-            highlightGreen.copy(alpha = 0.35f), darkBackground, Color.Black
-        ), center = Offset(x = 100f, y = 800f), radius = 1200f
+            MaterialTheme.colorScheme.primary,
+            MaterialTheme.colorScheme.primary.copy(0f),
+        ), center = Offset(x = 100f, y = 800f), radius = 600f
     )
 
     Box(
         modifier = modifier
-            .fillMaxSize()
+            .fillMaxSize().imePadding()
+            .background(MaterialTheme.colorScheme.background)
             .background(brush = backgroundBrush)
-            .padding(24.dp),
-        contentAlignment = Alignment.Center
+            .padding(24.dp), contentAlignment = Alignment.Center
     ) {
         content()
     }

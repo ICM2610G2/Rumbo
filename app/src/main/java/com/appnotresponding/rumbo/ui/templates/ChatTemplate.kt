@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.appnotresponding.rumbo.models.User
 import com.appnotresponding.rumbo.ui.components.organisms.common.MainTopBar
 import com.appnotresponding.rumbo.ui.components.organisms.common.Nav
@@ -29,9 +28,8 @@ fun ChatTemplate(
 ) {
     Scaffold(
         contentWindowInsets = WindowInsets(0),
-        topBar = { MainTopBar(u = currentUser) },
-        bottomBar = { Nav(controller) }
-    ) { paddingValues ->
+        topBar = { MainTopBar(u = currentUser, controller = controller) },
+        bottomBar = { Nav(controller) }) { paddingValues ->
         Column(
             modifier = modifier
                 .fillMaxSize()

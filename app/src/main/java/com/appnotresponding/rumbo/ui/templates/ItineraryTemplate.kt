@@ -1,27 +1,25 @@
 package com.appnotresponding.rumbo.ui.templates
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.appnotresponding.rumbo.models.Place
 import com.appnotresponding.rumbo.models.User
-import com.appnotresponding.rumbo.models.samplePlace
-import com.appnotresponding.rumbo.models.sampleUser
 import com.appnotresponding.rumbo.ui.components.molecules.common.DayHeader
 import com.appnotresponding.rumbo.ui.components.organisms.common.MainTopBar
 import com.appnotresponding.rumbo.ui.components.organisms.common.Nav
 import com.appnotresponding.rumbo.ui.components.organisms.itinerary.ItineraryOverview
-import com.appnotresponding.rumbo.ui.theme.RumboTheme
+import com.appnotresponding.rumbo.ui.viewModel.PlacesViewModel
 
 /**
  *
@@ -35,13 +33,16 @@ import com.appnotresponding.rumbo.ui.theme.RumboTheme
  */
 
 @Composable
-fun ItineraryTemplate(user: User, itineraryList: List<Place>,
-                      controller: NavHostController) {
+fun ItineraryTemplate(
+    user: User,
+    itineraryList: List<Place>,
+    controller: NavHostController,
+    placesViewModel: PlacesViewModel
+) {
     Scaffold(
         contentWindowInsets = WindowInsets(0),
-        topBar = { MainTopBar(u = user) },
-        bottomBar = { Nav(controller) }
-    ) { paddingValues ->
+        topBar = { MainTopBar(u = user, controller = controller) },
+        bottomBar = { Nav(controller) }) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -50,11 +51,13 @@ fun ItineraryTemplate(user: User, itineraryList: List<Place>,
             DayHeader(title = "Así Se Ve Tu Día")
             Spacer(modifier = Modifier.height(16.dp))
 
-            ItineraryOverview(itineraryList = itineraryList)
+            Box(modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp)) {
+            ItineraryOverview(itineraryList = itineraryList, placesViewModel, controller)}
         }
     }
 }
 
+/**
 @Preview(showBackground = true, name = "ItineraryTemplate - Light")
 @Composable
 private fun ItineraryTemplateLightPreview() {
@@ -78,3 +81,4 @@ private fun ItineraryTemplateDarkPreview() {
         )
     }
 }
+        */
