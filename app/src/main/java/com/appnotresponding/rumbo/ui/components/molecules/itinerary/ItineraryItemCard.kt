@@ -1,5 +1,6 @@
 package com.appnotresponding.rumbo.ui.components.molecules.itinerary
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -87,112 +88,113 @@ fun ItineraryItemCard(p: Place, placesViewModel: PlacesViewModel, controller: Na
     }
 
     ElevatedCard(
-        modifier = Modifier.fillMaxWidth(), colors = CardDefaults.elevatedCardColors(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.elevatedCardColors(
             containerColor = if (isActiveRoute) {
                 MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
             } else {
                 MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
             }
         ),
-
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = if (isActiveRoute) 4.dp else 2.dp
-        ), shape = MaterialTheme.shapes.medium
+        ),
+        shape = MaterialTheme.shapes.medium
     ) {
-        Column {
-            Row(
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
+        ) {
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp)
+                    .weight(4f)
+                    .aspectRatio(1f)
+                    .clip(MaterialTheme.shapes.medium)
+                    .background(MaterialTheme.colorScheme.secondaryContainer),
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    modifier = Modifier
-                        .weight(4f)
-                        .aspectRatio(1f)
-                        .clip(MaterialTheme.shapes.medium)
-                        .background(MaterialTheme.colorScheme.secondaryContainer),
-                    contentAlignment = Alignment.Center
-                ) {
-                    SubcomposeAsyncImage(
-                        model = p.imageUrl,
-                        contentDescription = "Imagen de ${p.name}",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize(),
-                        error = {
-                            Image(
-                                painter = painterResource(R.drawable.ic_picture),
-                                contentDescription = null,
-                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer),
-                                contentScale = ContentScale.Crop
-                            )
-                        })
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Column(
-                    modifier = Modifier.weight(6f), verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text = p.name,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.weight(1f, fill = false)
+                SubcomposeAsyncImage(
+                    model = p.imageUrl,
+                    contentDescription = "Imagen de ${p.name}",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize(),
+                    error = {
+                        Image(
+                            painter = painterResource(R.drawable.ic_picture),
+                            contentDescription = null,
+                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondaryContainer),
+                            contentScale = ContentScale.Crop
                         )
-                        if (isActiveRoute) {
-                            Box(
-                                modifier = Modifier
-                                    .background(
-                                        color = MaterialTheme.colorScheme.primary,
-                                        shape = MaterialTheme.shapes.small
-                                    )
-                                    .padding(horizontal = 8.dp, vertical = 2.dp)
-                            ) {
-                                Text(
-                                    text = "Activa",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onPrimary
+                    })
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(
+                modifier = Modifier
+                    .weight(6f),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = p.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.weight(1f, fill = false)
+                    )
+                    if (isActiveRoute) {
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.primary,
+                                    shape = MaterialTheme.shapes.small
                                 )
-                            }
+                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = "Activa",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
                         }
                     }
-                    Text(
-                        text = formatOpenHours(p.openHours),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {}
                 }
-            }
-            RumboButton(
-                modifier = Modifier.weight(1f).fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                text = if (isActiveRoute) "Ver Ruta Activa" else "Iniciar Desplazamiento",
-                onClick = {
-                    if (isActiveRoute) {
-                        controller.navigate(AppScreens.Map.name)
-                    } else if (selectedPlace != null) {
-                        showReplaceRouteDialog = true
-                    } else {
-                        placesViewModel.selectForNavigation(p)
-                        controller.navigate(AppScreens.Map.name)
-                    }
-                },
-                style = if (isActiveRoute) RumboButtonStyle.Primary else RumboButtonStyle.Secondary,
-                icon = painterResource(R.drawable.ic_map)
-            )
-            IconButton(onClick = { placesViewModel.removeFromItinerary(p) }) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Eliminar del Itinerario",
-                    tint = MaterialTheme.colorScheme.error
+                Text(
+                    text = formatOpenHours(p.openHours),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RumboButton(
+                        modifier = Modifier.weight(1f),
+                        text = if (isActiveRoute) "Ver Ruta Activa" else "Iniciar Desplazamiento",
+                        onClick = {
+                            if (isActiveRoute) {
+                                controller.navigate(AppScreens.Map.name)
+                            } else if (selectedPlace != null) {
+                                showReplaceRouteDialog = true
+                            } else {
+                                placesViewModel.selectForNavigation(p)
+                                controller.navigate(AppScreens.Map.name)
+                            }
+                        },
+                        style = if (isActiveRoute) RumboButtonStyle.Primary else RumboButtonStyle.Secondary,
+                        icon = painterResource(R.drawable.ic_map)
+                    )
+                    IconButton(onClick = { placesViewModel.removeFromItinerary(p) }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Eliminar del Itinerario",
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
             }
         }
     }
